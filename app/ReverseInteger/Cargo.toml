@@ -1,7 +1,7 @@
 [package]
-name = "learn_rust_app"
+name = "ReverseInteger"
 version = "0.1.0"
 authors = ["LiviuCP"]
 
 [dependencies]
-learn_rust_lib = { path = "../lib" }
+learn_rust_lib = { path = "../../lib" }

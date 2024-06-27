@@ -15,4 +15,7 @@ pub fn test_reverse_int() {
    assert_eq!(reverse_int((3, 2)), (300, 0));
    assert_eq!(reverse_int((300, 0)), (3, 2));
    assert_eq!(reverse_int((3, 0)), (3, 0));
+   assert_eq!(reverse_int((00, 0)), (0, 0));
+   assert_eq!(reverse_int((0, 00)), (0, 0));
+   assert_eq!(reverse_int((03, 02)), (300, 0));
 }

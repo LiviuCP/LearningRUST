@@ -4,7 +4,7 @@ pub fn reverse_int(input:(u64, u8)) -> (u64, u8) {
       *output_number = *output_number * 10 + found_digit;
       *input_number = *input_number / 10;
 
-      return found_digit as u8;
+      found_digit as u8
    }
 
    let mut input_number = input.0;
@@ -34,5 +34,5 @@ pub fn reverse_int(input:(u64, u8)) -> (u64, u8) {
       output_number *= u64::pow(10, input.1 as u32);
    }
 
-   return (output_number, output_preceding_zeroes_count);
+   (output_number, output_preceding_zeroes_count)
 }

@@ -9,7 +9,7 @@ fn read_input() -> String {
    let mut input_str = String::new();
    std::io::stdin().read_line(&mut input_str).unwrap();
    pre_parse_input_string(&mut input_str);
-   return input_str;
+   input_str
 }
 
 fn pre_parse_input_string(input_str:&mut String) {
@@ -59,7 +59,7 @@ fn parse_input_string(input_str:&String) -> Option<(u64,u8)> {
       result = Option::Some((number_int, preceding_zeroes_count));
    }
 
-   return result;
+   result
 }
 
 fn convert_prefixed_int_to_string(number:(u64, u8)) -> String {
@@ -74,7 +74,7 @@ fn convert_prefixed_int_to_string(number:(u64, u8)) -> String {
       result.push_str(")");
    }
    result.push_str(number.0.to_string().as_str());
-   return result;
+   result
 }
 
 fn main() {

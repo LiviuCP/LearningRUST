@@ -2,117 +2,117 @@ extern crate learn_rust_lib;
 use learn_rust_lib::numbers::reverse_int;
 
 fn clear_screen() {
-   std::process::Command::new("clear").status().unwrap();
+    std::process::Command::new("clear").status().unwrap();
 }
 
 fn read_input() -> String {
-   let mut input_str = String::new();
-   std::io::stdin().read_line(&mut input_str).unwrap();
-   pre_parse_input_string(&mut input_str);
-   input_str
+    let mut input_str = String::new();
+    std::io::stdin().read_line(&mut input_str).unwrap();
+    pre_parse_input_string(&mut input_str);
+    input_str
 }
 
 fn pre_parse_input_string(input_str:&mut String) {
-   let temp = input_str.trim().to_string();
-   *input_str = temp;
+    let temp = input_str.trim().to_string();
+    *input_str = temp;
 }
 
 fn parse_input_string(input_str:&String) -> Option<(u64,u8)> {
-   if input_str.len() == 0 {
-      panic!("A non-empty input string is expected!");
-   }
+    if input_str.len() == 0 {
+	panic!("A non-empty input string is expected!");
+    }
 
-   let mut number_str = String::new();
-   let mut preceding_zeroes_count = 0;
-   let mut preceding_zeroes_check_required = true;
-   let mut is_valid_string = true;
+    let mut number_str = String::new();
+    let mut preceding_zeroes_count = 0;
+    let mut preceding_zeroes_check_required = true;
+    let mut is_valid_string = true;
 
-   for ch in input_str.chars() {
-      if !ch.is_digit(10) {
-         is_valid_string = false;
-	 break;
-      }
+    for ch in input_str.chars() {
+	if !ch.is_digit(10) {
+            is_valid_string = false;
+	    break;
+	}
 
-      if preceding_zeroes_check_required {
-         if ch == '0' {
-	    preceding_zeroes_count += 1;
-	    continue;
-	 }
-	 number_str.push(ch);
-	 preceding_zeroes_check_required = false;
-      }
-      else {
-         number_str.push(ch);
-      }
-   }
+	if preceding_zeroes_check_required {
+            if ch == '0' {
+		preceding_zeroes_count += 1;
+		continue;
+	    }
+	    number_str.push(ch);
+	    preceding_zeroes_check_required = false;
+	}
+	else {
+            number_str.push(ch);
+	}
+    }
 
-   let mut result:Option<(u64,u8)> = Option::None;
+    let mut result:Option<(u64,u8)> = Option::None;
 
-   if is_valid_string {
-      let mut number_int:u64 = 0;
-      if number_str.len() == 0 {
-         preceding_zeroes_count -= 1;
-      }
-      else {
-         number_int = number_str.parse::<u64>().unwrap();
-      }
-      result = Option::Some((number_int, preceding_zeroes_count));
-   }
+    if is_valid_string {
+	let mut number_int:u64 = 0;
+	if number_str.len() == 0 {
+            preceding_zeroes_count -= 1;
+	}
+	else {
+            number_int = number_str.parse::<u64>().unwrap();
+	}
+	result = Option::Some((number_int, preceding_zeroes_count));
+    }
 
-   result
+    result
 }
 
 fn convert_prefixed_int_to_string(number:(u64, u8)) -> String {
-   let mut result = String::new();
-   if number.1 > 0 {
-      let mut zeroes_count = number.1;
-      result.push_str("(");
-      while zeroes_count > 0 {
-         result.push('0');
-         zeroes_count -= 1;
-      }
-      result.push_str(")");
-   }
-   result.push_str(number.0.to_string().as_str());
-   result
+    let mut result = String::new();
+    if number.1 > 0 {
+	let mut zeroes_count = number.1;
+	result.push_str("(");
+	while zeroes_count > 0 {
+            result.push('0');
+            zeroes_count -= 1;
+	}
+	result.push_str(")");
+    }
+    result.push_str(number.0.to_string().as_str());
+    result
 }
 
 fn main() {
-   let max_digits_count = 19; // this is to prevent overflow (a 64bit integer has maximum 20 digits) - preceding zeroes included
+    let max_digits_count = 19; // this is to prevent overflow (a 64bit integer has maximum 20 digits) - preceding zeroes included
 
-   clear_screen();
-   println!("Welcome!");
-   println!("---------------------------------------------------------------------------------");
+    clear_screen();
+    println!("Welcome!");
+    println!("---------------------------------------------------------------------------------");
 
-   loop {
-      println!("Please enter a positive integer (press ENTER to exit)!");
+    loop {
+	println!("Please enter a positive integer (press ENTER to exit)!");
 
-      let input_str = read_input();
-      let resulting_size = input_str.len();
+	let input_str = read_input();
+	let resulting_size = input_str.len();
 
-      clear_screen();
+	clear_screen();
 
-      if resulting_size == 0 {
-         println!("Goodbye!");
-	 break;
-      }
+	if resulting_size == 0 {
+            println!("Goodbye!");
+	    break;
+	}
 
-      if resulting_size <= max_digits_count {
-         let result = parse_input_string(&input_str);
-         if result == Option::None {
-            println!("Invalid integer! Please try again.")
-         }
-         else
-         {
-            let unwrapped_result = result.unwrap();
-	    let reversed_result = reverse_int(unwrapped_result);
-	    println!("Reversed integer is: {}", convert_prefixed_int_to_string(reversed_result));
-         }
-      }
-      else {
-         println!("The maximum allowed number of digits ({}) has been exceeded! Please try again.", max_digits_count);
-      }
+	if resulting_size <= max_digits_count {
+            let result = parse_input_string(&input_str);
+            if result == Option::None {
+		println!("Invalid integer! Please try again.")
+            }
+            else
+            {
+		let unwrapped_result = result.unwrap();
+		let reversed_result = reverse_int(unwrapped_result);
+		println!("Reversed integer is: {}", convert_prefixed_int_to_string(reversed_result));
+            }
+	}
+	else {
+            println!("The maximum allowed number of digits ({}) has been exceeded! Please try again.", max_digits_count);
+	}
 
-      println!("---------------------------------------------------------------------------------");
-   }
+	println!("---------------------------------------------------------------------------------");
+    }
 }

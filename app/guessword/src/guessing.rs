@@ -1,5 +1,5 @@
 use std::{io, cmp::Ordering, collections::{HashSet, HashMap}};
-use super::utilities;
+use learn_rust_lib::utilities;
 
 pub fn guess_word_size(word_to_guess: &String) -> bool {
     let word_size_to_guess = word_to_guess.len();

@@ -1,4 +1,7 @@
+mod guessing;
+
 use rand::Rng;
+use learn_rust_lib::utilities;
 
 /*
 TODO:
@@ -25,9 +28,6 @@ const AVAILABLE_WORDS:[&str;14] = ["confidential",
 				  "responsiveness",
 				  "accountability",
 				  "priority"];
-
-mod guessing;
-mod utilities;
 
 fn main() {
     utilities::clear_screen();

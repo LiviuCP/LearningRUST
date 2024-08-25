@@ -1,9 +1,5 @@
 extern crate learn_rust_lib;
-use learn_rust_lib::numbers::reverse_int;
-
-fn clear_screen() {
-    std::process::Command::new("clear").status().unwrap();
-}
+use learn_rust_lib::{numbers::reverse_int, utilities};
 
 fn read_input() -> String {
     let mut input_str = String::new();
@@ -80,7 +76,7 @@ fn convert_prefixed_int_to_string(number:(u64, u8)) -> String {
 fn main() {
     let max_digits_count = 19; // this is to prevent overflow (a 64bit integer has maximum 20 digits) - preceding zeroes included
 
-    clear_screen();
+    utilities::clear_screen();
     println!("Welcome!");
     println!("---------------------------------------------------------------------------------");
 
@@ -90,7 +86,7 @@ fn main() {
 	let input_str = read_input();
 	let resulting_size = input_str.len();
 
-	clear_screen();
+	utilities::clear_screen();
 
 	if resulting_size == 0 {
             println!("Goodbye!");

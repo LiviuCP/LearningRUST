@@ -1,5 +1,3 @@
-/* TODO: move this module into another crate */
-
 use std::io;
 
 pub fn clear_screen() {

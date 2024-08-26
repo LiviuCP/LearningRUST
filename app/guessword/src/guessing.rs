@@ -138,14 +138,8 @@ fn build_chars_left_to_guess_map(word_to_guess: &String) -> HashMap::<char, Vec:
 	let chars_to_guess = &word_to_guess[1..word_to_guess_size-1];
 
 	for (index, ch) in chars_to_guess.chars().enumerate() {
-	    if let Some(occurrence_indexes) = chars_left_to_guess.get_mut(&ch) {
-		// the index from slice chars_to_guess should be mapped to word_to_guess string index (the slice excludes starting/ending word to guess characters)
-		occurrence_indexes.push(index+1);
-	    }
-	    else {
-		let occurrence_indexes = vec![index+1];
-		chars_left_to_guess.insert(ch, occurrence_indexes);
-	    }
+	    let occurrence_indexes = chars_left_to_guess.entry(ch).or_insert(Vec::<usize>::new());
+	    (*occurrence_indexes).push(index+1);
 	}
     }
 

@@ -2,7 +2,7 @@ use std::{io, cmp::Ordering, collections::{HashSet, HashMap}};
 use learn_rust_lib::utilities;
 
 pub fn guess_word_size(word_to_guess: &String) -> bool {
-    let word_size_to_guess = word_to_guess.len();
+    let word_size_to_guess = word_to_guess.chars().count();
     let mut word_size_successfully_guessed = false;
 
     loop {
@@ -43,8 +43,8 @@ pub fn guess_word_size(word_to_guess: &String) -> bool {
 }
 
 pub fn guess_word(word_to_guess: &String) -> bool {
-    let word_to_guess_size = word_to_guess.len();
-    let mut nr_of_chars_to_guess = if word_to_guess_size < 2 {0} else {word_to_guess_size - 2}; // exclude beginning and ending char (should be displayed)
+    let word_to_guess_size = word_to_guess.chars().count();
+    let mut nr_of_chars_to_guess:usize = if word_to_guess_size < 2 {0} else {word_to_guess_size - 2}; // exclude beginning and ending char (should be displayed)
     let mut word_to_display = String::new(); // word displayed as guessing hint (with placeholders that are gradually filled in as the user guesses the chars)
     let mut guessed_chars = HashSet::new();
     let mut chars_left_to_guess = build_chars_left_to_guess_map(word_to_guess);
@@ -82,12 +82,18 @@ pub fn guess_word(word_to_guess: &String) -> bool {
 
 	if let Some(occurrence_indexes) = chars_left_to_guess.get(&input_char) {
 	    let found_occurrences_count = occurrence_indexes.len();
+
+	    assert!(found_occurrences_count <= nr_of_chars_to_guess);
 	    nr_of_chars_to_guess -= found_occurrences_count;
+
+	    let mut word_to_display_chars:Vec<char> = word_to_display.chars().collect();
 
 	    // for each guessed character all occurrences are filled-in into the guessing hint
 	    for index in occurrence_indexes {
-		word_to_display.replace_range(*index..*index+1, &word_to_guess[*index..*index+1]);
+		word_to_display_chars[*index] = input_char;
 	    }
+
+	    word_to_display = word_to_display_chars.iter().collect::<String>();
 
 	    chars_left_to_guess.remove(&input_char);
 	    guessed_chars.insert(input_char);
@@ -107,24 +113,24 @@ pub fn guess_word(word_to_guess: &String) -> bool {
 
 fn compute_word_to_display_initial_value(word_to_guess: &String) -> String {
     let mut word_to_display = String::new();
-    let word_to_guess_size = word_to_guess.len();
+    let word_to_guess_chars:Vec<char> = word_to_guess.chars().collect();
+    let word_to_guess_size = word_to_guess_chars.len();
 
     if word_to_guess_size > 2 {
 	// the guessing hint should initially contain underscore placeholders for all characters except the first and last
-	word_to_display.push(word_to_guess.chars().nth(0).unwrap());
+	word_to_display.push(word_to_guess_chars[0]);
+	let mut nr_of_underscores_to_add = word_to_guess_size - 2;
 
-	let mut underscores_to_add = word_to_guess_size - 2;
-
-	while underscores_to_add > 0 {
-	    word_to_display.push('_');
-	    underscores_to_add -= 1;
+	while nr_of_underscores_to_add > 0 {
+	    word_to_display.push('-');
+	    nr_of_underscores_to_add -= 1;
 	}
 
-	word_to_display.push(word_to_guess.chars().nth(word_to_guess.len() - 1).unwrap());
+	word_to_display.push(word_to_guess_chars[word_to_guess_size-1]);
     }
     else
     {
-	word_to_display.push_str(word_to_guess.as_str());
+	word_to_display = word_to_guess.clone();
     }
 
     word_to_display
@@ -132,13 +138,14 @@ fn compute_word_to_display_initial_value(word_to_guess: &String) -> String {
 
 fn build_chars_left_to_guess_map(word_to_guess: &String) -> HashMap::<char, Vec::<usize>> {
     let mut chars_left_to_guess = HashMap::<char, Vec::<usize>>::new();
-    let word_to_guess_size = word_to_guess.len();
+    let word_to_guess_chars:Vec<char> = word_to_guess.chars().collect();
+    let word_to_guess_size = word_to_guess_chars.len();
 
     if word_to_guess_size > 2 {
-	let chars_to_guess = &word_to_guess[1..word_to_guess_size-1];
+	let chars_to_guess = &word_to_guess_chars[1..word_to_guess_size-1];
 
-	for (index, ch) in chars_to_guess.chars().enumerate() {
-	    let occurrence_indexes = chars_left_to_guess.entry(ch).or_insert(Vec::<usize>::new());
+	for (index, ch) in chars_to_guess.iter().enumerate() {
+	    let occurrence_indexes = chars_left_to_guess.entry(*ch).or_insert(Vec::<usize>::new());
 	    (*occurrence_indexes).push(index+1);
 	}
     }

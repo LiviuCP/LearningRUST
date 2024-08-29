@@ -84,16 +84,11 @@ pub fn guess_word(word_to_guess: &String) -> bool {
 	    let found_occurrences_count = occurrence_indexes.len();
 
 	    assert!(found_occurrences_count <= nr_of_chars_to_guess);
+
 	    nr_of_chars_to_guess -= found_occurrences_count;
+	    let replaced_occurrences_count = utilities::replace_chars_in_string(input_char, &occurrence_indexes, &mut word_to_display);
 
-	    let mut word_to_display_chars:Vec<char> = word_to_display.chars().collect();
-
-	    // for each guessed character all occurrences are filled-in into the guessing hint
-	    for index in occurrence_indexes {
-		word_to_display_chars[*index] = input_char;
-	    }
-
-	    word_to_display = word_to_display_chars.iter().collect::<String>();
+	    assert!(replaced_occurrences_count == found_occurrences_count);
 
 	    chars_left_to_guess.remove(&input_char);
 	    guessed_chars.insert(input_char);
@@ -136,8 +131,8 @@ fn compute_word_to_display_initial_value(word_to_guess: &String) -> String {
     word_to_display
 }
 
-fn build_chars_left_to_guess_map(word_to_guess: &String) -> HashMap::<char, Vec::<usize>> {
-    let mut chars_left_to_guess = HashMap::<char, Vec::<usize>>::new();
+fn build_chars_left_to_guess_map(word_to_guess: &String) -> HashMap::<char, HashSet::<usize>> {
+    let mut chars_left_to_guess = HashMap::<char, HashSet::<usize>>::new();
     let word_to_guess_chars:Vec<char> = word_to_guess.chars().collect();
     let word_to_guess_size = word_to_guess_chars.len();
 
@@ -145,8 +140,8 @@ fn build_chars_left_to_guess_map(word_to_guess: &String) -> HashMap::<char, Vec:
 	let chars_to_guess = &word_to_guess_chars[1..word_to_guess_size-1];
 
 	for (index, ch) in chars_to_guess.iter().enumerate() {
-	    let occurrence_indexes = chars_left_to_guess.entry(*ch).or_insert(Vec::<usize>::new());
-	    (*occurrence_indexes).push(index+1);
+	    let occurrence_indexes = chars_left_to_guess.entry(*ch).or_insert(HashSet::<usize>::new());
+	    (*occurrence_indexes).insert(index+1); // index should be mapped to actual char index in word_to_guess (take first char into account)
 	}
     }
 

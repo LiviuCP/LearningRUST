@@ -1,4 +1,4 @@
-use std::io;
+use std::{io, collections::HashSet};
 
 pub fn clear_screen() {
     std::process::Command::new("clear").status().unwrap();
@@ -32,4 +32,20 @@ pub fn convert_char_to_lowercase(input_char: &mut char) {
 	*input_char = ch;
 	break;
     }
+}
+
+pub fn replace_chars_in_string(replacing_char: char, replaced_chars_indexes: &HashSet::<usize>, string_to_update: &mut String) -> usize {
+    let mut string_to_update_chars:Vec<char> = (*string_to_update).chars().collect();
+    let string_to_update_size = string_to_update_chars.len();
+    let mut replaced_chars_count = 0;
+
+    for index in replaced_chars_indexes {
+	if *index < string_to_update_size {
+	    string_to_update_chars[*index] = replacing_char;
+	    replaced_chars_count += 1;
+	}
+    }
+
+    *string_to_update = string_to_update_chars.iter().collect::<String>();
+    replaced_chars_count
 }

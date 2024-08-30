@@ -36,3 +36,23 @@ pub fn reverse_int(input:(u64, u8)) -> (u64, u8) {
 
     (output_number, output_preceding_zeroes_count)
 }
+
+pub fn compute_median(numbers_list: &Vec::<i32>) -> Option<i32> {
+    let mut result: Option::<i32> = None;
+    let list_size = numbers_list.len();
+
+    if list_size > 0 {
+	let mut sorted_numbers_list = numbers_list.clone(); // the original list should not be modified, we work on a copy
+	sorted_numbers_list.sort();
+
+	let median_index = list_size / 2;
+	result = Some(sorted_numbers_list[median_index]);
+
+	if list_size % 2 == 0 {
+	    // actually it should be the exact floating point average, i.e. 2 + 3 = 2,5 (not 2), however for simplicity we will do a "floor" average
+	    result = Some((sorted_numbers_list[median_index-1] + result.unwrap()) / 2);
+	}
+    }
+
+    result
+}

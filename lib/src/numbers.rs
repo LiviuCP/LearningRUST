@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 pub fn reverse_int(input:(u64, u8)) -> (u64, u8) {
     fn update_input_and_output_numbers(input_number: &mut u64, output_number: &mut u64) -> u8 {
 	let found_digit = *input_number % 10;
@@ -55,4 +57,34 @@ pub fn compute_median(numbers_list: &Vec::<i32>) -> Option<i32> {
     }
 
     result
+}
+
+// computes the value(s) that occur(s) most often (mode = number of occurrences of this/these value(s))
+pub fn compute_mode(numbers_list: &Vec::<i32>) -> (usize, Vec::<i32>) {
+    let mut occurrences_map = HashMap::new();
+
+    // count the occurrences of each value from input vector
+    for value in numbers_list.iter() {
+	let value_occurrences = occurrences_map.entry(*value).or_insert(0);
+	*value_occurrences += 1;
+    }
+
+    let mut values_with_mode = Vec::<i32>::new(); // value(s) with max number of occurrences
+    let mut mode:usize = 0; // max number of occurrences
+
+    for (value, occurrences) in &occurrences_map {
+	if *occurrences > mode {
+	    mode = *occurrences;
+	    values_with_mode.clear();
+	    values_with_mode.push(*value);
+	}
+	else if *occurrences == mode {
+	    values_with_mode.push(*value);
+	}
+    }
+
+    // sort the values with max occurrences to get a consistent result (not mandatory but useful for testing)
+    values_with_mode.sort();
+
+    (mode, values_with_mode)
 }

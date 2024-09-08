@@ -49,3 +49,12 @@ pub fn replace_chars_in_string(replacing_char: char, replaced_chars_indexes: &Ha
     *string_to_update = string_to_update_chars.iter().collect::<String>();
     replaced_chars_count
 }
+
+pub fn push_multiple_times_to_vec<T: Copy>(value: &T, count: usize, arr: &mut Vec::<T>) {
+    let mut times_to_push = count;
+
+    while times_to_push > 0 {
+	arr.push(*value);
+	times_to_push -= 1;
+    }
+}

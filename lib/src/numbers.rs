@@ -167,3 +167,62 @@ pub fn convert_number_to_roman_numeral(number: u16) -> Vec::<char> {
 
     result
 }
+
+// TODO: create static map (probably by using crates.io)
+fn build_roman_numerals_conversion_map() -> HashMap::<(usize, char), Vec::<char>> {
+    let result = HashMap::from([
+	((0 as usize, '1'), vec!('I')),
+	((0 as usize, '2'), vec!('I', 'I')),
+	((0 as usize, '3'), vec!('I', 'I', 'I')),
+	((0 as usize, '4'), vec!('I', 'V')),
+	((0 as usize, '5'), vec!('V')),
+	((0 as usize, '6'), vec!('V', 'I')),
+	((0 as usize, '7'), vec!('V', 'I', 'I')),
+	((0 as usize, '8'), vec!('V', 'I', 'I', 'I')),
+	((0 as usize, '9'), vec!('I', 'X')),
+	((1 as usize, '1'), vec!('X')),
+	((1 as usize, '2'), vec!('X', 'X')),
+	((1 as usize, '3'), vec!('X', 'X', 'X')),
+	((1 as usize, '4'), vec!('X', 'L')),
+	((1 as usize, '5'), vec!('L')),
+	((1 as usize, '6'), vec!('L', 'X')),
+	((1 as usize, '7'), vec!('L', 'X', 'X')),
+	((1 as usize, '8'), vec!('L', 'X', 'X', 'X')),
+	((1 as usize, '9'), vec!('X', 'C')),
+	((2 as usize, '1'), vec!('C')),
+	((2 as usize, '2'), vec!('C', 'C')),
+	((2 as usize, '3'), vec!('C', 'C', 'C')),
+	((2 as usize, '4'), vec!('C', 'D')),
+	((2 as usize, '5'), vec!('D')),
+	((2 as usize, '6'), vec!('D', 'C')),
+	((2 as usize, '7'), vec!('D', 'C', 'C')),
+	((2 as usize, '8'), vec!('D', 'C', 'C', 'C')),
+	((2 as usize, '9'), vec!('C', 'M')),
+	((3 as usize, '1'), vec!('M')),
+	((3 as usize, '2'), vec!('M', 'M')),
+	((3 as usize, '3'), vec!('M', 'M', 'M')),
+	((3 as usize, '4'), vec!('M', 'M', 'M', 'M'))
+    ]);
+
+    result
+}
+
+pub fn convert_number_to_roman_numeral_using_hash(number: u16) -> Vec::<char> {
+    let mut result = Vec::<char>::new();
+
+    if number > 0 && number < 5000 {
+	let conversion_map = build_roman_numerals_conversion_map();
+	let digits: Vec::<char> = number.to_string().chars().collect();
+
+	// no need to check the digits_count is > 0 for getting power_of_ten_index (see below), an integer should have min. 1 digit
+	let digits_count = digits.len();
+
+	for (index, digit_as_char) in digits.iter().enumerate() {
+	    let power_of_ten_index = digits_count - 1 - index; // place of the digit within the number, e.g. for thousands it is 3 corresponding to 10^3
+	    let mut chars_to_append: Vec::<char> = conversion_map.get(&(power_of_ten_index, *digit_as_char)).unwrap_or(&Vec::new()).to_vec();
+	    result.append(&mut chars_to_append);
+	}
+    }
+
+    result
+}

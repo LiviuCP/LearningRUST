@@ -176,3 +176,96 @@ pub fn test_convert_number_to_roman_numeral_using_hash() {
     assert_eq!(numbers::convert_number_to_roman_numeral_using_hash(4987), vec!['M', 'M', 'M', 'M', 'C', 'M', 'L', 'X', 'X', 'X', 'V', 'I', 'I']);
     assert_eq!(numbers::convert_number_to_roman_numeral_using_hash(4999), vec!['M', 'M', 'M', 'M', 'C', 'M', 'X', 'C', 'I', 'X']);
 }
+
+#[test]
+pub fn test_convert_roman_numeral_to_number() {
+    // building blocks
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['I']), 1);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['I', 'V']), 4);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['V']), 5);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['I', 'X']), 9);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['X']), 10);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['X', 'L']), 40);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['L']), 50);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['X', 'C']), 90);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['C']), 100);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['C', 'D']), 400);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['D']), 500);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['C', 'M']), 900);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['M']), 1000);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['M', 'M', 'M', 'M']), 4000);
+
+    // random
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['I', 'I']), 2);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['V', 'I', 'I', 'I']), 8);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['X', 'X', 'V']), 25);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['X', 'L', 'I', 'V']), 44);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['L', 'X', 'X', 'V', 'I']), 76);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['C', 'C', 'X', 'X', 'X', 'V', 'I', 'I']), 237);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['C', 'D', 'X', 'I', 'I']), 412);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['D', 'L', 'V']), 555);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['D', 'C', 'C', 'L', 'X', 'X', 'V', 'I', 'I']), 777);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['M', 'C', 'X', 'I']), 1111);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['M', 'C', 'C', 'X', 'X', 'X', 'I', 'V']), 1234);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['M', 'C', 'D', 'L', 'I', 'I', 'I']), 1453);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['M', 'D', 'C', 'C', 'C', 'L', 'X', 'X', 'V', 'I', 'I']), 1877);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['M', 'C', 'M', 'X', 'V', 'I', 'I', 'I']), 1918);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['M', 'M', 'X', 'X']), 2020);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['M', 'M', 'C', 'C', 'X', 'X', 'I', 'I']), 2222);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['M', 'M', 'C', 'C', 'C', 'X', 'C', 'I', 'V']), 2394);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['M', 'M', 'D', 'C', 'X', 'C', 'V']), 2695);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['M', 'M', 'D', 'C', 'C', 'C']), 2800);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['M', 'M', 'M']), 3000);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['M', 'M', 'M', 'C', 'C', 'C', 'X', 'X', 'X', 'I', 'I', 'I']), 3333);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['M', 'M', 'M', 'C', 'D', 'L', 'V', 'I']), 3456);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['M', 'M', 'M', 'D', 'C', 'C', 'C', 'L', 'X', 'X', 'I', 'X']), 3879);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['M', 'M', 'M', 'C', 'M', 'L', 'X', 'X', 'X', 'V', 'I', 'I']), 3987);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['M', 'M', 'M', 'M', 'C', 'L', 'X', 'V', 'I']), 4166);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['M', 'M', 'M', 'M', 'C', 'D', 'X', 'L', 'I', 'V']), 4444);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['M', 'M', 'M', 'M', 'D', 'C', 'C', 'C', 'L', 'X', 'X', 'X', 'V', 'I', 'I', 'I']), 4888);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['M', 'M', 'M', 'M', 'C', 'M', 'L', 'X', 'X', 'X', 'V', 'I', 'I']), 4987);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['M', 'M', 'M', 'M', 'C', 'M', 'X', 'C', 'I', 'X']), 4999);
+
+    // lower or mixed case numerals
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['M', 'm', 'D', 'C', 'c', 'l', 'X', 'x', 'V', 'i', 'I']), 2777);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['d', 'L', 'v']), 555);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['m', 'd', 'c', 'l', 'x', 'v', 'i']), 1666);
+
+    // error cases
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['M', 'M', 'M', 'M', 'M', 'X', 'C', 'I', 'X']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['M', 'D', 'C', 'C', 'C', 'C', 'X', 'V', 'I', 'I', 'I']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['C', 'L', 'X', 'X', 'X', 'X']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['X', 'V', 'I', 'I', 'I', 'I']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['D', 'D', 'C', 'L']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['L', 'L', 'X']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['X', 'V', 'V', 'I']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['D', 'M']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['M', 'L', 'M', 'V']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['X', 'M', 'V']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['C', 'V', 'M', 'I', 'I']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['I', 'M', 'I', 'I']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['L', 'C', 'X', 'X']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['V', 'C', 'I']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['I', 'C', 'I', 'I']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['V', 'X', 'I', 'I']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['M', 'L', 'D', 'X', 'I', 'I']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['C', 'X', 'D', 'I', 'I']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['V', 'D', 'I', 'I']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['I', 'D', 'I']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['C', 'V', 'L', 'I', 'I']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['C', 'C', 'I', 'L', 'I']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['M', 'C', 'C', 'M']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['M', 'C', 'C', 'D', 'X', 'X']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['D', 'X', 'X', 'C', 'V']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['X', 'X', 'L', 'V']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['X', 'I', 'I', 'X']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['I', 'I', 'V']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['M', 'M', 'M', 'N', 'C', 'M', 'X', 'C', 'I', 'X']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['M', 'M', 'M', 'M', 'C', 'M', '_', 'C', 'I', 'X']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['M', 'M', 'M', 'M', 'C', 'M', 'X', 'C', '9', 'X']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['M', 'M', 'M', 'M', 'C', 'M', ' ', 'X', 'C', 'I', 'X']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['N']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['2']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&vec!['-']), 0);
+    assert_eq!(numbers::convert_roman_numeral_to_number(&Vec::<char>::new()), 0);
+}

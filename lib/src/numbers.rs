@@ -207,6 +207,7 @@ fn build_roman_numerals_conversion_map() -> HashMap::<(usize, char), Vec::<char>
     result
 }
 
+/* Alternative method for converting integer to roman numeral, same constraints */
 pub fn convert_number_to_roman_numeral_using_hash(number: u16) -> Vec::<char> {
     let mut result = Vec::<char>::new();
 
@@ -225,4 +226,183 @@ pub fn convert_number_to_roman_numeral_using_hash(number: u16) -> Vec::<char> {
     }
 
     result
+}
+
+#[derive(Eq, PartialEq, Hash, Clone)]
+enum DigitCategory {
+    Thousands,
+    Hundreds,
+    Tens,
+    Units
+}
+
+// TODO: implement static map (probably by using crates.io)
+fn build_numbers_conversion_map() -> HashMap::<(DigitCategory, u16, char), (DigitCategory, u16)> {
+    let result = HashMap::from([
+	((DigitCategory::Thousands, 0, 'M'), (DigitCategory::Thousands, 1)),
+	((DigitCategory::Thousands, 1, 'M'), (DigitCategory::Thousands, 2)),
+	((DigitCategory::Thousands, 2, 'M'), (DigitCategory::Thousands, 3)),
+	((DigitCategory::Thousands, 3, 'M'), (DigitCategory::Thousands, 4)),
+	((DigitCategory::Thousands, 0, 'D'), (DigitCategory::Hundreds, 5)),
+	((DigitCategory::Thousands, 1, 'D'), (DigitCategory::Hundreds, 5)),
+	((DigitCategory::Thousands, 2, 'D'), (DigitCategory::Hundreds, 5)),
+	((DigitCategory::Thousands, 3, 'D'), (DigitCategory::Hundreds, 5)),
+	((DigitCategory::Thousands, 4, 'D'), (DigitCategory::Hundreds, 5)),
+	((DigitCategory::Thousands, 0, 'C'), (DigitCategory::Hundreds, 1)),
+	((DigitCategory::Thousands, 1, 'C'), (DigitCategory::Hundreds, 1)),
+	((DigitCategory::Thousands, 2, 'C'), (DigitCategory::Hundreds, 1)),
+	((DigitCategory::Thousands, 3, 'C'), (DigitCategory::Hundreds, 1)),
+	((DigitCategory::Thousands, 4, 'C'), (DigitCategory::Hundreds, 1)),
+	((DigitCategory::Thousands, 0, 'L'), (DigitCategory::Tens, 5)),
+	((DigitCategory::Thousands, 1, 'L'), (DigitCategory::Tens, 5)),
+	((DigitCategory::Thousands, 2, 'L'), (DigitCategory::Tens, 5)),
+	((DigitCategory::Thousands, 3, 'L'), (DigitCategory::Tens, 5)),
+	((DigitCategory::Thousands, 4, 'L'), (DigitCategory::Tens, 5)),
+	((DigitCategory::Thousands, 0, 'X'), (DigitCategory::Tens, 1)),
+	((DigitCategory::Thousands, 1, 'X'), (DigitCategory::Tens, 1)),
+	((DigitCategory::Thousands, 2, 'X'), (DigitCategory::Tens, 1)),
+	((DigitCategory::Thousands, 3, 'X'), (DigitCategory::Tens, 1)),
+	((DigitCategory::Thousands, 4, 'X'), (DigitCategory::Tens, 1)),
+	((DigitCategory::Thousands, 0, 'V'), (DigitCategory::Units, 5)),
+	((DigitCategory::Thousands, 1, 'V'), (DigitCategory::Units, 5)),
+	((DigitCategory::Thousands, 2, 'V'), (DigitCategory::Units, 5)),
+	((DigitCategory::Thousands, 3, 'V'), (DigitCategory::Units, 5)),
+	((DigitCategory::Thousands, 4, 'V'), (DigitCategory::Units, 5)),
+	((DigitCategory::Thousands, 0, 'I'), (DigitCategory::Units, 1)),
+	((DigitCategory::Thousands, 1, 'I'), (DigitCategory::Units, 1)),
+	((DigitCategory::Thousands, 2, 'I'), (DigitCategory::Units, 1)),
+	((DigitCategory::Thousands, 3, 'I'), (DigitCategory::Units, 1)),
+	((DigitCategory::Thousands, 4, 'I'), (DigitCategory::Units, 1)),
+	((DigitCategory::Hundreds, 1, 'C'), (DigitCategory::Hundreds, 2)),
+	((DigitCategory::Hundreds, 2, 'C'), (DigitCategory::Hundreds, 3)),
+	((DigitCategory::Hundreds, 1, 'D'), (DigitCategory::Hundreds, 4)),
+	((DigitCategory::Hundreds, 5, 'C'), (DigitCategory::Hundreds, 6)),
+	((DigitCategory::Hundreds, 6, 'C'), (DigitCategory::Hundreds, 7)),
+	((DigitCategory::Hundreds, 7, 'C'), (DigitCategory::Hundreds, 8)),
+	((DigitCategory::Hundreds, 1, 'M'), (DigitCategory::Hundreds, 9)),
+	((DigitCategory::Hundreds, 1, 'L'), (DigitCategory::Tens, 5)),
+	((DigitCategory::Hundreds, 2, 'L'), (DigitCategory::Tens, 5)),
+	((DigitCategory::Hundreds, 3, 'L'), (DigitCategory::Tens, 5)),
+	((DigitCategory::Hundreds, 4, 'L'), (DigitCategory::Tens, 5)),
+	((DigitCategory::Hundreds, 5, 'L'), (DigitCategory::Tens, 5)),
+	((DigitCategory::Hundreds, 6, 'L'), (DigitCategory::Tens, 5)),
+	((DigitCategory::Hundreds, 7, 'L'), (DigitCategory::Tens, 5)),
+	((DigitCategory::Hundreds, 8, 'L'), (DigitCategory::Tens, 5)),
+	((DigitCategory::Hundreds, 9, 'L'), (DigitCategory::Tens, 5)),
+	((DigitCategory::Hundreds, 1, 'X'), (DigitCategory::Tens, 1)),
+	((DigitCategory::Hundreds, 2, 'X'), (DigitCategory::Tens, 1)),
+	((DigitCategory::Hundreds, 3, 'X'), (DigitCategory::Tens, 1)),
+	((DigitCategory::Hundreds, 4, 'X'), (DigitCategory::Tens, 1)),
+	((DigitCategory::Hundreds, 5, 'X'), (DigitCategory::Tens, 1)),
+	((DigitCategory::Hundreds, 6, 'X'), (DigitCategory::Tens, 1)),
+	((DigitCategory::Hundreds, 7, 'X'), (DigitCategory::Tens, 1)),
+	((DigitCategory::Hundreds, 8, 'X'), (DigitCategory::Tens, 1)),
+	((DigitCategory::Hundreds, 9, 'X'), (DigitCategory::Tens, 1)),
+	((DigitCategory::Hundreds, 1, 'V'), (DigitCategory::Units, 5)),
+	((DigitCategory::Hundreds, 2, 'V'), (DigitCategory::Units, 5)),
+	((DigitCategory::Hundreds, 3, 'V'), (DigitCategory::Units, 5)),
+	((DigitCategory::Hundreds, 4, 'V'), (DigitCategory::Units, 5)),
+	((DigitCategory::Hundreds, 5, 'V'), (DigitCategory::Units, 5)),
+	((DigitCategory::Hundreds, 6, 'V'), (DigitCategory::Units, 5)),
+	((DigitCategory::Hundreds, 7, 'V'), (DigitCategory::Units, 5)),
+	((DigitCategory::Hundreds, 8, 'V'), (DigitCategory::Units, 5)),
+	((DigitCategory::Hundreds, 9, 'V'), (DigitCategory::Units, 5)),
+	((DigitCategory::Hundreds, 1, 'I'), (DigitCategory::Units, 1)),
+	((DigitCategory::Hundreds, 2, 'I'), (DigitCategory::Units, 1)),
+	((DigitCategory::Hundreds, 3, 'I'), (DigitCategory::Units, 1)),
+	((DigitCategory::Hundreds, 4, 'I'), (DigitCategory::Units, 1)),
+	((DigitCategory::Hundreds, 5, 'I'), (DigitCategory::Units, 1)),
+	((DigitCategory::Hundreds, 6, 'I'), (DigitCategory::Units, 1)),
+	((DigitCategory::Hundreds, 7, 'I'), (DigitCategory::Units, 1)),
+	((DigitCategory::Hundreds, 8, 'I'), (DigitCategory::Units, 1)),
+	((DigitCategory::Hundreds, 9, 'I'), (DigitCategory::Units, 1)),
+	((DigitCategory::Tens, 1, 'X'), (DigitCategory::Tens, 2)),
+	((DigitCategory::Tens, 2, 'X'), (DigitCategory::Tens, 3)),
+	((DigitCategory::Tens, 1, 'L'), (DigitCategory::Tens, 4)),
+	((DigitCategory::Tens, 5, 'X'), (DigitCategory::Tens, 6)),
+	((DigitCategory::Tens, 6, 'X'), (DigitCategory::Tens, 7)),
+	((DigitCategory::Tens, 7, 'X'), (DigitCategory::Tens, 8)),
+	((DigitCategory::Tens, 1, 'C'), (DigitCategory::Tens, 9)),
+	((DigitCategory::Tens, 1, 'V'), (DigitCategory::Units, 5)),
+	((DigitCategory::Tens, 2, 'V'), (DigitCategory::Units, 5)),
+	((DigitCategory::Tens, 3, 'V'), (DigitCategory::Units, 5)),
+	((DigitCategory::Tens, 4, 'V'), (DigitCategory::Units, 5)),
+	((DigitCategory::Tens, 5, 'V'), (DigitCategory::Units, 5)),
+	((DigitCategory::Tens, 6, 'V'), (DigitCategory::Units, 5)),
+	((DigitCategory::Tens, 7, 'V'), (DigitCategory::Units, 5)),
+	((DigitCategory::Tens, 8, 'V'), (DigitCategory::Units, 5)),
+	((DigitCategory::Tens, 9, 'V'), (DigitCategory::Units, 5)),
+	((DigitCategory::Tens, 1, 'I'), (DigitCategory::Units, 1)),
+	((DigitCategory::Tens, 2, 'I'), (DigitCategory::Units, 1)),
+	((DigitCategory::Tens, 3, 'I'), (DigitCategory::Units, 1)),
+	((DigitCategory::Tens, 4, 'I'), (DigitCategory::Units, 1)),
+	((DigitCategory::Tens, 5, 'I'), (DigitCategory::Units, 1)),
+	((DigitCategory::Tens, 6, 'I'), (DigitCategory::Units, 1)),
+	((DigitCategory::Tens, 7, 'I'), (DigitCategory::Units, 1)),
+	((DigitCategory::Tens, 8, 'I'), (DigitCategory::Units, 1)),
+	((DigitCategory::Tens, 9, 'I'), (DigitCategory::Units, 1)),
+	((DigitCategory::Units, 1, 'I'), (DigitCategory::Units, 2)),
+	((DigitCategory::Units, 2, 'I'), (DigitCategory::Units, 3)),
+	((DigitCategory::Units, 1, 'V'), (DigitCategory::Units, 4)),
+	((DigitCategory::Units, 5, 'I'), (DigitCategory::Units, 6)),
+	((DigitCategory::Units, 6, 'I'), (DigitCategory::Units, 7)),
+	((DigitCategory::Units, 7, 'I'), (DigitCategory::Units, 8)),
+	((DigitCategory::Units, 1, 'X'), (DigitCategory::Units, 9)),
+    ]);
+
+    result
+
+}
+
+/*
+This is the maximum number of digits that the resulting number (converted from roman numeral) can have.
+If the number has less digits the missing ones are considered to have value 0.
+*/
+const MAX_DIGITS_COUNT: usize = 4;
+
+pub fn convert_roman_numeral_to_number(numeral: &Vec::<char>) -> u16 {
+    fn update_digits(digit_category: &DigitCategory, digit_value: u16, digits: &mut [u16;4]) {
+	match digit_category {
+	    DigitCategory::Thousands => digits[0] = digit_value,
+	    DigitCategory::Hundreds => digits[1] = digit_value,
+	    DigitCategory::Tens => digits[2] = digit_value,
+	    DigitCategory::Units => digits[3] = digit_value
+	}
+    }
+
+    let mut result = 0;
+
+    if numeral.len() > 0 {
+	let numbers_conversion_map = build_numbers_conversion_map();
+	let mut digits = [0;MAX_DIGITS_COUNT];
+	let mut current_digit_category = DigitCategory::Thousands;
+	let mut current_digit_value = 0;
+	let mut is_valid_numeral = true;
+
+	for ch in numeral.iter() {
+	    let mut current_char = *ch;
+	    utilities::convert_char_to_uppercase(&mut current_char);
+	    let key = (current_digit_category.clone(), current_digit_value, current_char);
+
+	    match numbers_conversion_map.get(&key) {
+		Some((digit_category, digit_value)) => {
+		    current_digit_category = digit_category.clone();
+		    current_digit_value = *digit_value;
+		    update_digits(&current_digit_category, current_digit_value, &mut digits);
+		},
+		None => {
+		    is_valid_numeral = false;
+		    break;
+		}
+	    }
+	}
+
+	if is_valid_numeral {
+	    for index in 0..MAX_DIGITS_COUNT {
+		result += u16::pow(10, (MAX_DIGITS_COUNT - 1 - index) as u32) * digits[index];
+	    }
+	}
+    }
+
+    return result;
 }

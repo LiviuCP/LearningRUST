@@ -34,6 +34,13 @@ pub fn convert_char_to_lowercase(input_char: &mut char) {
     }
 }
 
+pub fn convert_char_to_uppercase(input_char: &mut char) {
+    for ch in input_char.to_uppercase() {
+	*input_char = ch;
+	break;
+    }
+}
+
 pub fn replace_chars_in_string(replacing_char: char, replaced_chars_indexes: &HashSet::<usize>, string_to_update: &mut String) -> usize {
     let mut string_to_update_chars:Vec<char> = (*string_to_update).chars().collect();
     let string_to_update_size = string_to_update_chars.len();

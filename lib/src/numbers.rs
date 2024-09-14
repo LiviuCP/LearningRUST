@@ -228,126 +228,127 @@ pub fn convert_number_to_roman_numeral_using_hash(number: u16) -> Vec::<char> {
     result
 }
 
+// the inner value is the value of the digit
 #[derive(Eq, PartialEq, Hash, Clone)]
-enum DigitCategory {
-    Thousands,
-    Hundreds,
-    Tens,
-    Units
+enum DecimalDigit {
+    Thousands(u16),
+    Hundreds(u16),
+    Tens(u16),
+    Units(u16)
 }
 
 // TODO: implement static map (probably by using crates.io)
-fn build_numbers_conversion_map() -> HashMap::<(DigitCategory, u16, char), (DigitCategory, u16)> {
+fn build_numbers_conversion_map() -> HashMap::<(DecimalDigit, char), DecimalDigit> {
     let result = HashMap::from([
-	((DigitCategory::Thousands, 0, 'M'), (DigitCategory::Thousands, 1)),
-	((DigitCategory::Thousands, 1, 'M'), (DigitCategory::Thousands, 2)),
-	((DigitCategory::Thousands, 2, 'M'), (DigitCategory::Thousands, 3)),
-	((DigitCategory::Thousands, 3, 'M'), (DigitCategory::Thousands, 4)),
-	((DigitCategory::Thousands, 0, 'D'), (DigitCategory::Hundreds, 5)),
-	((DigitCategory::Thousands, 1, 'D'), (DigitCategory::Hundreds, 5)),
-	((DigitCategory::Thousands, 2, 'D'), (DigitCategory::Hundreds, 5)),
-	((DigitCategory::Thousands, 3, 'D'), (DigitCategory::Hundreds, 5)),
-	((DigitCategory::Thousands, 4, 'D'), (DigitCategory::Hundreds, 5)),
-	((DigitCategory::Thousands, 0, 'C'), (DigitCategory::Hundreds, 1)),
-	((DigitCategory::Thousands, 1, 'C'), (DigitCategory::Hundreds, 1)),
-	((DigitCategory::Thousands, 2, 'C'), (DigitCategory::Hundreds, 1)),
-	((DigitCategory::Thousands, 3, 'C'), (DigitCategory::Hundreds, 1)),
-	((DigitCategory::Thousands, 4, 'C'), (DigitCategory::Hundreds, 1)),
-	((DigitCategory::Thousands, 0, 'L'), (DigitCategory::Tens, 5)),
-	((DigitCategory::Thousands, 1, 'L'), (DigitCategory::Tens, 5)),
-	((DigitCategory::Thousands, 2, 'L'), (DigitCategory::Tens, 5)),
-	((DigitCategory::Thousands, 3, 'L'), (DigitCategory::Tens, 5)),
-	((DigitCategory::Thousands, 4, 'L'), (DigitCategory::Tens, 5)),
-	((DigitCategory::Thousands, 0, 'X'), (DigitCategory::Tens, 1)),
-	((DigitCategory::Thousands, 1, 'X'), (DigitCategory::Tens, 1)),
-	((DigitCategory::Thousands, 2, 'X'), (DigitCategory::Tens, 1)),
-	((DigitCategory::Thousands, 3, 'X'), (DigitCategory::Tens, 1)),
-	((DigitCategory::Thousands, 4, 'X'), (DigitCategory::Tens, 1)),
-	((DigitCategory::Thousands, 0, 'V'), (DigitCategory::Units, 5)),
-	((DigitCategory::Thousands, 1, 'V'), (DigitCategory::Units, 5)),
-	((DigitCategory::Thousands, 2, 'V'), (DigitCategory::Units, 5)),
-	((DigitCategory::Thousands, 3, 'V'), (DigitCategory::Units, 5)),
-	((DigitCategory::Thousands, 4, 'V'), (DigitCategory::Units, 5)),
-	((DigitCategory::Thousands, 0, 'I'), (DigitCategory::Units, 1)),
-	((DigitCategory::Thousands, 1, 'I'), (DigitCategory::Units, 1)),
-	((DigitCategory::Thousands, 2, 'I'), (DigitCategory::Units, 1)),
-	((DigitCategory::Thousands, 3, 'I'), (DigitCategory::Units, 1)),
-	((DigitCategory::Thousands, 4, 'I'), (DigitCategory::Units, 1)),
-	((DigitCategory::Hundreds, 1, 'C'), (DigitCategory::Hundreds, 2)),
-	((DigitCategory::Hundreds, 2, 'C'), (DigitCategory::Hundreds, 3)),
-	((DigitCategory::Hundreds, 1, 'D'), (DigitCategory::Hundreds, 4)),
-	((DigitCategory::Hundreds, 5, 'C'), (DigitCategory::Hundreds, 6)),
-	((DigitCategory::Hundreds, 6, 'C'), (DigitCategory::Hundreds, 7)),
-	((DigitCategory::Hundreds, 7, 'C'), (DigitCategory::Hundreds, 8)),
-	((DigitCategory::Hundreds, 1, 'M'), (DigitCategory::Hundreds, 9)),
-	((DigitCategory::Hundreds, 1, 'L'), (DigitCategory::Tens, 5)),
-	((DigitCategory::Hundreds, 2, 'L'), (DigitCategory::Tens, 5)),
-	((DigitCategory::Hundreds, 3, 'L'), (DigitCategory::Tens, 5)),
-	((DigitCategory::Hundreds, 4, 'L'), (DigitCategory::Tens, 5)),
-	((DigitCategory::Hundreds, 5, 'L'), (DigitCategory::Tens, 5)),
-	((DigitCategory::Hundreds, 6, 'L'), (DigitCategory::Tens, 5)),
-	((DigitCategory::Hundreds, 7, 'L'), (DigitCategory::Tens, 5)),
-	((DigitCategory::Hundreds, 8, 'L'), (DigitCategory::Tens, 5)),
-	((DigitCategory::Hundreds, 9, 'L'), (DigitCategory::Tens, 5)),
-	((DigitCategory::Hundreds, 1, 'X'), (DigitCategory::Tens, 1)),
-	((DigitCategory::Hundreds, 2, 'X'), (DigitCategory::Tens, 1)),
-	((DigitCategory::Hundreds, 3, 'X'), (DigitCategory::Tens, 1)),
-	((DigitCategory::Hundreds, 4, 'X'), (DigitCategory::Tens, 1)),
-	((DigitCategory::Hundreds, 5, 'X'), (DigitCategory::Tens, 1)),
-	((DigitCategory::Hundreds, 6, 'X'), (DigitCategory::Tens, 1)),
-	((DigitCategory::Hundreds, 7, 'X'), (DigitCategory::Tens, 1)),
-	((DigitCategory::Hundreds, 8, 'X'), (DigitCategory::Tens, 1)),
-	((DigitCategory::Hundreds, 9, 'X'), (DigitCategory::Tens, 1)),
-	((DigitCategory::Hundreds, 1, 'V'), (DigitCategory::Units, 5)),
-	((DigitCategory::Hundreds, 2, 'V'), (DigitCategory::Units, 5)),
-	((DigitCategory::Hundreds, 3, 'V'), (DigitCategory::Units, 5)),
-	((DigitCategory::Hundreds, 4, 'V'), (DigitCategory::Units, 5)),
-	((DigitCategory::Hundreds, 5, 'V'), (DigitCategory::Units, 5)),
-	((DigitCategory::Hundreds, 6, 'V'), (DigitCategory::Units, 5)),
-	((DigitCategory::Hundreds, 7, 'V'), (DigitCategory::Units, 5)),
-	((DigitCategory::Hundreds, 8, 'V'), (DigitCategory::Units, 5)),
-	((DigitCategory::Hundreds, 9, 'V'), (DigitCategory::Units, 5)),
-	((DigitCategory::Hundreds, 1, 'I'), (DigitCategory::Units, 1)),
-	((DigitCategory::Hundreds, 2, 'I'), (DigitCategory::Units, 1)),
-	((DigitCategory::Hundreds, 3, 'I'), (DigitCategory::Units, 1)),
-	((DigitCategory::Hundreds, 4, 'I'), (DigitCategory::Units, 1)),
-	((DigitCategory::Hundreds, 5, 'I'), (DigitCategory::Units, 1)),
-	((DigitCategory::Hundreds, 6, 'I'), (DigitCategory::Units, 1)),
-	((DigitCategory::Hundreds, 7, 'I'), (DigitCategory::Units, 1)),
-	((DigitCategory::Hundreds, 8, 'I'), (DigitCategory::Units, 1)),
-	((DigitCategory::Hundreds, 9, 'I'), (DigitCategory::Units, 1)),
-	((DigitCategory::Tens, 1, 'X'), (DigitCategory::Tens, 2)),
-	((DigitCategory::Tens, 2, 'X'), (DigitCategory::Tens, 3)),
-	((DigitCategory::Tens, 1, 'L'), (DigitCategory::Tens, 4)),
-	((DigitCategory::Tens, 5, 'X'), (DigitCategory::Tens, 6)),
-	((DigitCategory::Tens, 6, 'X'), (DigitCategory::Tens, 7)),
-	((DigitCategory::Tens, 7, 'X'), (DigitCategory::Tens, 8)),
-	((DigitCategory::Tens, 1, 'C'), (DigitCategory::Tens, 9)),
-	((DigitCategory::Tens, 1, 'V'), (DigitCategory::Units, 5)),
-	((DigitCategory::Tens, 2, 'V'), (DigitCategory::Units, 5)),
-	((DigitCategory::Tens, 3, 'V'), (DigitCategory::Units, 5)),
-	((DigitCategory::Tens, 4, 'V'), (DigitCategory::Units, 5)),
-	((DigitCategory::Tens, 5, 'V'), (DigitCategory::Units, 5)),
-	((DigitCategory::Tens, 6, 'V'), (DigitCategory::Units, 5)),
-	((DigitCategory::Tens, 7, 'V'), (DigitCategory::Units, 5)),
-	((DigitCategory::Tens, 8, 'V'), (DigitCategory::Units, 5)),
-	((DigitCategory::Tens, 9, 'V'), (DigitCategory::Units, 5)),
-	((DigitCategory::Tens, 1, 'I'), (DigitCategory::Units, 1)),
-	((DigitCategory::Tens, 2, 'I'), (DigitCategory::Units, 1)),
-	((DigitCategory::Tens, 3, 'I'), (DigitCategory::Units, 1)),
-	((DigitCategory::Tens, 4, 'I'), (DigitCategory::Units, 1)),
-	((DigitCategory::Tens, 5, 'I'), (DigitCategory::Units, 1)),
-	((DigitCategory::Tens, 6, 'I'), (DigitCategory::Units, 1)),
-	((DigitCategory::Tens, 7, 'I'), (DigitCategory::Units, 1)),
-	((DigitCategory::Tens, 8, 'I'), (DigitCategory::Units, 1)),
-	((DigitCategory::Tens, 9, 'I'), (DigitCategory::Units, 1)),
-	((DigitCategory::Units, 1, 'I'), (DigitCategory::Units, 2)),
-	((DigitCategory::Units, 2, 'I'), (DigitCategory::Units, 3)),
-	((DigitCategory::Units, 1, 'V'), (DigitCategory::Units, 4)),
-	((DigitCategory::Units, 5, 'I'), (DigitCategory::Units, 6)),
-	((DigitCategory::Units, 6, 'I'), (DigitCategory::Units, 7)),
-	((DigitCategory::Units, 7, 'I'), (DigitCategory::Units, 8)),
-	((DigitCategory::Units, 1, 'X'), (DigitCategory::Units, 9)),
+	((DecimalDigit::Thousands(0), 'M'), DecimalDigit::Thousands(1)),
+	((DecimalDigit::Thousands(1), 'M'), DecimalDigit::Thousands(2)),
+	((DecimalDigit::Thousands(2), 'M'), DecimalDigit::Thousands(3)),
+	((DecimalDigit::Thousands(3), 'M'), DecimalDigit::Thousands(4)),
+	((DecimalDigit::Thousands(0), 'D'), DecimalDigit::Hundreds(5)),
+	((DecimalDigit::Thousands(1), 'D'), DecimalDigit::Hundreds(5)),
+	((DecimalDigit::Thousands(2), 'D'), DecimalDigit::Hundreds(5)),
+	((DecimalDigit::Thousands(3), 'D'), DecimalDigit::Hundreds(5)),
+	((DecimalDigit::Thousands(4), 'D'), DecimalDigit::Hundreds(5)),
+	((DecimalDigit::Thousands(0), 'C'), DecimalDigit::Hundreds(1)),
+	((DecimalDigit::Thousands(1), 'C'), DecimalDigit::Hundreds(1)),
+	((DecimalDigit::Thousands(2), 'C'), DecimalDigit::Hundreds(1)),
+	((DecimalDigit::Thousands(3), 'C'), DecimalDigit::Hundreds(1)),
+	((DecimalDigit::Thousands(4), 'C'), DecimalDigit::Hundreds(1)),
+	((DecimalDigit::Thousands(0), 'L'), DecimalDigit::Tens(5)),
+	((DecimalDigit::Thousands(1), 'L'), DecimalDigit::Tens(5)),
+	((DecimalDigit::Thousands(2), 'L'), DecimalDigit::Tens(5)),
+	((DecimalDigit::Thousands(3), 'L'), DecimalDigit::Tens(5)),
+	((DecimalDigit::Thousands(4), 'L'), DecimalDigit::Tens(5)),
+	((DecimalDigit::Thousands(0), 'X'), DecimalDigit::Tens(1)),
+	((DecimalDigit::Thousands(1), 'X'), DecimalDigit::Tens(1)),
+	((DecimalDigit::Thousands(2), 'X'), DecimalDigit::Tens(1)),
+	((DecimalDigit::Thousands(3), 'X'), DecimalDigit::Tens(1)),
+	((DecimalDigit::Thousands(4), 'X'), DecimalDigit::Tens(1)),
+	((DecimalDigit::Thousands(0), 'V'), DecimalDigit::Units(5)),
+	((DecimalDigit::Thousands(1), 'V'), DecimalDigit::Units(5)),
+	((DecimalDigit::Thousands(2), 'V'), DecimalDigit::Units(5)),
+	((DecimalDigit::Thousands(3), 'V'), DecimalDigit::Units(5)),
+	((DecimalDigit::Thousands(4), 'V'), DecimalDigit::Units(5)),
+	((DecimalDigit::Thousands(0), 'I'), DecimalDigit::Units(1)),
+	((DecimalDigit::Thousands(1), 'I'), DecimalDigit::Units(1)),
+	((DecimalDigit::Thousands(2), 'I'), DecimalDigit::Units(1)),
+	((DecimalDigit::Thousands(3), 'I'), DecimalDigit::Units(1)),
+	((DecimalDigit::Thousands(4), 'I'), DecimalDigit::Units(1)),
+	((DecimalDigit::Hundreds(1), 'C'), DecimalDigit::Hundreds(2)),
+	((DecimalDigit::Hundreds(2), 'C'), DecimalDigit::Hundreds(3)),
+	((DecimalDigit::Hundreds(1), 'D'), DecimalDigit::Hundreds(4)),
+	((DecimalDigit::Hundreds(5), 'C'), DecimalDigit::Hundreds(6)),
+	((DecimalDigit::Hundreds(6), 'C'), DecimalDigit::Hundreds(7)),
+	((DecimalDigit::Hundreds(7), 'C'), DecimalDigit::Hundreds(8)),
+	((DecimalDigit::Hundreds(1), 'M'), DecimalDigit::Hundreds(9)),
+	((DecimalDigit::Hundreds(1), 'L'), DecimalDigit::Tens(5)),
+	((DecimalDigit::Hundreds(2), 'L'), DecimalDigit::Tens(5)),
+	((DecimalDigit::Hundreds(3), 'L'), DecimalDigit::Tens(5)),
+	((DecimalDigit::Hundreds(4), 'L'), DecimalDigit::Tens(5)),
+	((DecimalDigit::Hundreds(5), 'L'), DecimalDigit::Tens(5)),
+	((DecimalDigit::Hundreds(6), 'L'), DecimalDigit::Tens(5)),
+	((DecimalDigit::Hundreds(7), 'L'), DecimalDigit::Tens(5)),
+	((DecimalDigit::Hundreds(8), 'L'), DecimalDigit::Tens(5)),
+	((DecimalDigit::Hundreds(9), 'L'), DecimalDigit::Tens(5)),
+	((DecimalDigit::Hundreds(1), 'X'), DecimalDigit::Tens(1)),
+	((DecimalDigit::Hundreds(2), 'X'), DecimalDigit::Tens(1)),
+	((DecimalDigit::Hundreds(3), 'X'), DecimalDigit::Tens(1)),
+	((DecimalDigit::Hundreds(4), 'X'), DecimalDigit::Tens(1)),
+	((DecimalDigit::Hundreds(5), 'X'), DecimalDigit::Tens(1)),
+	((DecimalDigit::Hundreds(6), 'X'), DecimalDigit::Tens(1)),
+	((DecimalDigit::Hundreds(7), 'X'), DecimalDigit::Tens(1)),
+	((DecimalDigit::Hundreds(8), 'X'), DecimalDigit::Tens(1)),
+	((DecimalDigit::Hundreds(9), 'X'), DecimalDigit::Tens(1)),
+	((DecimalDigit::Hundreds(1), 'V'), DecimalDigit::Units(5)),
+	((DecimalDigit::Hundreds(2), 'V'), DecimalDigit::Units(5)),
+	((DecimalDigit::Hundreds(3), 'V'), DecimalDigit::Units(5)),
+	((DecimalDigit::Hundreds(4), 'V'), DecimalDigit::Units(5)),
+	((DecimalDigit::Hundreds(5), 'V'), DecimalDigit::Units(5)),
+	((DecimalDigit::Hundreds(6), 'V'), DecimalDigit::Units(5)),
+	((DecimalDigit::Hundreds(7), 'V'), DecimalDigit::Units(5)),
+	((DecimalDigit::Hundreds(8), 'V'), DecimalDigit::Units(5)),
+	((DecimalDigit::Hundreds(9), 'V'), DecimalDigit::Units(5)),
+	((DecimalDigit::Hundreds(1), 'I'), DecimalDigit::Units(1)),
+	((DecimalDigit::Hundreds(2), 'I'), DecimalDigit::Units(1)),
+	((DecimalDigit::Hundreds(3), 'I'), DecimalDigit::Units(1)),
+	((DecimalDigit::Hundreds(4), 'I'), DecimalDigit::Units(1)),
+	((DecimalDigit::Hundreds(5), 'I'), DecimalDigit::Units(1)),
+	((DecimalDigit::Hundreds(6), 'I'), DecimalDigit::Units(1)),
+	((DecimalDigit::Hundreds(7), 'I'), DecimalDigit::Units(1)),
+	((DecimalDigit::Hundreds(8), 'I'), DecimalDigit::Units(1)),
+	((DecimalDigit::Hundreds(9), 'I'), DecimalDigit::Units(1)),
+	((DecimalDigit::Tens(1), 'X'), DecimalDigit::Tens(2)),
+	((DecimalDigit::Tens(2), 'X'), DecimalDigit::Tens(3)),
+	((DecimalDigit::Tens(1), 'L'), DecimalDigit::Tens(4)),
+	((DecimalDigit::Tens(5), 'X'), DecimalDigit::Tens(6)),
+	((DecimalDigit::Tens(6), 'X'), DecimalDigit::Tens(7)),
+	((DecimalDigit::Tens(7), 'X'), DecimalDigit::Tens(8)),
+	((DecimalDigit::Tens(1), 'C'), DecimalDigit::Tens(9)),
+	((DecimalDigit::Tens(1), 'V'), DecimalDigit::Units(5)),
+	((DecimalDigit::Tens(2), 'V'), DecimalDigit::Units(5)),
+	((DecimalDigit::Tens(3), 'V'), DecimalDigit::Units(5)),
+	((DecimalDigit::Tens(4), 'V'), DecimalDigit::Units(5)),
+	((DecimalDigit::Tens(5), 'V'), DecimalDigit::Units(5)),
+	((DecimalDigit::Tens(6), 'V'), DecimalDigit::Units(5)),
+	((DecimalDigit::Tens(7), 'V'), DecimalDigit::Units(5)),
+	((DecimalDigit::Tens(8), 'V'), DecimalDigit::Units(5)),
+	((DecimalDigit::Tens(9), 'V'), DecimalDigit::Units(5)),
+	((DecimalDigit::Tens(1), 'I'), DecimalDigit::Units(1)),
+	((DecimalDigit::Tens(2), 'I'), DecimalDigit::Units(1)),
+	((DecimalDigit::Tens(3), 'I'), DecimalDigit::Units(1)),
+	((DecimalDigit::Tens(4), 'I'), DecimalDigit::Units(1)),
+	((DecimalDigit::Tens(5), 'I'), DecimalDigit::Units(1)),
+	((DecimalDigit::Tens(6), 'I'), DecimalDigit::Units(1)),
+	((DecimalDigit::Tens(7), 'I'), DecimalDigit::Units(1)),
+	((DecimalDigit::Tens(8), 'I'), DecimalDigit::Units(1)),
+	((DecimalDigit::Tens(9), 'I'), DecimalDigit::Units(1)),
+	((DecimalDigit::Units(1), 'I'), DecimalDigit::Units(2)),
+	((DecimalDigit::Units(2), 'I'), DecimalDigit::Units(3)),
+	((DecimalDigit::Units(1), 'V'), DecimalDigit::Units(4)),
+	((DecimalDigit::Units(5), 'I'), DecimalDigit::Units(6)),
+	((DecimalDigit::Units(6), 'I'), DecimalDigit::Units(7)),
+	((DecimalDigit::Units(7), 'I'), DecimalDigit::Units(8)),
+	((DecimalDigit::Units(1), 'X'), DecimalDigit::Units(9))
     ]);
 
     result
@@ -360,13 +361,17 @@ If the number has less digits the missing ones are considered to have value 0.
 */
 const MAX_DIGITS_COUNT: usize = 4;
 
+/*
+This function converts a roman numeral into the concrete numeric value.
+Only roman numerals mapping to integer values between 0 and 5000 (ends excluded) are accepted.
+*/
 pub fn convert_roman_numeral_to_number(numeral: &Vec::<char>) -> u16 {
-    fn update_digits(digit_category: &DigitCategory, digit_value: u16, digits: &mut [u16;4]) {
-	match digit_category {
-	    DigitCategory::Thousands => digits[0] = digit_value,
-	    DigitCategory::Hundreds => digits[1] = digit_value,
-	    DigitCategory::Tens => digits[2] = digit_value,
-	    DigitCategory::Units => digits[3] = digit_value
+    fn update_digit(digit: &DecimalDigit, resulting_digit_values: &mut [u16;4]) {
+	match digit {
+	    DecimalDigit::Thousands(thousands_value) => resulting_digit_values[0] = *thousands_value,
+	    DecimalDigit::Hundreds(hundreds_value) => resulting_digit_values[1] = *hundreds_value,
+	    DecimalDigit::Tens(tens_value) => resulting_digit_values[2] = *tens_value,
+	    DecimalDigit::Units(units_value) => resulting_digit_values[3] = *units_value
 	}
     }
 
@@ -374,21 +379,19 @@ pub fn convert_roman_numeral_to_number(numeral: &Vec::<char>) -> u16 {
 
     if numeral.len() > 0 {
 	let numbers_conversion_map = build_numbers_conversion_map();
-	let mut digits = [0;MAX_DIGITS_COUNT];
-	let mut current_digit_category = DigitCategory::Thousands;
-	let mut current_digit_value = 0;
+	let mut resulting_digit_values = [0;MAX_DIGITS_COUNT];
+	let mut current_digit = DecimalDigit::Thousands(0);
 	let mut is_valid_numeral = true;
 
 	for ch in numeral.iter() {
 	    let mut current_char = *ch;
 	    utilities::convert_char_to_uppercase(&mut current_char);
-	    let key = (current_digit_category.clone(), current_digit_value, current_char);
+	    let key = (current_digit.clone(), current_char);
 
 	    match numbers_conversion_map.get(&key) {
-		Some((digit_category, digit_value)) => {
-		    current_digit_category = digit_category.clone();
-		    current_digit_value = *digit_value;
-		    update_digits(&current_digit_category, current_digit_value, &mut digits);
+		Some(digit) => {
+		    current_digit = digit.clone();
+		    update_digit(&current_digit, &mut resulting_digit_values);
 		},
 		None => {
 		    is_valid_numeral = false;
@@ -399,7 +402,7 @@ pub fn convert_roman_numeral_to_number(numeral: &Vec::<char>) -> u16 {
 
 	if is_valid_numeral {
 	    for index in 0..MAX_DIGITS_COUNT {
-		result += u16::pow(10, (MAX_DIGITS_COUNT - 1 - index) as u32) * digits[index];
+		result += u16::pow(10, (MAX_DIGITS_COUNT - 1 - index) as u32) * resulting_digit_values[index];
 	    }
 	}
     }

@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use crate::utilities;
+use phf::phf_map;
 
 pub fn reverse_int(input:(u64, u8)) -> (u64, u8) {
     fn update_input_and_output_numbers(input_number: &mut u64, output_number: &mut u64) -> u8 {
@@ -168,59 +169,61 @@ pub fn convert_number_to_roman_numeral(number: u16) -> Vec::<char> {
     result
 }
 
-// TODO: create static map (probably by using crates.io)
-fn build_roman_numerals_conversion_map() -> HashMap::<(usize, char), Vec::<char>> {
-    let result = HashMap::from([
-	((0 as usize, '1'), vec!('I')),
-	((0 as usize, '2'), vec!('I', 'I')),
-	((0 as usize, '3'), vec!('I', 'I', 'I')),
-	((0 as usize, '4'), vec!('I', 'V')),
-	((0 as usize, '5'), vec!('V')),
-	((0 as usize, '6'), vec!('V', 'I')),
-	((0 as usize, '7'), vec!('V', 'I', 'I')),
-	((0 as usize, '8'), vec!('V', 'I', 'I', 'I')),
-	((0 as usize, '9'), vec!('I', 'X')),
-	((1 as usize, '1'), vec!('X')),
-	((1 as usize, '2'), vec!('X', 'X')),
-	((1 as usize, '3'), vec!('X', 'X', 'X')),
-	((1 as usize, '4'), vec!('X', 'L')),
-	((1 as usize, '5'), vec!('L')),
-	((1 as usize, '6'), vec!('L', 'X')),
-	((1 as usize, '7'), vec!('L', 'X', 'X')),
-	((1 as usize, '8'), vec!('L', 'X', 'X', 'X')),
-	((1 as usize, '9'), vec!('X', 'C')),
-	((2 as usize, '1'), vec!('C')),
-	((2 as usize, '2'), vec!('C', 'C')),
-	((2 as usize, '3'), vec!('C', 'C', 'C')),
-	((2 as usize, '4'), vec!('C', 'D')),
-	((2 as usize, '5'), vec!('D')),
-	((2 as usize, '6'), vec!('D', 'C')),
-	((2 as usize, '7'), vec!('D', 'C', 'C')),
-	((2 as usize, '8'), vec!('D', 'C', 'C', 'C')),
-	((2 as usize, '9'), vec!('C', 'M')),
-	((3 as usize, '1'), vec!('M')),
-	((3 as usize, '2'), vec!('M', 'M')),
-	((3 as usize, '3'), vec!('M', 'M', 'M')),
-	((3 as usize, '4'), vec!('M', 'M', 'M', 'M'))
-    ]);
+/*
+Key is an array consisting of two elements:
+- digit power-of-ten index (e.g. for hundreds digit it is 2, i.e. 10^2 = 100)
+- digit value
 
-    result
-}
+A tuple would have been more appropriate, yet this is not supported as key by the phf compile-time map.
+*/
+static ROMAN_NUMERALS_CONVERSION_MAP: phf::Map<[u8;2], &'static str> = phf_map! {
+    [0, 1] => "I",
+    [0, 2] => "II",
+    [0, 3] => "III",
+    [0, 4] => "IV",
+    [0, 5] => "V",
+    [0, 6] => "VI",
+    [0, 7] => "VII",
+    [0, 8] => "VIII",
+    [0, 9] => "IX",
+    [1, 1] => "X",
+    [1, 2] => "XX",
+    [1, 3] => "XXX",
+    [1, 4] => "XL",
+    [1, 5] => "L",
+    [1, 6] => "LX",
+    [1, 7] => "LXX",
+    [1, 8] => "LXXX",
+    [1, 9] => "XC",
+    [2, 1] => "C",
+    [2, 2] => "CC",
+    [2, 3] => "CCC",
+    [2, 4] => "CD",
+    [2, 5] => "D",
+    [2, 6] => "DC",
+    [2, 7] => "DCC",
+    [2, 8] => "DCCC",
+    [2, 9] => "CM",
+    [3, 1] => "M",
+    [3, 2] => "MM",
+    [3, 3] => "MMM",
+    [3, 4] => "MMMM"
+};
 
 /* Alternative method for converting integer to roman numeral, same constraints */
 pub fn convert_number_to_roman_numeral_using_hash(number: u16) -> Vec::<char> {
-    let mut result = Vec::<char>::new();
+    let mut result = Vec::new();
 
     if number > 0 && number < 5000 {
-	let conversion_map = build_roman_numerals_conversion_map();
-	let digits: Vec::<char> = number.to_string().chars().collect();
+	let digits = utilities::get_digits(number as u32);
 
 	// no need to check the digits_count is > 0 for getting power_of_ten_index (see below), an integer should have min. 1 digit
 	let digits_count = digits.len();
 
-	for (index, digit_as_char) in digits.iter().enumerate() {
-	    let power_of_ten_index = digits_count - 1 - index; // place of the digit within the number, e.g. for thousands it is 3 corresponding to 10^3
-	    let mut chars_to_append: Vec::<char> = conversion_map.get(&(power_of_ten_index, *digit_as_char)).unwrap_or(&Vec::new()).to_vec();
+	for (index, digit) in digits.iter().enumerate() {
+	    let power_of_ten_index = (digits_count - 1 - index) as u8; // place of the digit within the number, e.g. for thousands it is 3 corresponding to 10^3
+	    let chars_to_append: &str = ROMAN_NUMERALS_CONVERSION_MAP.get(&[power_of_ten_index, *digit]).unwrap_or(&"");
+	    let mut chars_to_append: Vec::<char> = (*chars_to_append).chars().collect();
 	    result.append(&mut chars_to_append);
 	}
     }

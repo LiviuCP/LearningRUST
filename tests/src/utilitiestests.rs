@@ -1,3 +1,4 @@
+#[cfg(test)]
 use learn_rust_lib::utilities;
 
 #[test]

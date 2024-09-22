@@ -1,6 +1,101 @@
 use std::collections::HashMap;
 use crate::utilities;
 use phf::phf_map;
+use regex::Regex;
+
+#[derive(PartialEq, Debug)]
+pub enum RomanDigit {
+    I,
+    V,
+    X,
+    L,
+    C,
+    D,
+    M
+}
+
+impl RomanDigit {
+    pub fn as_char(&self) -> char {
+	match *self {
+	    RomanDigit::I => 'I',
+	    RomanDigit::V => 'V',
+	    RomanDigit::X => 'X',
+	    RomanDigit::L => 'L',
+	    RomanDigit::C => 'C',
+	    RomanDigit::D => 'D',
+	    RomanDigit::M => 'M'
+	}
+    }
+
+    pub fn from_char(ch: char) -> Option<Self> {
+	match ch {
+	    'i' | 'I' => Some(RomanDigit::I),
+	    'v' | 'V' => Some(RomanDigit::V),
+	    'x' | 'X' => Some(RomanDigit::X),
+	    'l' | 'L' => Some(RomanDigit::L),
+	    'c' | 'C' => Some(RomanDigit::C),
+	    'd' | 'D' => Some(RomanDigit::D),
+	    'm' | 'M' => Some(RomanDigit::M),
+	    _ => None
+	}
+    }
+}
+
+pub struct RomanNumeral {
+    content: Vec::<RomanDigit>
+}
+
+impl RomanNumeral {
+    const MAX_CHARS_COUNT: usize = 16;
+
+    pub fn is_valid_roman_numeral_string(numeral_str: &str) -> bool {
+	let mut is_valid = false;
+	let numeral_size = numeral_str.len();
+
+	if numeral_size > 0 && numeral_size <= Self::MAX_CHARS_COUNT {
+	    let roman_numeral_regex = Regex::new("^M{0,4}(DC{0,3}|C[DM]|C{1,3}){0,1}(LX{0,3}|X[LC]|X{1,3}){0,1}(VI{0,3}|I[VX]|I{1,3}){0,1}$").unwrap();
+	    is_valid = roman_numeral_regex.is_match(&numeral_str.to_uppercase());
+	}
+
+	return is_valid;
+    }
+
+    pub fn from_string(numeral_str: &str) -> Self {
+	let mut result = Self {content: Vec::new()};
+
+	if Self::is_valid_roman_numeral_string(numeral_str) {
+	    for ch in numeral_str.chars() {
+		if let Some(roman_digit) = RomanDigit::from_char(ch) {
+		    result.content.push(roman_digit);
+		    continue;
+		}
+
+		result.content.clear();
+		panic!("Invalid roman digit detected! (should have been filtered out by regex)");
+	    }
+	}
+
+	result
+    }
+
+    pub fn to_string(&self) -> String {
+	let mut result = String::new();
+
+	for roman_digit in self.content.iter() {
+	    result.push(roman_digit.as_char());
+	}
+
+	result
+    }
+
+    pub fn get_content(&self) -> &Vec::<RomanDigit> {
+	&self.content
+    }
+
+    pub fn empty(&self) -> bool {
+	self.content.len() == 0
+    }
+}
 
 pub struct NumberToRomanNumeralConverter {
     remainder: u16,

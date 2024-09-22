@@ -1,5 +1,157 @@
 #[cfg(test)]
 use learn_rust_lib::numbers::romannumerals as rnum;
+use learn_rust_lib::numbers::romannumerals::RomanDigit as RD;
+use learn_rust_lib::numbers::romannumerals::RomanNumeral as RN;
+
+#[test]
+pub fn test_roman_digit_as_char() {
+    assert_eq!(RD::I.as_char(), 'I');
+    assert_eq!(RD::V.as_char(), 'V');
+    assert_eq!(RD::X.as_char(), 'X');
+    assert_eq!(RD::L.as_char(), 'L');
+    assert_eq!(RD::C.as_char(), 'C');
+    assert_eq!(RD::D.as_char(), 'D');
+    assert_eq!(RD::M.as_char(), 'M');
+}
+
+#[test]
+pub fn test_roman_digit_from_char() {
+    assert_eq!(RD::from_char('i'), Some(RD::I));
+    assert_eq!(RD::from_char('I'), Some(RD::I));
+    assert_eq!(RD::from_char('v'), Some(RD::V));
+    assert_eq!(RD::from_char('V'), Some(RD::V));
+    assert_eq!(RD::from_char('x'), Some(RD::X));
+    assert_eq!(RD::from_char('X'), Some(RD::X));
+    assert_eq!(RD::from_char('l'), Some(RD::L));
+    assert_eq!(RD::from_char('L'), Some(RD::L));
+    assert_eq!(RD::from_char('c'), Some(RD::C));
+    assert_eq!(RD::from_char('C'), Some(RD::C));
+    assert_eq!(RD::from_char('d'), Some(RD::D));
+    assert_eq!(RD::from_char('D'), Some(RD::D));
+    assert_eq!(RD::from_char('m'), Some(RD::M));
+    assert_eq!(RD::from_char('M'), Some(RD::M));
+    assert_eq!(RD::from_char('a'), None);
+    assert_eq!(RD::from_char('N'), None);
+    assert_eq!(RD::from_char('2'), None);
+    assert_eq!(RD::from_char(' '), None);
+    assert_eq!(RD::from_char('_'), None);
+    assert_eq!(RD::from_char('\n'), None);
+}
+
+#[test]
+pub fn test_is_valid_roman_numeral_string() {
+    // building blocks
+    assert!(RN::is_valid_roman_numeral_string("I"));
+    assert!(RN::is_valid_roman_numeral_string("IV"));
+    assert!(RN::is_valid_roman_numeral_string("V"));
+    assert!(RN::is_valid_roman_numeral_string("IX"));
+    assert!(RN::is_valid_roman_numeral_string("X"));
+    assert!(RN::is_valid_roman_numeral_string("XL"));
+    assert!(RN::is_valid_roman_numeral_string("L"));
+    assert!(RN::is_valid_roman_numeral_string("XC"));
+    assert!(RN::is_valid_roman_numeral_string("C"));
+    assert!(RN::is_valid_roman_numeral_string("CD"));
+    assert!(RN::is_valid_roman_numeral_string("D"));
+    assert!(RN::is_valid_roman_numeral_string("CM"));
+    assert!(RN::is_valid_roman_numeral_string("M"));
+    assert!(RN::is_valid_roman_numeral_string("MMMM"));
+
+    // random
+    assert!(RN::is_valid_roman_numeral_string("II"));
+    assert!(RN::is_valid_roman_numeral_string("VIII"));
+    assert!(RN::is_valid_roman_numeral_string("XXV"));
+    assert!(RN::is_valid_roman_numeral_string("XLIV"));
+    assert!(RN::is_valid_roman_numeral_string("LXXVI"));
+    assert!(RN::is_valid_roman_numeral_string("CCXXXVII"));
+    assert!(RN::is_valid_roman_numeral_string("CDXII"));
+    assert!(RN::is_valid_roman_numeral_string("DLV"));
+    assert!(RN::is_valid_roman_numeral_string("DCCLXXVII"));
+    assert!(RN::is_valid_roman_numeral_string("MCXI"));
+    assert!(RN::is_valid_roman_numeral_string("MCCXXXIV"));
+    assert!(RN::is_valid_roman_numeral_string("MCDLIII"));
+    assert!(RN::is_valid_roman_numeral_string("MDCCCLXXVII"));
+    assert!(RN::is_valid_roman_numeral_string("MCMXVIII"));
+    assert!(RN::is_valid_roman_numeral_string("MMXX"));
+    assert!(RN::is_valid_roman_numeral_string("MMCCXXII"));
+    assert!(RN::is_valid_roman_numeral_string("MMCCCXCIV"));
+    assert!(RN::is_valid_roman_numeral_string("MMDCXCV"));
+    assert!(RN::is_valid_roman_numeral_string("MMDCCC"));
+    assert!(RN::is_valid_roman_numeral_string("MMM"));
+    assert!(RN::is_valid_roman_numeral_string("MMMCCCXXXIII"));
+    assert!(RN::is_valid_roman_numeral_string("MMMCDLVI"));
+    assert!(RN::is_valid_roman_numeral_string("MMMDCCCLXXIX"));
+    assert!(RN::is_valid_roman_numeral_string("MMMCMLXXXVII"));
+    assert!(RN::is_valid_roman_numeral_string("MMMMCLXVI"));
+    assert!(RN::is_valid_roman_numeral_string("MMMMCDXLIV"));
+    assert!(RN::is_valid_roman_numeral_string("MMMMDCCCLXXXVIII"));
+    assert!(RN::is_valid_roman_numeral_string("MMMMCMLXXXVII"));
+    assert!(RN::is_valid_roman_numeral_string("MMMMCMXCIX"));
+
+    // lower-case
+    assert!(RN::is_valid_roman_numeral_string("mmdcclxiv"));
+    assert!(RN::is_valid_roman_numeral_string("x"));
+
+    // mixed-case
+    assert!(RN::is_valid_roman_numeral_string("MmCcXxIi"));
+    assert!(RN::is_valid_roman_numeral_string("DlV"));
+    assert!(RN::is_valid_roman_numeral_string("dLV"));
+    assert!(RN::is_valid_roman_numeral_string("DLv"));
+
+    // invalid strings
+    assert!(!RN::is_valid_roman_numeral_string("MCMCDXXXLVII"));
+    assert!(!RN::is_valid_roman_numeral_string("IVMCDLCXM"));
+    assert!(!RN::is_valid_roman_numeral_string("mcdlxxxivi"));
+    assert!(!RN::is_valid_roman_numeral_string("MCNLXXVII"));
+    assert!(!RN::is_valid_roman_numeral_string("MC_LXXVII"));
+    assert!(!RN::is_valid_roman_numeral_string("MC LXXVII"));
+    assert!(!RN::is_valid_roman_numeral_string("MC\nLXXVII"));
+    assert!(!RN::is_valid_roman_numeral_string("MC1LXXVII"));
+    assert!(!RN::is_valid_roman_numeral_string("MCMLXXVII "));
+    assert!(!RN::is_valid_roman_numeral_string(" MCMLXXVII"));
+    assert!(!RN::is_valid_roman_numeral_string(" MCMLXXVII "));
+    assert!(!RN::is_valid_roman_numeral_string(" "));
+    assert!(!RN::is_valid_roman_numeral_string(""));
+}
+
+#[test]
+pub fn test_roman_numeral_from_string() {
+    assert_eq!(*RN::from_string("MCMLXXVII").get_content(), vec![RD::M, RD::C, RD::M, RD::L, RD::X, RD::X, RD::V, RD::I, RD::I]);
+    assert_eq!(*RN::from_string("MmCcXxIi").get_content(), vec![RD::M, RD::M, RD::C, RD::C, RD::X, RD::X, RD::I, RD::I]);
+    assert_eq!(*RN::from_string("DlV").get_content(), vec![RD::D, RD::L, RD::V]);
+    assert_eq!(*RN::from_string("dLV").get_content(), vec![RD::D, RD::L, RD::V]);
+    assert_eq!(*RN::from_string("DLv").get_content(), vec![RD::D, RD::L, RD::V]);
+    assert_eq!(*RN::from_string("X").get_content(), vec![RD::X]);
+    assert_eq!(*RN::from_string("c").get_content(), vec![RD::C]);
+    assert!(RN::from_string("IVMCDLCXM").empty());
+    assert!(RN::from_string("MCNLXXVII").empty());
+    assert!(RN::from_string("MC_LXXVII").empty());
+    assert!(RN::from_string("MC LXXVII").empty());
+    assert!(RN::from_string("MC\nLXXVII").empty());
+    assert!(RN::from_string("MC1LXXVII").empty());
+    assert!(RN::from_string("MCMLXXVII ").empty());
+    assert!(RN::from_string(" MCMLXXVII ").empty());
+    assert!(RN::from_string("").empty());
+}
+
+#[test]
+pub fn test_roman_numeral_to_string() {
+    assert_eq!(RN::from_string("MCMLXXVII").to_string(), "MCMLXXVII".to_string());
+    assert_eq!(RN::from_string("MmCcXxIi").to_string(), "MMCCXXII".to_string());
+    assert_eq!(RN::from_string("DlV").to_string(), "DLV".to_string());
+    assert_eq!(RN::from_string("dLV").to_string(), "DLV".to_string());
+    assert_eq!(RN::from_string("DLv").to_string(), "DLV".to_string());
+    assert_eq!(RN::from_string("X").to_string(), "X".to_string());
+    assert_eq!(RN::from_string("c").to_string(), "C".to_string());
+    assert_eq!(RN::from_string("IVMCDLCXM").to_string(), "".to_string());
+    assert_eq!(RN::from_string("MCNLXXVII").to_string(), "".to_string());
+    assert_eq!(RN::from_string("MC_LXXVII").to_string(), "".to_string());
+    assert_eq!(RN::from_string("MC LXXVII").to_string(), "".to_string());
+    assert_eq!(RN::from_string("MC\nLXXVII").to_string(), "".to_string());
+    assert_eq!(RN::from_string("MC1LXXVII").to_string(), "".to_string());
+    assert_eq!(RN::from_string("MCMLXXVII ").to_string(), "".to_string());
+    assert_eq!(RN::from_string(" MCMLXXVII ").to_string(), "".to_string());
+    assert_eq!(RN::from_string("").to_string(), "".to_string());
+}
 
 #[test]
 pub fn test_convert_number_to_roman_numeral() {

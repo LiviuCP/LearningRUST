@@ -41,24 +41,18 @@ Converts the string as follows:
 Note: strings containing invalid characters (other than alpha-numeric) are discarded and an empty result is returned. Same is valid for empty strings or 1-char strings where the character is a consonant.
 */
 pub fn convert_to_pig_latin(input_string: &String) -> String {
+    let mut output_string = String::new();
     let input_string_chars: Vec::<char> = input_string.chars().collect();
-    let mut output_string_chars = Vec::<char>::new();
 
     if is_valid_pig_latin_input(&input_string_chars) {
 	let is_first_input_char_vowel = is_starting_char_vowel(&input_string_chars);
 
-	// suffix has 4 characters ("-hay") but for consonants the second suffix char is the starting input string character so less space should be reserved
-	let suffix_space_to_reserve = if is_first_input_char_vowel {4} else {3};
-	output_string_chars.reserve(input_string_chars.len() + suffix_space_to_reserve);
-
 	// for consonants first char is copied when appending the suffix
 	let copy_starting_index = if is_first_input_char_vowel {0} else {1};
 
-	for ch in (&input_string_chars[copy_starting_index..]).iter() {
-	    let mut current_ch = *ch;
-	    utilities::convert_char_to_lowercase(&mut current_ch);
-	    output_string_chars.push(current_ch);
-	}
+	output_string = (&input_string_chars[copy_starting_index..]).iter().map(|ch| {
+	    let mut current_ch = *ch; utilities::convert_char_to_lowercase(&mut current_ch); current_ch
+	}).collect();
 
 	let mut second_suffix_char = 'h';
 
@@ -67,11 +61,11 @@ pub fn convert_to_pig_latin(input_string: &String) -> String {
 	    utilities::convert_char_to_lowercase(&mut second_suffix_char);
 	}
 
-	output_string_chars.push('-');
-	output_string_chars.push(second_suffix_char);
-	output_string_chars.push('a');
-	output_string_chars.push('y');
+	output_string.push('-');
+	output_string.push(second_suffix_char);
+	output_string.push('a');
+	output_string.push('y');
     }
 
-    output_string_chars.iter().collect::<String>()
+    output_string
 }

@@ -67,12 +67,6 @@ pub fn push_multiple_times_to_vec<T: Copy>(value: &T, count: usize, arr: &mut Ve
 }
 
 pub fn get_digits(number: u32) -> Vec::<u8> {
-    let mut result = Vec::<u8>::new();
     let chars_vec: Vec::<char> = number.to_string().chars().collect();
-
-    for ch in chars_vec.iter() {
-	result.push(*ch as u8 - '0' as u8);
-    }
-
-    return result;
+    chars_vec.iter().map(|ch| *ch as u8 - '0' as u8).collect()
 }

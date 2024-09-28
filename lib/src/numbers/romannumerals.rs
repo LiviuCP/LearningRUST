@@ -80,22 +80,11 @@ impl RomanNumeral {
     }
 
     pub fn to_string(&self) -> String {
-	let mut result = String::new();
-
-	for roman_digit in self.content.iter() {
-	    result.push(roman_digit.as_char());
-	}
-
-	result
+	self.content.iter().map(|roman_digit| roman_digit.as_char()).collect()
     }
 
     pub fn from_roman_digits(digits: &Vec::<RomanDigit>) -> Self {
-	let mut numeral_str = String::new();
-
-	for digit in digits.iter() {
-	    numeral_str.push(digit.as_char().clone());
-	}
-
+	let numeral_str: String = digits.iter().map(|roman_digit| roman_digit.as_char()).collect();
 	Self::from_string(&numeral_str)
     }
 
@@ -136,39 +125,39 @@ impl NumberToRomanNumeralConverter {
 	    self.handle_same_appended_char_threshold(1000, 'M');
 
 	    // mutually exclusive: 900 - 999, 500 - 899, 400 - 499
-	    let handled = self.handle_different_appended_chars_threshold(900, &mut vec!['C','M']);
+	    let handled = self.handle_different_appended_chars_threshold(900, "CM");
 
 	    if !handled {
 		let handled = self.handle_same_appended_char_threshold(500, 'D');
 
 		if !handled {
-		    self.handle_different_appended_chars_threshold(400, &mut vec!['C','D']);
+		    self.handle_different_appended_chars_threshold(400, "CD");
 		}
 	    }
 
 	    self.handle_same_appended_char_threshold(100, 'C');
 
 	    // mutually exclusive: 90 - 99, 50 - 89, 40 - 49
-	    let handled = self.handle_different_appended_chars_threshold(90, &mut vec!['X','C']);
+	    let handled = self.handle_different_appended_chars_threshold(90, "XC");
 
 	    if !handled {
 		let handled = self.handle_same_appended_char_threshold(50, 'L');
 
 		if !handled {
-		    self.handle_different_appended_chars_threshold(40, &mut vec!['X','L']);
+		    self.handle_different_appended_chars_threshold(40, "XL");
 		}
 	    }
 
 	    self.handle_same_appended_char_threshold(10, 'X');
 
 	    // mutually exclusive: 9, 5 - 8, 4
-	    let handled = self.handle_different_appended_chars_threshold(9, &mut vec!['I','X']);
+	    let handled = self.handle_different_appended_chars_threshold(9, "IX");
 
 	    if !handled {
 		let handled = self.handle_same_appended_char_threshold(5, 'V');
 
 		if !handled {
-		    self.handle_different_appended_chars_threshold(4, &mut vec!['I','V']);
+		    self.handle_different_appended_chars_threshold(4, "IV");
 		}
 	    }
 
@@ -182,12 +171,9 @@ impl NumberToRomanNumeralConverter {
 	let can_handle = self.remainder >= threshold;
 
 	if can_handle {
-	    let mut count: usize = (self.remainder / threshold) as usize;
-	    while count > 0 {
-		self.result_str.push(char_to_append);
-		count -= 1;
-	    }
-
+	    let mut chars_to_append = Vec::<char>::new();
+	    utilities::push_multiple_times_to_vec(&char_to_append, (self.remainder / threshold) as usize, &mut chars_to_append);
+	    self.result_str.push_str(&chars_to_append.iter().collect::<String>());
 	    self.remainder = self.remainder % threshold;
 	}
 
@@ -195,14 +181,11 @@ impl NumberToRomanNumeralConverter {
     }
 
     // multiple different chars, appended one time each for the given threshold (if it applies: remainder >= threshold)
-    fn handle_different_appended_chars_threshold(&mut self, threshold: u16, chars_to_append: &mut Vec::<char>) -> bool {
+    fn handle_different_appended_chars_threshold(&mut self, threshold: u16, chars_to_append: &str) -> bool {
 	let can_handle = self.remainder >= threshold;
 
 	if can_handle {
-	    for ch in chars_to_append.iter() {
-		self.result_str.push(*ch);
-	    }
-
+	    self.result_str.push_str(chars_to_append);
 	    self.remainder = self.remainder % threshold;
 	}
 
@@ -270,10 +253,10 @@ pub fn convert_number_to_roman_numeral_using_hash(number: u16) -> RomanNumeral {
 	// no need to check the digits_count is > 0 for getting power_of_ten_index (see below), an integer should have min. 1 digit
 	let digits_count = digits.len();
 
-	for (index, digit) in digits.iter().enumerate() {
+	result = digits.iter().enumerate().map(|(index, digit)| {
 	    let power_of_ten_index = (digits_count - 1 - index) as u8; // place of the digit within the number, e.g. for thousands it is 3 corresponding to 10^3
-	    result.push_str(ROMAN_NUMERALS_CONVERSION_MAP.get(&[power_of_ten_index, *digit]).unwrap_or(&""));
-	}
+	    ROMAN_NUMERALS_CONVERSION_MAP.get(&[power_of_ten_index, *digit]).unwrap_or(&"").to_string()
+	}).collect();
     }
 
     RomanNumeral::from_string(&result)
@@ -327,12 +310,10 @@ impl RomanNumeralToNumberConverter {
 		}
 	    }
 
-	    for index in 0..Self::MAX_DIGITS_COUNT {
-		result += u16::pow(10, (Self::MAX_DIGITS_COUNT - 1 - index) as u32) * self.resulting_digit_values[index];
-	    }
+	    result = (0..Self::MAX_DIGITS_COUNT).map(|index| u16::pow(10, (Self::MAX_DIGITS_COUNT - 1 - index) as u32) * self.resulting_digit_values[index]).sum()
 	}
 
-	return result;
+	result
     }
 
     fn update_digit(&mut self, digit: &DecimalDigit) {

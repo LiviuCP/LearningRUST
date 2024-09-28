@@ -2,34 +2,35 @@
 use learn_rust_lib::numbers::romannumerals as rnum;
 use learn_rust_lib::numbers::romannumerals::RomanDigit as RD;
 use learn_rust_lib::numbers::romannumerals::RomanNumeral as RN;
+use RD::{I, V, X, L, C, D, M};
 
 #[test]
 pub fn test_roman_digit_as_char() {
-    assert_eq!(RD::I.as_char(), 'I');
-    assert_eq!(RD::V.as_char(), 'V');
-    assert_eq!(RD::X.as_char(), 'X');
-    assert_eq!(RD::L.as_char(), 'L');
-    assert_eq!(RD::C.as_char(), 'C');
-    assert_eq!(RD::D.as_char(), 'D');
-    assert_eq!(RD::M.as_char(), 'M');
+    assert_eq!(I.as_char(), 'I');
+    assert_eq!(V.as_char(), 'V');
+    assert_eq!(X.as_char(), 'X');
+    assert_eq!(L.as_char(), 'L');
+    assert_eq!(C.as_char(), 'C');
+    assert_eq!(D.as_char(), 'D');
+    assert_eq!(M.as_char(), 'M');
 }
 
 #[test]
 pub fn test_roman_digit_from_char() {
-    assert_eq!(RD::from_char('i'), Some(RD::I));
-    assert_eq!(RD::from_char('I'), Some(RD::I));
-    assert_eq!(RD::from_char('v'), Some(RD::V));
-    assert_eq!(RD::from_char('V'), Some(RD::V));
-    assert_eq!(RD::from_char('x'), Some(RD::X));
-    assert_eq!(RD::from_char('X'), Some(RD::X));
-    assert_eq!(RD::from_char('l'), Some(RD::L));
-    assert_eq!(RD::from_char('L'), Some(RD::L));
-    assert_eq!(RD::from_char('c'), Some(RD::C));
-    assert_eq!(RD::from_char('C'), Some(RD::C));
-    assert_eq!(RD::from_char('d'), Some(RD::D));
-    assert_eq!(RD::from_char('D'), Some(RD::D));
-    assert_eq!(RD::from_char('m'), Some(RD::M));
-    assert_eq!(RD::from_char('M'), Some(RD::M));
+    assert_eq!(RD::from_char('i'), Some(I));
+    assert_eq!(RD::from_char('I'), Some(I));
+    assert_eq!(RD::from_char('v'), Some(V));
+    assert_eq!(RD::from_char('V'), Some(V));
+    assert_eq!(RD::from_char('x'), Some(X));
+    assert_eq!(RD::from_char('X'), Some(X));
+    assert_eq!(RD::from_char('l'), Some(L));
+    assert_eq!(RD::from_char('L'), Some(L));
+    assert_eq!(RD::from_char('c'), Some(C));
+    assert_eq!(RD::from_char('C'), Some(C));
+    assert_eq!(RD::from_char('d'), Some(D));
+    assert_eq!(RD::from_char('D'), Some(D));
+    assert_eq!(RD::from_char('m'), Some(M));
+    assert_eq!(RD::from_char('M'), Some(M));
     assert_eq!(RD::from_char('a'), None);
     assert_eq!(RD::from_char('N'), None);
     assert_eq!(RD::from_char('2'), None);
@@ -115,13 +116,13 @@ pub fn test_is_valid_roman_numeral_string() {
 
 #[test]
 pub fn test_roman_numeral_from_string() {
-    assert_eq!(*RN::from_string("MCMLXXVII").get_content(), vec![RD::M, RD::C, RD::M, RD::L, RD::X, RD::X, RD::V, RD::I, RD::I]);
-    assert_eq!(*RN::from_string("MmCcXxIi").get_content(), vec![RD::M, RD::M, RD::C, RD::C, RD::X, RD::X, RD::I, RD::I]);
-    assert_eq!(*RN::from_string("DlV").get_content(), vec![RD::D, RD::L, RD::V]);
-    assert_eq!(*RN::from_string("dLV").get_content(), vec![RD::D, RD::L, RD::V]);
-    assert_eq!(*RN::from_string("DLv").get_content(), vec![RD::D, RD::L, RD::V]);
-    assert_eq!(*RN::from_string("X").get_content(), vec![RD::X]);
-    assert_eq!(*RN::from_string("c").get_content(), vec![RD::C]);
+    assert_eq!(*RN::from_string("MCMLXXVII").get_content(), vec![M, C, M, L, X, X, V, I, I]);
+    assert_eq!(*RN::from_string("MmCcXxIi").get_content(), vec![M, M, C, C, X, X, I, I]);
+    assert_eq!(*RN::from_string("DlV").get_content(), vec![D, L, V]);
+    assert_eq!(*RN::from_string("dLV").get_content(), vec![D, L, V]);
+    assert_eq!(*RN::from_string("DLv").get_content(), vec![D, L, V]);
+    assert_eq!(*RN::from_string("X").get_content(), vec![X]);
+    assert_eq!(*RN::from_string("c").get_content(), vec![C]);
     assert!(RN::from_string("IVMCDLCXM").empty());
     assert!(RN::from_string("MCNLXXVII").empty());
     assert!(RN::from_string("MC_LXXVII").empty());
@@ -155,11 +156,11 @@ pub fn test_roman_numeral_to_string() {
 
 #[test]
 pub fn test_roman_numeral_from_roman_digits() {
-    assert_eq!(*RN::from_roman_digits(&vec![RD::M, RD::C, RD::M, RD::L, RD::X, RD::X, RD::V, RD::I, RD::I]).get_content(), vec![RD::M, RD::C, RD::M, RD::L, RD::X, RD::X, RD::V, RD::I, RD::I]);
-    assert_eq!(*RN::from_roman_digits(&vec![RD::D, RD::L, RD::V]).get_content(), vec![RD::D, RD::L, RD::V]);
-    assert_eq!(*RN::from_roman_digits(&vec![RD::X]).get_content(), vec![RD::X]);
-    assert!(RN::from_roman_digits(&vec![RD::I, RD::V, RD::M, RD::C, RD::D, RD::L, RD::C, RD::X, RD::M]).empty());
-    assert!(RN::from_roman_digits(&vec![RD::M, RD::C, RD::M, RD::L, RD::X, RD::X, RD::V, RD::I, RD::V]).empty());
+    assert_eq!(*RN::from_roman_digits(&vec![M, C, M, L, X, X, V, I, I]).get_content(), vec![M, C, M, L, X, X, V, I, I]);
+    assert_eq!(*RN::from_roman_digits(&vec![D, L, V]).get_content(), vec![D, L, V]);
+    assert_eq!(*RN::from_roman_digits(&vec![X]).get_content(), vec![X]);
+    assert!(RN::from_roman_digits(&vec![I, V, M, C, D, L, C, X, M]).empty());
+    assert!(RN::from_roman_digits(&vec![M, C, M, L, X, X, V, I, V]).empty());
     assert!(RN::from_roman_digits(&Vec::new()).empty());
 }
 
@@ -168,8 +169,8 @@ pub fn test_roman_numeral_clone() {
     let numeral = RN::from_string("MCDXLIV");
     let cloned_numeral = numeral.clone();
 
-    assert_eq!(*numeral.get_content(), vec![RD::M, RD::C, RD::D, RD::X, RD::L, RD::I, RD::V]);
-    assert_eq!(*cloned_numeral.get_content(), vec![RD::M, RD::C, RD::D, RD::X, RD::L, RD::I, RD::V]);
+    assert_eq!(*numeral.get_content(), vec![M, C, D, X, L, I, V]);
+    assert_eq!(*cloned_numeral.get_content(), vec![M, C, D, X, L, I, V]);
 
     let numeral = RN::from_string("");
     let cloned_numeral = numeral.clone();
@@ -183,20 +184,20 @@ pub fn test_convert_number_to_roman_numeral() {
     let mut converter = rnum::NumberToRomanNumeralConverter::create();
 
     // building blocks
-    assert_eq!(*converter.convert(1).get_content(), vec![RD::I]);
-    assert_eq!(*converter.convert(4).get_content(), vec![RD::I, RD::V]);
-    assert_eq!(*converter.convert(5).get_content(), vec![RD::V]);
-    assert_eq!(*converter.convert(9).get_content(), vec![RD::I, RD::X]);
-    assert_eq!(*converter.convert(10).get_content(), vec![RD::X]);
-    assert_eq!(*converter.convert(40).get_content(), vec![RD::X, RD::L]);
-    assert_eq!(*converter.convert(50).get_content(), vec![RD::L]);
-    assert_eq!(*converter.convert(90).get_content(), vec![RD::X, RD::C]);
-    assert_eq!(*converter.convert(100).get_content(), vec![RD::C]);
-    assert_eq!(*converter.convert(400).get_content(), vec![RD::C, RD::D]);
-    assert_eq!(*converter.convert(500).get_content(), vec![RD::D]);
-    assert_eq!(*converter.convert(900).get_content(), vec![RD::C, RD::M]);
-    assert_eq!(*converter.convert(1000).get_content(), vec![RD::M]);
-    assert_eq!(*converter.convert(4000).get_content(), vec![RD::M, RD::M, RD::M, RD::M]);
+    assert_eq!(*converter.convert(1).get_content(), vec![I]);
+    assert_eq!(*converter.convert(4).get_content(), vec![I, V]);
+    assert_eq!(*converter.convert(5).get_content(), vec![V]);
+    assert_eq!(*converter.convert(9).get_content(), vec![I, X]);
+    assert_eq!(*converter.convert(10).get_content(), vec![X]);
+    assert_eq!(*converter.convert(40).get_content(), vec![X, L]);
+    assert_eq!(*converter.convert(50).get_content(), vec![L]);
+    assert_eq!(*converter.convert(90).get_content(), vec![X, C]);
+    assert_eq!(*converter.convert(100).get_content(), vec![C]);
+    assert_eq!(*converter.convert(400).get_content(), vec![C, D]);
+    assert_eq!(*converter.convert(500).get_content(), vec![D]);
+    assert_eq!(*converter.convert(900).get_content(), vec![C, M]);
+    assert_eq!(*converter.convert(1000).get_content(), vec![M]);
+    assert_eq!(*converter.convert(4000).get_content(), vec![M, M, M, M]);
 
     // bounds and beyond bounds
     assert_eq!(*converter.convert(0).get_content(), Vec::<RD>::new());
@@ -205,54 +206,54 @@ pub fn test_convert_number_to_roman_numeral() {
     assert_eq!(*converter.convert(9875).get_content(), Vec::<RD>::new());
 
     // random
-    assert_eq!(*converter.convert(2).get_content(), vec![RD::I, RD::I]);
-    assert_eq!(*converter.convert(8).get_content(), vec![RD::V, RD::I, RD::I, RD::I]);
-    assert_eq!(*converter.convert(25).get_content(), vec![RD::X, RD::X, RD::V]);
-    assert_eq!(*converter.convert(44).get_content(), vec![RD::X, RD::L, RD::I, RD::V]);
-    assert_eq!(*converter.convert(76).get_content(), vec![RD::L, RD::X, RD::X, RD::V, RD::I]);
-    assert_eq!(*converter.convert(237).get_content(), vec![RD::C, RD::C, RD::X, RD::X, RD::X, RD::V, RD::I, RD::I]);
-    assert_eq!(*converter.convert(412).get_content(), vec![RD::C, RD::D, RD::X, RD::I, RD::I]);
-    assert_eq!(*converter.convert(555).get_content(), vec![RD::D, RD::L, RD::V]);
-    assert_eq!(*converter.convert(777).get_content(), vec![RD::D, RD::C, RD::C, RD::L, RD::X, RD::X, RD::V, RD::I, RD::I]);
-    assert_eq!(*converter.convert(1111).get_content(), vec![RD::M, RD::C, RD::X, RD::I]);
-    assert_eq!(*converter.convert(1234).get_content(), vec![RD::M, RD::C, RD::C, RD::X, RD::X, RD::X, RD::I, RD::V]);
-    assert_eq!(*converter.convert(1453).get_content(), vec![RD::M, RD::C, RD::D, RD::L, RD::I, RD::I, RD::I]);
-    assert_eq!(*converter.convert(1877).get_content(), vec![RD::M, RD::D, RD::C, RD::C, RD::C, RD::L, RD::X, RD::X, RD::V, RD::I, RD::I]);
-    assert_eq!(*converter.convert(1918).get_content(), vec![RD::M, RD::C, RD::M, RD::X, RD::V, RD::I, RD::I, RD::I]);
-    assert_eq!(*converter.convert(2020).get_content(), vec![RD::M, RD::M, RD::X, RD::X]);
-    assert_eq!(*converter.convert(2222).get_content(), vec![RD::M, RD::M, RD::C, RD::C, RD::X, RD::X, RD::I, RD::I]);
-    assert_eq!(*converter.convert(2394).get_content(), vec![RD::M, RD::M, RD::C, RD::C, RD::C, RD::X, RD::C, RD::I, RD::V]);
-    assert_eq!(*converter.convert(2695).get_content(), vec![RD::M, RD::M, RD::D, RD::C, RD::X, RD::C, RD::V]);
-    assert_eq!(*converter.convert(2800).get_content(), vec![RD::M, RD::M, RD::D, RD::C, RD::C, RD::C]);
-    assert_eq!(*converter.convert(3000).get_content(), vec![RD::M, RD::M, RD::M]);
-    assert_eq!(*converter.convert(3333).get_content(), vec![RD::M, RD::M, RD::M, RD::C, RD::C, RD::C, RD::X, RD::X, RD::X, RD::I, RD::I, RD::I]);
-    assert_eq!(*converter.convert(3456).get_content(), vec![RD::M, RD::M, RD::M, RD::C, RD::D, RD::L, RD::V, RD::I]);
-    assert_eq!(*converter.convert(3879).get_content(), vec![RD::M, RD::M, RD::M, RD::D, RD::C, RD::C, RD::C, RD::L, RD::X, RD::X, RD::I, RD::X]);
-    assert_eq!(*converter.convert(3987).get_content(), vec![RD::M, RD::M, RD::M, RD::C, RD::M, RD::L, RD::X, RD::X, RD::X, RD::V, RD::I, RD::I]);
-    assert_eq!(*converter.convert(4166).get_content(), vec![RD::M, RD::M, RD::M, RD::M, RD::C, RD::L, RD::X, RD::V, RD::I]);
-    assert_eq!(*converter.convert(4444).get_content(), vec![RD::M, RD::M, RD::M, RD::M, RD::C, RD::D, RD::X, RD::L, RD::I, RD::V]);
-    assert_eq!(*converter.convert(4888).get_content(), vec![RD::M, RD::M, RD::M, RD::M, RD::D, RD::C, RD::C, RD::C, RD::L, RD::X, RD::X, RD::X, RD::V, RD::I, RD::I, RD::I]);
-    assert_eq!(*converter.convert(4987).get_content(), vec![RD::M, RD::M, RD::M, RD::M, RD::C, RD::M, RD::L, RD::X, RD::X, RD::X, RD::V, RD::I, RD::I]);
-    assert_eq!(*converter.convert(4999).get_content(), vec![RD::M, RD::M, RD::M, RD::M, RD::C, RD::M, RD::X, RD::C, RD::I, RD::X]);
+    assert_eq!(*converter.convert(2).get_content(), vec![I, I]);
+    assert_eq!(*converter.convert(8).get_content(), vec![V, I, I, I]);
+    assert_eq!(*converter.convert(25).get_content(), vec![X, X, V]);
+    assert_eq!(*converter.convert(44).get_content(), vec![X, L, I, V]);
+    assert_eq!(*converter.convert(76).get_content(), vec![L, X, X, V, I]);
+    assert_eq!(*converter.convert(237).get_content(), vec![C, C, X, X, X, V, I, I]);
+    assert_eq!(*converter.convert(412).get_content(), vec![C, D, X, I, I]);
+    assert_eq!(*converter.convert(555).get_content(), vec![D, L, V]);
+    assert_eq!(*converter.convert(777).get_content(), vec![D, C, C, L, X, X, V, I, I]);
+    assert_eq!(*converter.convert(1111).get_content(), vec![M, C, X, I]);
+    assert_eq!(*converter.convert(1234).get_content(), vec![M, C, C, X, X, X, I, V]);
+    assert_eq!(*converter.convert(1453).get_content(), vec![M, C, D, L, I, I, I]);
+    assert_eq!(*converter.convert(1877).get_content(), vec![M, D, C, C, C, L, X, X, V, I, I]);
+    assert_eq!(*converter.convert(1918).get_content(), vec![M, C, M, X, V, I, I, I]);
+    assert_eq!(*converter.convert(2020).get_content(), vec![M, M, X, X]);
+    assert_eq!(*converter.convert(2222).get_content(), vec![M, M, C, C, X, X, I, I]);
+    assert_eq!(*converter.convert(2394).get_content(), vec![M, M, C, C, C, X, C, I, V]);
+    assert_eq!(*converter.convert(2695).get_content(), vec![M, M, D, C, X, C, V]);
+    assert_eq!(*converter.convert(2800).get_content(), vec![M, M, D, C, C, C]);
+    assert_eq!(*converter.convert(3000).get_content(), vec![M, M, M]);
+    assert_eq!(*converter.convert(3333).get_content(), vec![M, M, M, C, C, C, X, X, X, I, I, I]);
+    assert_eq!(*converter.convert(3456).get_content(), vec![M, M, M, C, D, L, V, I]);
+    assert_eq!(*converter.convert(3879).get_content(), vec![M, M, M, D, C, C, C, L, X, X, I, X]);
+    assert_eq!(*converter.convert(3987).get_content(), vec![M, M, M, C, M, L, X, X, X, V, I, I]);
+    assert_eq!(*converter.convert(4166).get_content(), vec![M, M, M, M, C, L, X, V, I]);
+    assert_eq!(*converter.convert(4444).get_content(), vec![M, M, M, M, C, D, X, L, I, V]);
+    assert_eq!(*converter.convert(4888).get_content(), vec![M, M, M, M, D, C, C, C, L, X, X, X, V, I, I, I]);
+    assert_eq!(*converter.convert(4987).get_content(), vec![M, M, M, M, C, M, L, X, X, X, V, I, I]);
+    assert_eq!(*converter.convert(4999).get_content(), vec![M, M, M, M, C, M, X, C, I, X]);
 }
 
 #[test]
 pub fn test_convert_number_to_roman_numeral_using_hash() {
     // building blocks
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(1).get_content(), vec![RD::I]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(4).get_content(), vec![RD::I, RD::V]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(5).get_content(), vec![RD::V]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(9).get_content(), vec![RD::I, RD::X]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(10).get_content(), vec![RD::X]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(40).get_content(), vec![RD::X, RD::L]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(50).get_content(), vec![RD::L]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(90).get_content(), vec![RD::X, RD::C]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(100).get_content(), vec![RD::C]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(400).get_content(), vec![RD::C, RD::D]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(500).get_content(), vec![RD::D]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(900).get_content(), vec![RD::C, RD::M]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(1000).get_content(), vec![RD::M]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(4000).get_content(), vec![RD::M, RD::M, RD::M, RD::M]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(1).get_content(), vec![I]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(4).get_content(), vec![I, V]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(5).get_content(), vec![V]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(9).get_content(), vec![I, X]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(10).get_content(), vec![X]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(40).get_content(), vec![X, L]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(50).get_content(), vec![L]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(90).get_content(), vec![X, C]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(100).get_content(), vec![C]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(400).get_content(), vec![C, D]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(500).get_content(), vec![D]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(900).get_content(), vec![C, M]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(1000).get_content(), vec![M]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(4000).get_content(), vec![M, M, M, M]);
 
     // bounds and beyond bounds
     assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(0).get_content(), Vec::<RD>::new());
@@ -261,35 +262,35 @@ pub fn test_convert_number_to_roman_numeral_using_hash() {
     assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(9875).get_content(), Vec::<RD>::new());
 
     // random
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(2).get_content(), vec![RD::I, RD::I]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(8).get_content(), vec![RD::V, RD::I, RD::I, RD::I]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(25).get_content(), vec![RD::X, RD::X, RD::V]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(44).get_content(), vec![RD::X, RD::L, RD::I, RD::V]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(76).get_content(), vec![RD::L, RD::X, RD::X, RD::V, RD::I]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(237).get_content(), vec![RD::C, RD::C, RD::X, RD::X, RD::X, RD::V, RD::I, RD::I]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(412).get_content(), vec![RD::C, RD::D, RD::X, RD::I, RD::I]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(555).get_content(), vec![RD::D, RD::L, RD::V]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(777).get_content(), vec![RD::D, RD::C, RD::C, RD::L, RD::X, RD::X, RD::V, RD::I, RD::I]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(1111).get_content(), vec![RD::M, RD::C, RD::X, RD::I]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(1234).get_content(), vec![RD::M, RD::C, RD::C, RD::X, RD::X, RD::X, RD::I, RD::V]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(1453).get_content(), vec![RD::M, RD::C, RD::D, RD::L, RD::I, RD::I, RD::I]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(1877).get_content(), vec![RD::M, RD::D, RD::C, RD::C, RD::C, RD::L, RD::X, RD::X, RD::V, RD::I, RD::I]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(1918).get_content(), vec![RD::M, RD::C, RD::M, RD::X, RD::V, RD::I, RD::I, RD::I]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(2020).get_content(), vec![RD::M, RD::M, RD::X, RD::X]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(2222).get_content(), vec![RD::M, RD::M, RD::C, RD::C, RD::X, RD::X, RD::I, RD::I]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(2394).get_content(), vec![RD::M, RD::M, RD::C, RD::C, RD::C, RD::X, RD::C, RD::I, RD::V]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(2695).get_content(), vec![RD::M, RD::M, RD::D, RD::C, RD::X, RD::C, RD::V]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(2800).get_content(), vec![RD::M, RD::M, RD::D, RD::C, RD::C, RD::C]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(3000).get_content(), vec![RD::M, RD::M, RD::M]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(3333).get_content(), vec![RD::M, RD::M, RD::M, RD::C, RD::C, RD::C, RD::X, RD::X, RD::X, RD::I, RD::I, RD::I]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(3456).get_content(), vec![RD::M, RD::M, RD::M, RD::C, RD::D, RD::L, RD::V, RD::I]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(3879).get_content(), vec![RD::M, RD::M, RD::M, RD::D, RD::C, RD::C, RD::C, RD::L, RD::X, RD::X, RD::I, RD::X]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(3987).get_content(), vec![RD::M, RD::M, RD::M, RD::C, RD::M, RD::L, RD::X, RD::X, RD::X, RD::V, RD::I, RD::I]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(4166).get_content(), vec![RD::M, RD::M, RD::M, RD::M, RD::C, RD::L, RD::X, RD::V, RD::I]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(4444).get_content(), vec![RD::M, RD::M, RD::M, RD::M, RD::C, RD::D, RD::X, RD::L, RD::I, RD::V]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(4888).get_content(), vec![RD::M, RD::M, RD::M, RD::M, RD::D, RD::C, RD::C, RD::C, RD::L, RD::X, RD::X, RD::X, RD::V, RD::I, RD::I, RD::I]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(4987).get_content(), vec![RD::M, RD::M, RD::M, RD::M, RD::C, RD::M, RD::L, RD::X, RD::X, RD::X, RD::V, RD::I, RD::I]);
-    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(4999).get_content(), vec![RD::M, RD::M, RD::M, RD::M, RD::C, RD::M, RD::X, RD::C, RD::I, RD::X]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(2).get_content(), vec![I, I]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(8).get_content(), vec![V, I, I, I]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(25).get_content(), vec![X, X, V]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(44).get_content(), vec![X, L, I, V]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(76).get_content(), vec![L, X, X, V, I]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(237).get_content(), vec![C, C, X, X, X, V, I, I]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(412).get_content(), vec![C, D, X, I, I]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(555).get_content(), vec![D, L, V]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(777).get_content(), vec![D, C, C, L, X, X, V, I, I]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(1111).get_content(), vec![M, C, X, I]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(1234).get_content(), vec![M, C, C, X, X, X, I, V]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(1453).get_content(), vec![M, C, D, L, I, I, I]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(1877).get_content(), vec![M, D, C, C, C, L, X, X, V, I, I]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(1918).get_content(), vec![M, C, M, X, V, I, I, I]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(2020).get_content(), vec![M, M, X, X]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(2222).get_content(), vec![M, M, C, C, X, X, I, I]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(2394).get_content(), vec![M, M, C, C, C, X, C, I, V]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(2695).get_content(), vec![M, M, D, C, X, C, V]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(2800).get_content(), vec![M, M, D, C, C, C]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(3000).get_content(), vec![M, M, M]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(3333).get_content(), vec![M, M, M, C, C, C, X, X, X, I, I, I]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(3456).get_content(), vec![M, M, M, C, D, L, V, I]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(3879).get_content(), vec![M, M, M, D, C, C, C, L, X, X, I, X]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(3987).get_content(), vec![M, M, M, C, M, L, X, X, X, V, I, I]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(4166).get_content(), vec![M, M, M, M, C, L, X, V, I]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(4444).get_content(), vec![M, M, M, M, C, D, X, L, I, V]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(4888).get_content(), vec![M, M, M, M, D, C, C, C, L, X, X, X, V, I, I, I]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(4987).get_content(), vec![M, M, M, M, C, M, L, X, X, X, V, I, I]);
+    assert_eq!(*rnum::convert_number_to_roman_numeral_using_hash(4999).get_content(), vec![M, M, M, M, C, M, X, C, I, X]);
 }
 
 #[test]

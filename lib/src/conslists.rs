@@ -1,3 +1,7 @@
+/*
+TODO: create (mut) iterators
+*/
+
 enum ConsList<T> {
     ConsValue(T, Box<ConsList<T>>),
     Nil
@@ -21,4 +25,12 @@ impl<T> ConsList<T> {
     pub fn count(&self) -> usize {
 	0 as usize
     }
+
+    pub fn head(&self) -> &ConsList<T> {
+	&ConsList::<T>::Nil
+    }
+
+//    pub fn tail(&self) -> &Box<ConsList<T>> {
+	// TODO
+//    }
 }

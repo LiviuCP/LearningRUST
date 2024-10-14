@@ -2,14 +2,19 @@
 TODO: create (mut) iterators
 */
 
-enum ConsList<T> {
+#[derive(PartialEq, Debug)]
+pub enum ConsList<T> {
     ConsValue(T, Box<ConsList<T>>),
     Nil
 }
 
-impl<T> ConsList<T> {
+impl<T: Copy> ConsList<T> {
     pub fn create_from_vec(arr: &Vec<T>) -> ConsList<T> {
-	ConsList::<T>::Nil
+	let mut result = ConsList::<T>::Nil;
+	for val in arr.iter() {
+	    result = ConsList::ConsValue(*val, Box::new(result));
+	}
+	result
     }
 
     pub fn append(&mut self, value: &T) {

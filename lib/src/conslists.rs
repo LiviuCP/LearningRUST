@@ -2,7 +2,7 @@
 TODO: create (mut) iterators
 */
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone)]
 pub enum ConsList<T> {
     ConsValue(T, Box<ConsList<T>>),
     Nil
@@ -16,10 +16,11 @@ impl<T: Copy> ConsList<T> {
 	}
 	result
     }
-/*
-    pub fn append(&mut self, value: &T) {
-    }
 
+    pub fn prepend(&mut self, value: &T) {
+	*self = ConsList::ConsValue(*value, Box::new(self.clone()));
+    }
+/*
     pub fn reverse(&self) -> ConsList<T> {
 	ConsList::<T>::Nil
     }

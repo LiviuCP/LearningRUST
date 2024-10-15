@@ -11,7 +11,7 @@ pub enum ConsList<T> {
 impl<T: Copy> ConsList<T> {
     pub fn create_from_vec(arr: &Vec<T>) -> ConsList<T> {
 	let mut result = ConsList::<T>::Nil;
-	for val in arr.iter() {
+	for val in arr.iter().rev() {
 	    result = ConsList::ConsValue(*val, Box::new(result));
 	}
 	result

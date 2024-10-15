@@ -16,7 +16,7 @@ impl<T: Copy> ConsList<T> {
 	}
 	result
     }
-
+/*
     pub fn append(&mut self, value: &T) {
     }
 
@@ -34,7 +34,7 @@ impl<T: Copy> ConsList<T> {
     pub fn head(&self) -> &ConsList<T> {
 	&ConsList::<T>::Nil
     }
-
+*/
 //    pub fn tail(&self) -> &Box<ConsList<T>> {
 	// TODO
 //    }

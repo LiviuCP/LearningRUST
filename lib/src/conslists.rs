@@ -1,18 +1,26 @@
 /*
 TODO: create (mut) iterators
-*/
+ */
+
+use std::{rc::Rc, cell::RefCell};
+
+#[derive(PartialEq, Debug, Clone)]
+pub enum ConsList<T> {
+    ConsValue(Rc<RefCell<T>>, Rc<ConsList<T>>),
+    Nil
+}
 
 pub struct ConsWrapper<T> {
-    list: Box<ConsList<T>>,
+    list: Rc<ConsList<T>>,
     count: usize
 }
 
 impl<T: Copy> ConsWrapper<T> {
     pub fn create_from_vec(arr: &Vec<T>) -> ConsWrapper<T> {
-	let mut result = ConsWrapper::<T>{list: Box::new(ConsList::<T>::Nil), count: 0};
+	let mut result = ConsWrapper::<T>{list: Rc::new(ConsList::<T>::Nil), count: 0};
 
 	for val in arr.iter().rev() {
-	    result.list = Box::new(ConsList::ConsValue(*val, result.list));
+	    result.list = Rc::new(ConsList::ConsValue(Rc::new(RefCell::new(*val)), result.list));
 	    result.count += 1;
 	}
 	
@@ -32,16 +40,10 @@ impl<T: Copy> ConsWrapper<T> {
     }
 }
 
-#[derive(PartialEq, Debug, Clone)]
-pub enum ConsList<T> {
-    ConsValue(T, Box<ConsList<T>>),
-    Nil
-}
-
-impl<T: Copy> ConsList<T> {
+/*impl<T: Copy> ConsList<T> {
     pub fn prepend(&mut self, value: &T) {
 	*self = ConsList::ConsValue(*value, Box::new(self.clone()));
-    }
+    }*/
 /*
     pub fn reverse(&self) -> ConsList<T> {
 	ConsList::<T>::Nil
@@ -61,4 +63,4 @@ impl<T: Copy> ConsList<T> {
 //    pub fn tail(&self) -> &Box<ConsList<T>> {
 	// TODO
 //    }
-}
+//}

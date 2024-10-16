@@ -27,6 +27,11 @@ impl<T: Copy> ConsWrapper<T> {
 	result
     }
 
+    pub fn prepend(&mut self, value: &T) {
+	self.list = Rc::new(ConsList::ConsValue(Rc::new(RefCell::new(*value)), Rc::clone(&self.list)));
+	self.count += 1;
+    }
+
     pub fn value(&self) -> &ConsList::<T> {
 	&self.list
     }
@@ -40,10 +45,6 @@ impl<T: Copy> ConsWrapper<T> {
     }
 }
 
-/*impl<T: Copy> ConsList<T> {
-    pub fn prepend(&mut self, value: &T) {
-	*self = ConsList::ConsValue(*value, Box::new(self.clone()));
-    }*/
 /*
     pub fn reverse(&self) -> ConsList<T> {
 	ConsList::<T>::Nil
@@ -59,8 +60,8 @@ impl<T: Copy> ConsWrapper<T> {
     pub fn head(&self) -> &ConsList<T> {
 	&ConsList::<T>::Nil
     }
-*/
-//    pub fn tail(&self) -> &Box<ConsList<T>> {
+
+    pub fn tail(&self) -> &Box<ConsList<T>> {
 	// TODO
-//    }
-//}
+    }
+*/

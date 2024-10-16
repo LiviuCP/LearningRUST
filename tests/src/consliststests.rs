@@ -31,23 +31,35 @@ pub fn test_create_from_vec() {
 	    wrapper.size() == 8);
 }
 
-/*#[test]
+#[test]
 pub fn test_prepend() {
-    let mut list = Nil;
+    let mut wrapper = ConsWrapper::create_from_vec(&Vec::new());
     let mut value = -3;
-    list.prepend(&value);
+    wrapper.prepend(&value);
 
-    assert_eq!(list, ConsValue(-3, Box::new(Nil)));
+    assert!(*wrapper.value() == ConsValue(Rc::new(Rcl::new(-3)), Rc::new(Nil)) && wrapper.size() == 1);
 
-    list = ConsValue(5, Box::new(Nil));
+    wrapper = ConsWrapper::create_from_vec(&vec![5]);
     value = 2;
-    list.prepend(&value);
+    wrapper.prepend(&value);
 
-    assert_eq!(list, ConsValue(2, Box::new(ConsValue(5, Box::new(Nil)))));
+    assert!(*wrapper.value() == ConsValue(Rc::new(Rcl::new(2)),
+					   Rc::new(ConsValue(Rc::new(Rcl::new(5)),
+							     Rc::new(Nil)))) &&
+	    wrapper.size() == 2);
 
-    list = ConsValue(8, Box::new(ConsValue(-3, Box::new(ConsValue(-3, Box::new(ConsValue(5, Box::new(ConsValue(0, Box::new(ConsValue(2, Box::new(ConsValue(1, Box::new(Nil))))))))))))));
+    wrapper = ConsWrapper::create_from_vec(&vec![8, -3, -3, 5, 0, 2, 1]);
     value = -4;
-    list.prepend(&value);
+    wrapper.prepend(&value);
 
-    assert_eq!(list, ConsValue(-4, Box::new(ConsValue(8, Box::new(ConsValue(-3, Box::new(ConsValue(-3, Box::new(ConsValue(5, Box::new(ConsValue(0, Box::new(ConsValue(2, Box::new(ConsValue(1, Box::new(Nil)))))))))))))))));
-}*/
+    assert!(*wrapper.value() == ConsValue(Rc::new(Rcl::new(-4)),
+					  Rc::new(ConsValue(Rc::new(Rcl::new(8)),
+							    Rc::new(ConsValue(Rc::new(Rcl::new(-3)),
+									      Rc::new(ConsValue(Rc::new(Rcl::new(-3)),
+												Rc::new(ConsValue(Rc::new(Rcl::new(5)),
+														  Rc::new(ConsValue(Rc::new(Rcl::new(0)),
+																    Rc::new(ConsValue(Rc::new(Rcl::new(2)),
+																		      Rc::new(ConsValue(Rc::new(Rcl::new(1)),
+																					Rc::new(Nil)))))))))))))))) &&
+	    wrapper.size() == 8);
+}

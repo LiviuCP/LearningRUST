@@ -15,7 +15,7 @@ pub struct ConsWrapper<T> {
     count: usize
 }
 
-impl<T: Copy> ConsWrapper<T> {
+impl<T: Copy + std::cmp::PartialEq> ConsWrapper<T> {
     pub fn create_from_vec(arr: &Vec<T>) -> ConsWrapper<T> {
 	let mut result = ConsWrapper::<T>{list: Rc::new(ConsList::<T>::Nil), count: 0};
 
@@ -30,6 +30,20 @@ impl<T: Copy> ConsWrapper<T> {
     pub fn prepend(&mut self, value: &T) {
 	self.list = Rc::new(ConsList::ConsValue(Rc::new(RefCell::new(*value)), Rc::clone(&self.list)));
 	self.count += 1;
+    }
+
+    pub fn reverse(&mut self) {
+	let mut old_list = self.list.clone();
+	self.list = Rc::new(ConsList::<T>::Nil);
+	loop {
+	    if let ConsList::ConsValue(val, remaining_list) = Rc::into_inner(old_list).unwrap() {
+		old_list = remaining_list;
+		self.list = Rc::new(ConsList::ConsValue(Rc::clone(&val), Rc::clone(&self.list)));
+	    }
+	    else {
+		break;
+	    }
+	}
     }
 
     pub fn value(&self) -> &ConsList::<T> {

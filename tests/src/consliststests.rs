@@ -51,3 +51,13 @@ pub fn test_prepend() {
 
     assert!(*wrapper.value() == *ConsWrapper::create_from_vec(&vec![-4, 8, -3, -3, 5, 0, 2, 1]).value() && wrapper.size() == 8);
 }
+
+#[test]
+pub fn test_reverse() {
+    let mut wrapper = ConsWrapper::create_from_vec(&Vec::new());
+    assert!(wrapper.empty());
+
+    wrapper = ConsWrapper::create_from_vec(&vec![2, 5]);
+    wrapper.reverse();
+    assert!(*wrapper.value() == *ConsWrapper::create_from_vec(&vec![5, 2]).value() && wrapper.size() == 2);
+}

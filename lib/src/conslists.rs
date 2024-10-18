@@ -46,6 +46,11 @@ impl<T: Copy + std::cmp::PartialEq> ConsWrapper<T> {
 	}
     }
 
+    pub fn clear(&mut self) {
+	self.list = Rc::new(ConsList::<T>::Nil);
+	self.count = 0;
+    }
+
     pub fn value(&self) -> &ConsList::<T> {
 	&self.list
     }
@@ -60,10 +65,6 @@ impl<T: Copy + std::cmp::PartialEq> ConsWrapper<T> {
 }
 
 /*
-    pub fn reverse(&self) -> ConsList<T> {
-	ConsList::<T>::Nil
-    }
-
     pub fn clear(&mut self) {
     }
 

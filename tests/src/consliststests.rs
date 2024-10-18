@@ -99,6 +99,72 @@ pub fn test_reverse() {
 }
 
 #[test]
+pub fn test_merge() {
+    let mut first_wrapper = ConsWrapper::create();
+    let mut second_wrapper = ConsWrapper::create();
+    first_wrapper.merge(&mut second_wrapper);
+
+    assert!(*first_wrapper.value() == Nil && first_wrapper.empty());
+    assert!(*second_wrapper.value() == Nil && second_wrapper.empty());
+
+    first_wrapper = ConsWrapper::create_from_vec(&vec![-3]);
+    second_wrapper = ConsWrapper::create();
+    first_wrapper.merge(&mut second_wrapper);
+
+    assert!(*first_wrapper.value() == *ConsWrapper::create_from_vec(&vec![-3]).value() && first_wrapper.size() == 1);
+    assert!(*second_wrapper.value() == Nil && second_wrapper.empty());
+
+    first_wrapper = ConsWrapper::create();
+    second_wrapper = ConsWrapper::create_from_vec(&vec![-3]);
+    first_wrapper.merge(&mut second_wrapper);
+
+    assert!(*first_wrapper.value() == *ConsWrapper::create_from_vec(&vec![-3]).value() && first_wrapper.size() == 1);
+    assert!(*second_wrapper.value() == Nil && second_wrapper.empty());
+
+    first_wrapper = ConsWrapper::create_from_vec(&vec![5, -4]);
+    second_wrapper = ConsWrapper::create();
+    first_wrapper.merge(&mut second_wrapper);
+
+    assert!(*first_wrapper.value() == *ConsWrapper::create_from_vec(&vec![5, -4]).value() && first_wrapper.size() == 2);
+    assert!(*second_wrapper.value() == Nil && second_wrapper.empty());
+
+    first_wrapper = ConsWrapper::create();
+    second_wrapper = ConsWrapper::create_from_vec(&vec![5, -4]);
+    first_wrapper.merge(&mut second_wrapper);
+
+    assert!(*first_wrapper.value() == *ConsWrapper::create_from_vec(&vec![5, -4]).value() && first_wrapper.size() == 2);
+    assert!(*second_wrapper.value() == Nil && second_wrapper.empty());
+
+    first_wrapper = ConsWrapper::create_from_vec(&vec![-8, 1]);
+    second_wrapper = ConsWrapper::create_from_vec(&vec![-4]);
+    first_wrapper.merge(&mut second_wrapper);
+
+    assert!(*first_wrapper.value() == *ConsWrapper::create_from_vec(&vec![-8, 1, -4]).value() && first_wrapper.size() == 3);
+    assert!(*second_wrapper.value() == Nil && second_wrapper.empty());
+
+    first_wrapper = ConsWrapper::create_from_vec(&vec![-4]);
+    second_wrapper = ConsWrapper::create_from_vec(&vec![-8, 1]);
+    first_wrapper.merge(&mut second_wrapper);
+
+    assert!(*first_wrapper.value() == *ConsWrapper::create_from_vec(&vec![-4, -8, 1]).value() && first_wrapper.size() == 3);
+    assert!(*second_wrapper.value() == Nil && second_wrapper.empty());
+
+    first_wrapper = ConsWrapper::create_from_vec(&vec![2, -5, 4, 3, 4]);
+    second_wrapper = ConsWrapper::create_from_vec(&vec![9, 1, 1, 8]);
+    first_wrapper.merge(&mut second_wrapper);
+
+    assert!(*first_wrapper.value() == *ConsWrapper::create_from_vec(&vec![2, -5, 4, 3, 4, 9, 1, 1, 8]).value() && first_wrapper.size() == 9);
+    assert!(*second_wrapper.value() == Nil && second_wrapper.empty());
+
+    first_wrapper = ConsWrapper::create_from_vec(&vec![9, 1, 1, 8]);
+    second_wrapper = ConsWrapper::create_from_vec(&vec![2, -5, 4, 3, 4]);
+    first_wrapper.merge(&mut second_wrapper);
+
+    assert!(*first_wrapper.value() == *ConsWrapper::create_from_vec(&vec![9, 1, 1, 8, 2, -5, 4, 3, 4]).value() && first_wrapper.size() == 9);
+    assert!(*second_wrapper.value() == Nil && second_wrapper.empty());
+}
+
+#[test]
 pub fn test_clear() {
     let mut wrapper = ConsWrapper::create_from_vec(&Vec::new());
     wrapper.clear();

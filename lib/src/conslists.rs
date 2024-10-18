@@ -56,6 +56,28 @@ impl<T: Copy + std::cmp::PartialEq> ConsWrapper<T> {
 	}
     }
 
+    pub fn merge(&mut self, wrapper: &mut ConsWrapper::<T>) {
+	self.reverse();
+	let mut old_list = self.list.clone();
+	self.clear();
+
+	loop {
+	    if let ConsList::ConsValue(val, remaining_list) = Rc::into_inner(old_list).unwrap() {
+		old_list = remaining_list;
+		wrapper.list = Rc::new(ConsList::ConsValue(Rc::clone(&val), Rc::clone(&wrapper.list)));
+		wrapper.count += 1;
+		continue;
+	    }
+
+	    break;
+	}
+
+	self.list = wrapper.list.clone();
+	self.count = wrapper.count;
+
+	wrapper.clear();
+    }
+
     pub fn clear(&mut self) {
 	self.list = Rc::new(ConsList::<T>::Nil);
 	self.count = 0;
@@ -75,13 +97,6 @@ impl<T: Copy + std::cmp::PartialEq> ConsWrapper<T> {
 }
 
 /*
-    pub fn clear(&mut self) {
-    }
-
-    pub fn count(&self) -> usize {
-	0 as usize
-    }
-
     pub fn head(&self) -> &ConsList<T> {
 	&ConsList::<T>::Nil
     }

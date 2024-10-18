@@ -53,6 +53,27 @@ pub fn test_prepend() {
 }
 
 #[test]
+pub fn test_append() {
+    let mut wrapper = ConsWrapper::create_from_vec(&Vec::new());
+    let mut value = -3;
+    wrapper.append(&value);
+
+    assert!(*wrapper.value() == *ConsWrapper::create_from_vec(&vec![-3]).value() && wrapper.size() == 1);
+
+    wrapper = ConsWrapper::create_from_vec(&vec![5]);
+    value = 2;
+    wrapper.append(&value);
+
+    assert!(*wrapper.value() == *ConsWrapper::create_from_vec(&vec![5, 2]).value() && wrapper.size() == 2);
+
+    wrapper = ConsWrapper::create_from_vec(&vec![8, -3, -3, 5, 0, 2, 1]);
+    value = -4;
+    wrapper.append(&value);
+
+    assert!(*wrapper.value() == *ConsWrapper::create_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]).value() && wrapper.size() == 8);
+}
+
+#[test]
 pub fn test_reverse() {
     let mut wrapper = ConsWrapper::create_from_vec(&Vec::new());
     wrapper.reverse();

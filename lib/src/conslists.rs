@@ -32,6 +32,12 @@ impl<T: Copy + std::cmp::PartialEq> ConsWrapper<T> {
 	self.count += 1;
     }
 
+    pub fn append(&mut self, value: &T) {
+	self.reverse();
+	self.prepend(value);
+	self.reverse();
+    }
+
     pub fn reverse(&mut self) {
 	let mut old_list = self.list.clone();
 	self.list = Rc::new(ConsList::<T>::Nil);

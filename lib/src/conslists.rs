@@ -24,8 +24,7 @@ impl<T: Copy + std::cmp::PartialEq> ConsWrapper<T> {
 	let mut result = ConsWrapper::create();
 
 	for val in arr.iter().rev() {
-	    result.list = Rc::new(ConsList::ConsValue(Rc::new(RefCell::new(*val)), result.list));
-	    result.count += 1;
+	    result.prepend(val);
 	}
 	
 	result
@@ -44,15 +43,17 @@ impl<T: Copy + std::cmp::PartialEq> ConsWrapper<T> {
 
     pub fn reverse(&mut self) {
 	let mut old_list = self.list.clone();
-	self.list = Rc::new(ConsList::<T>::Nil);
+	self.clear();
+
 	loop {
 	    if let ConsList::ConsValue(val, remaining_list) = Rc::into_inner(old_list).unwrap() {
 		old_list = remaining_list;
 		self.list = Rc::new(ConsList::ConsValue(Rc::clone(&val), Rc::clone(&self.list)));
+		self.count += 1;
+		continue;
 	    }
-	    else {
-		break;
-	    }
+
+	    break;
 	}
     }
 

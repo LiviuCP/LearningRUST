@@ -16,8 +16,12 @@ pub struct ConsWrapper<T> {
 }
 
 impl<T: Copy + std::cmp::PartialEq> ConsWrapper<T> {
+    pub fn create() -> ConsWrapper<T> {
+	ConsWrapper::<T>{list: Rc::new(ConsList::<T>::Nil), count: 0}
+    }
+
     pub fn create_from_vec(arr: &Vec<T>) -> ConsWrapper<T> {
-	let mut result = ConsWrapper::<T>{list: Rc::new(ConsList::<T>::Nil), count: 0};
+	let mut result = ConsWrapper::create();
 
 	for val in arr.iter().rev() {
 	    result.list = Rc::new(ConsList::ConsValue(Rc::new(RefCell::new(*val)), result.list));

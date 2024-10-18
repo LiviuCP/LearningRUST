@@ -5,6 +5,12 @@ use learn_rust_lib::conslists::{ConsList, ConsWrapper};
 use ConsList::{ConsValue, Nil};
 
 #[test]
+pub fn test_create() {
+    let wrapper = ConsWrapper::<i32>::create();
+    assert!(*wrapper.value() == Nil && wrapper.empty());
+}
+
+#[test]
 pub fn test_create_from_vec() {
     let mut wrapper = ConsWrapper::create_from_vec(&Vec::new());
     assert!(*wrapper.value() == Nil && wrapper.empty());

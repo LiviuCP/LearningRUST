@@ -39,7 +39,7 @@ pub fn test_create_from_vec() {
 
 #[test]
 pub fn test_prepend() {
-    let mut wrapper = ConsWrapper::create_from_vec(&Vec::new());
+    let mut wrapper = ConsWrapper::create();
     let mut value = -3;
     wrapper.prepend(&value);
 
@@ -60,7 +60,7 @@ pub fn test_prepend() {
 
 #[test]
 pub fn test_append() {
-    let mut wrapper = ConsWrapper::create_from_vec(&Vec::new());
+    let mut wrapper = ConsWrapper::create();
     let mut value = -3;
     wrapper.append(&value);
 
@@ -81,20 +81,24 @@ pub fn test_append() {
 
 #[test]
 pub fn test_reverse() {
-    let mut wrapper = ConsWrapper::create_from_vec(&Vec::new());
+    let mut wrapper = ConsWrapper::create();
     wrapper.reverse();
+
     assert!(*wrapper.value() == Nil && wrapper.empty());
 
     wrapper = ConsWrapper::create_from_vec(&vec![-3]);
     wrapper.reverse();
+
     assert!(*wrapper.value() == *ConsWrapper::create_from_vec(&vec![-3]).value() && wrapper.size() == 1);
 
     wrapper = ConsWrapper::create_from_vec(&vec![2, 5]);
     wrapper.reverse();
+
     assert!(*wrapper.value() == *ConsWrapper::create_from_vec(&vec![5, 2]).value() && wrapper.size() == 2);
 
     wrapper = ConsWrapper::create_from_vec(&vec![-4, 8, -3, -3, 5, 0, 2, 1]);
     wrapper.reverse();
+
     assert!(*wrapper.value() == *ConsWrapper::create_from_vec(&vec![1, 2, 0, 5, -3, -3, 8, -4]).value() && wrapper.size() == 8);
 }
 
@@ -166,11 +170,13 @@ pub fn test_merge() {
 
 #[test]
 pub fn test_clear() {
-    let mut wrapper = ConsWrapper::create_from_vec(&Vec::new());
+    let mut wrapper = ConsWrapper::create();
     wrapper.clear();
+
     assert!(*wrapper.value() == Nil && wrapper.empty());
 
     wrapper = ConsWrapper::create_from_vec(&vec![2, 5, -3, 4]);
     wrapper.clear();
+
     assert!(*wrapper.value() == Nil && wrapper.empty());
 }

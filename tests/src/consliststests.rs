@@ -99,6 +99,26 @@ pub fn test_prepend() {
 
     assert!(*wrapper.value() == *ConsWrapper::create_from_vec(&vec![-4, 8, -3, -3, 5, 0, 2, 1]).value() && wrapper.size() == 8);
 }
+#[test]
+pub fn test_alt_prepend() {
+    let mut wrapper = AltConsWrapper::create();
+    let mut value = -3;
+    wrapper.prepend(&value);
+
+    assert!(*wrapper.value() == *AltConsWrapper::create_from_vec(&vec![-3]).value() && wrapper.size() == 1);
+
+    wrapper = AltConsWrapper::create_from_vec(&vec![5]);
+    value = 2;
+    wrapper.prepend(&value);
+
+    assert!(*wrapper.value() == *AltConsWrapper::create_from_vec(&vec![2, 5]).value() && wrapper.size() == 2);
+
+    wrapper = AltConsWrapper::create_from_vec(&vec![8, -3, -3, 5, 0, 2, 1]);
+    value = -4;
+    wrapper.prepend(&value);
+
+    assert!(*wrapper.value() == *AltConsWrapper::create_from_vec(&vec![-4, 8, -3, -3, 5, 0, 2, 1]).value() && wrapper.size() == 8);
+}
 
 #[test]
 pub fn test_append() {

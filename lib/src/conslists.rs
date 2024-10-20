@@ -5,6 +5,51 @@ TODO: create (mut) iterators
 use std::{rc::Rc, cell::RefCell};
 
 #[derive(PartialEq, Debug, Clone)]
+pub struct AltConsList<T> {
+    pub value: Option<Rc<RefCell<T>>>,
+    pub remaining: Option<Rc<AltConsList<T>>>
+}
+
+pub struct AltConsWrapper<T> {
+    list: Option<Rc<AltConsList<T>>>,
+    count: usize
+}
+
+impl<T: Copy + std::cmp::PartialEq> AltConsWrapper<T> {
+    pub fn create() -> AltConsWrapper<T> {
+	AltConsWrapper::<T>{list: None, count: 0}
+    }
+
+    pub fn create_from_vec(arr: &Vec<T>) -> AltConsWrapper<T> {
+	let mut result = AltConsWrapper::create();
+
+	for val in arr.iter().rev() {
+	    result.prepend(val);
+	}
+
+	result
+    }
+
+    pub fn prepend(&mut self, val: &T) {
+	self.list = Some(Rc::new(AltConsList{value: Some(Rc::new(RefCell::new(*val))), remaining: self.list.clone()}));
+	self.count += 1;
+    }
+
+    pub fn value(&self) -> &Option<Rc<AltConsList::<T>>> {
+	&self.list
+    }
+
+    pub fn size(&self) -> usize {
+	self.count
+    }
+
+    pub fn empty(&self) -> bool {
+	self.count == 0
+    }
+}
+
+
+#[derive(PartialEq, Debug, Clone)]
 pub enum ConsList<T> {
     ConsValue(Rc<RefCell<T>>, Rc<ConsList<T>>),
     Nil

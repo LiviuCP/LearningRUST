@@ -1,13 +1,19 @@
 #[cfg(test)]
 
 use std::{rc::Rc, cell::RefCell as Rcl};
-use learn_rust_lib::conslists::{ConsList, ConsWrapper};
+use learn_rust_lib::conslists::{ConsList, ConsWrapper, AltConsList, AltConsWrapper};
 use ConsList::{ConsValue, Nil};
 
 #[test]
 pub fn test_create() {
     let wrapper = ConsWrapper::<i32>::create();
     assert!(*wrapper.value() == Nil && wrapper.empty());
+}
+
+#[test]
+pub fn test_alt_create() {
+    let wrapper = AltConsWrapper::<i32>::create();
+    assert!(*wrapper.value() == None && wrapper.empty());
 }
 
 #[test]
@@ -35,6 +41,36 @@ pub fn test_create_from_vec() {
 																		      Rc::new(ConsValue(Rc::new(Rcl::new(1)),
 																					Rc::new(Nil)))))))))))))))) &&
 	    wrapper.size() == 8);
+}
+
+#[test]
+pub fn test_alt_create_from_vec() {
+    let mut wrapper = AltConsWrapper::create_from_vec(&Vec::<i32>::new());
+    assert!(*wrapper.value() == None && wrapper.empty());
+
+    wrapper = AltConsWrapper::create_from_vec(&vec![-3]);
+    assert!(*wrapper.value() == Some(Rc::new(AltConsList{value: Some(Rc::new(Rcl::new(-3))),
+							 remaining: None})) && wrapper.size() == 1);
+
+    wrapper = AltConsWrapper::create_from_vec(&vec![2, 5]);
+    assert!(*wrapper.value() == Some(Rc::new(AltConsList{value: Some(Rc::new(Rcl::new(2))),
+							 remaining: Some(Rc::new(AltConsList{value: Some(Rc::new(Rcl::new(5))),
+											     remaining: None}))})) &&
+	    wrapper.size() == 2);
+/*
+// TODO:
+    wrapper = ConsWrapper::create_from_vec(&vec![-4, 8, -3, -3, 5, 0, 2, 1]);
+    assert!(*wrapper.value() == ConsValue(Rc::new(Rcl::new(-4)),
+					  Rc::new(ConsValue(Rc::new(Rcl::new(8)),
+							    Rc::new(ConsValue(Rc::new(Rcl::new(-3)),
+									      Rc::new(ConsValue(Rc::new(Rcl::new(-3)),
+												Rc::new(ConsValue(Rc::new(Rcl::new(5)),
+														  Rc::new(ConsValue(Rc::new(Rcl::new(0)),
+																    Rc::new(ConsValue(Rc::new(Rcl::new(2)),
+																		      Rc::new(ConsValue(Rc::new(Rcl::new(1)),
+																					Rc::new(Nil)))))))))))))))) &&
+	    wrapper.size() == 8);
+*/
 }
 
 #[test]

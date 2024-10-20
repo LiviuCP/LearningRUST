@@ -35,6 +35,32 @@ impl<T: Copy + std::cmp::PartialEq> AltConsWrapper<T> {
 	self.count += 1;
     }
 
+    pub fn reverse(&mut self) {
+	if let Some(current_list) = self.list.clone() {
+	    let mut old_list = current_list;
+	    self.clear();
+
+	    loop {
+		if let Some(val) = old_list.value.clone() {
+		    self.list = Some(Rc::new(AltConsList{value: Some(val), remaining: self.list.clone()}));
+		    self.count += 1;
+
+		    if let Some(rem) = old_list.remaining.clone() {
+			old_list = rem;
+			continue;
+		    }
+		}
+
+		break;
+	    }
+	}
+    }
+
+    pub fn clear(&mut self) {
+	self.list = None;
+	self.count = 0;
+    }
+
     pub fn value(&self) -> &Option<Rc<AltConsList::<T>>> {
 	&self.list
     }

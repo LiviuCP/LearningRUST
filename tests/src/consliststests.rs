@@ -165,6 +165,29 @@ pub fn test_reverse() {
 }
 
 #[test]
+pub fn test_alt_reverse() {
+    let mut wrapper = AltConsWrapper::create();
+    wrapper.reverse();
+
+    assert!(*wrapper.value() == None && wrapper.empty());
+
+    wrapper = AltConsWrapper::create_from_vec(&vec![-3]);
+    wrapper.reverse();
+
+    assert!(*wrapper.value() == *AltConsWrapper::create_from_vec(&vec![-3]).value() && wrapper.size() == 1);
+
+    wrapper = AltConsWrapper::create_from_vec(&vec![2, 5]);
+    wrapper.reverse();
+
+    assert!(*wrapper.value() == *AltConsWrapper::create_from_vec(&vec![5, 2]).value() && wrapper.size() == 2);
+
+    wrapper = AltConsWrapper::create_from_vec(&vec![-4, 8, -3, -3, 5, 0, 2, 1]);
+    wrapper.reverse();
+
+    assert!(*wrapper.value() == *AltConsWrapper::create_from_vec(&vec![1, 2, 0, 5, -3, -3, 8, -4]).value() && wrapper.size() == 8);
+}
+
+#[test]
 pub fn test_merge() {
     let mut first_wrapper = ConsWrapper::create();
     let mut second_wrapper = ConsWrapper::create();
@@ -241,4 +264,17 @@ pub fn test_clear() {
     wrapper.clear();
 
     assert!(*wrapper.value() == Nil && wrapper.empty());
+}
+
+#[test]
+pub fn test_alt_clear() {
+    let mut wrapper = AltConsWrapper::create();
+    wrapper.clear();
+
+    assert!(*wrapper.value() == None && wrapper.empty());
+
+    wrapper = AltConsWrapper::create_from_vec(&vec![2, 5, -3, 4]);
+    wrapper.clear();
+
+    assert!(*wrapper.value() == None && wrapper.empty());
 }

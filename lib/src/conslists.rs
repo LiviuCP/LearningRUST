@@ -90,6 +90,15 @@ impl<T: Copy + std::cmp::PartialEq> ConsWrapper<T> {
 	wrapper.clear();
     }
 
+    pub fn head(&self) -> Option<Rc<RefCell<T>>> {
+	if let Some(current_list) = self.list.clone() {
+	    current_list.value.clone()
+	}
+	else {
+	    None
+	}
+    }
+
     pub fn clear(&mut self) {
 	self.list = None;
 	self.count = 0;

@@ -177,6 +177,34 @@ pub fn test_merge() {
 }
 
 #[test]
+pub fn test_head() {
+    let mut wrapper = ConsWrapper::create_from_vec(&vec![2, 5, -3, 4]);
+    assert_ne!(wrapper.head(), None);
+
+    let mut read_head = wrapper.head();
+    assert_eq!(*read_head.unwrap().borrow(), 2);
+
+    let mut write_head = wrapper.head();
+    *write_head.unwrap().borrow_mut() = -10;
+
+    assert!(*wrapper.value() == *ConsWrapper::create_from_vec(&vec![-10, 5, -3, 4]).value() && wrapper.size() == 4);
+
+    wrapper = ConsWrapper::create_from_vec(&vec![-8]);
+    assert_ne!(wrapper.head(), None);
+
+    read_head = wrapper.head();
+    assert_eq!(*read_head.unwrap().borrow(), -8);
+
+    write_head = wrapper.head();
+    *write_head.unwrap().borrow_mut() = 9;
+
+    assert!(*wrapper.value() == *ConsWrapper::create_from_vec(&vec![9]).value() && wrapper.size() == 1);
+
+    wrapper = ConsWrapper::create();
+    assert_eq!(wrapper.head(), None);
+}
+
+#[test]
 pub fn test_clear() {
     let mut wrapper = ConsWrapper::create();
     wrapper.clear();

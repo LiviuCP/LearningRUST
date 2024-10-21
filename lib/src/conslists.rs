@@ -5,23 +5,23 @@ TODO: create (mut) iterators
 use std::{rc::Rc, cell::RefCell};
 
 #[derive(PartialEq, Debug, Clone)]
-pub struct AltConsList<T> {
+pub struct ConsList<T> {
     pub value: Option<Rc<RefCell<T>>>,
-    pub remaining: Option<Rc<AltConsList<T>>>
+    pub remaining: Option<Rc<ConsList<T>>>
 }
 
-pub struct AltConsWrapper<T> {
-    list: Option<Rc<AltConsList<T>>>,
+pub struct ConsWrapper<T> {
+    list: Option<Rc<ConsList<T>>>,
     count: usize
 }
 
-impl<T: Copy + std::cmp::PartialEq> AltConsWrapper<T> {
-    pub fn create() -> AltConsWrapper<T> {
-	AltConsWrapper::<T>{list: None, count: 0}
+impl<T: Copy + std::cmp::PartialEq> ConsWrapper<T> {
+    pub fn create() -> ConsWrapper<T> {
+	ConsWrapper::<T>{list: None, count: 0}
     }
 
-    pub fn create_from_vec(arr: &Vec<T>) -> AltConsWrapper<T> {
-	let mut result = AltConsWrapper::create();
+    pub fn create_from_vec(arr: &Vec<T>) -> ConsWrapper<T> {
+	let mut result = ConsWrapper::create();
 
 	for val in arr.iter().rev() {
 	    result.prepend(val);
@@ -31,7 +31,7 @@ impl<T: Copy + std::cmp::PartialEq> AltConsWrapper<T> {
     }
 
     pub fn prepend(&mut self, val: &T) {
-	self.list = Some(Rc::new(AltConsList{value: Some(Rc::new(RefCell::new(*val))), remaining: self.list.clone()}));
+	self.list = Some(Rc::new(ConsList{value: Some(Rc::new(RefCell::new(*val))), remaining: self.list.clone()}));
 	self.count += 1;
     }
 
@@ -48,7 +48,7 @@ impl<T: Copy + std::cmp::PartialEq> AltConsWrapper<T> {
 
 	    loop {
 		if let Some(val) = old_list.value.clone() {
-		    self.list = Some(Rc::new(AltConsList{value: Some(val), remaining: self.list.clone()}));
+		    self.list = Some(Rc::new(ConsList{value: Some(val), remaining: self.list.clone()}));
 		    self.count += 1;
 
 		    if let Some(rem) = old_list.remaining.clone() {
@@ -62,7 +62,7 @@ impl<T: Copy + std::cmp::PartialEq> AltConsWrapper<T> {
 	}
     }
 
-    pub fn merge(&mut self, wrapper: &mut AltConsWrapper::<T>) {
+    pub fn merge(&mut self, wrapper: &mut ConsWrapper::<T>) {
 	self.reverse();
 
 	if let Some(current_list) = self.list.clone() {
@@ -71,7 +71,7 @@ impl<T: Copy + std::cmp::PartialEq> AltConsWrapper<T> {
 
 	    loop {
 		if let Some(val) = old_list.value.clone() {
-		    wrapper.list = Some(Rc::new(AltConsList{value: Some(val), remaining: wrapper.list.clone()}));
+		    wrapper.list = Some(Rc::new(ConsList{value: Some(val), remaining: wrapper.list.clone()}));
 		    wrapper.count += 1;
 
 		    if let Some(rem) = old_list.remaining.clone() {
@@ -95,7 +95,7 @@ impl<T: Copy + std::cmp::PartialEq> AltConsWrapper<T> {
 	self.count = 0;
     }
 
-    pub fn value(&self) -> &Option<Rc<AltConsList::<T>>> {
+    pub fn value(&self) -> &Option<Rc<ConsList::<T>>> {
 	&self.list
     }
 

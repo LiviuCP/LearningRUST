@@ -35,6 +35,12 @@ impl<T: Copy + std::cmp::PartialEq> AltConsWrapper<T> {
 	self.count += 1;
     }
 
+    pub fn append(&mut self, val: &T) {
+	self.reverse();
+	self.prepend(val);
+	self.reverse();
+    }
+
     pub fn reverse(&mut self) {
 	if let Some(current_list) = self.list.clone() {
 	    let mut old_list = current_list;

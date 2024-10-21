@@ -142,6 +142,27 @@ pub fn test_append() {
 }
 
 #[test]
+pub fn test_alt_append() {
+    let mut wrapper = AltConsWrapper::create();
+    let mut value = -3;
+    wrapper.append(&value);
+
+    assert!(*wrapper.value() == *AltConsWrapper::create_from_vec(&vec![-3]).value() && wrapper.size() == 1);
+
+    wrapper = AltConsWrapper::create_from_vec(&vec![5]);
+    value = 2;
+    wrapper.append(&value);
+
+    assert!(*wrapper.value() == *AltConsWrapper::create_from_vec(&vec![5, 2]).value() && wrapper.size() == 2);
+
+    wrapper = AltConsWrapper::create_from_vec(&vec![8, -3, -3, 5, 0, 2, 1]);
+    value = -4;
+    wrapper.append(&value);
+
+    assert!(*wrapper.value() == *AltConsWrapper::create_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]).value() && wrapper.size() == 8);
+}
+
+#[test]
 pub fn test_reverse() {
     let mut wrapper = ConsWrapper::create();
     wrapper.reverse();

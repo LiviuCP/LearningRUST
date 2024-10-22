@@ -15,6 +15,14 @@ pub struct ConsWrapper<T> {
     count: usize
 }
 
+impl<T: Copy + std::cmp::PartialEq> Iterator for ConsWrapper<T> {
+    type Item = Rc<RefCell<T>>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+	return self.head();
+    }
+}
+
 impl<T: Copy + std::cmp::PartialEq> ConsWrapper<T> {
     pub fn create() -> ConsWrapper<T> {
 	ConsWrapper::<T>{list: None, count: 0}

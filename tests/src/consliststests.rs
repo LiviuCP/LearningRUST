@@ -205,6 +205,34 @@ pub fn test_head() {
 }
 
 #[test]
+pub fn test_tail() {
+    let mut wrapper = ConsWrapper::create_from_vec(&vec![2, 5, -3, 4]);
+    assert_ne!(wrapper.tail(), None);
+
+    let mut read_tail = wrapper.tail();
+    assert_eq!(*read_tail.unwrap().borrow(), 4);
+
+    let mut write_tail = wrapper.tail();
+    *write_tail.unwrap().borrow_mut() = 9;
+
+    assert!(*wrapper.value() == *ConsWrapper::create_from_vec(&vec![2, 5, -3, 9]).value() && wrapper.size() == 4);
+
+    wrapper = ConsWrapper::create_from_vec(&vec![-8]);
+    assert_ne!(wrapper.tail(), None);
+
+    read_tail = wrapper.tail();
+    assert_eq!(*read_tail.unwrap().borrow(), -8);
+
+    write_tail = wrapper.tail();
+    *write_tail.unwrap().borrow_mut() = -10;
+
+    assert!(*wrapper.value() == *ConsWrapper::create_from_vec(&vec![-10]).value() && wrapper.size() == 1);
+
+    wrapper = ConsWrapper::create();
+    assert_eq!(wrapper.tail(), None);
+}
+
+#[test]
 pub fn test_clear() {
     let mut wrapper = ConsWrapper::create();
     wrapper.clear();

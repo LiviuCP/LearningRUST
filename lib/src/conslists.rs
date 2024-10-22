@@ -99,6 +99,28 @@ impl<T: Copy + std::cmp::PartialEq> ConsWrapper<T> {
 	}
     }
 
+    pub fn tail(&self) -> Option<Rc<RefCell<T>>> {
+	let mut result = None;
+
+	if let Some(current_list) = self.list.clone() {
+	    let mut current_value = current_list.value.clone();
+	    let mut remaining_list = current_list.remaining.clone();
+
+	    loop {
+		if let Some(rem_list) = remaining_list {
+		    current_value = rem_list.value.clone();
+		    remaining_list = rem_list.remaining.clone();
+		    continue;
+		}
+
+		result = current_value;
+		break;
+	    }
+	}
+
+	result
+    }
+
     pub fn clear(&mut self) {
 	self.list = None;
 	self.count = 0;

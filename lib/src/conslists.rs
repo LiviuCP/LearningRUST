@@ -138,13 +138,3 @@ impl<T: Copy + std::cmp::PartialEq> ConsWrapper<T> {
 	self.count == 0
     }
 }
-
-/*
-    pub fn head(&self) -> &ConsList<T> {
-	&ConsList::<T>::Nil
-    }
-
-    pub fn tail(&self) -> &Box<ConsList<T>> {
-	// TODO
-    }
-*/

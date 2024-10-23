@@ -47,7 +47,7 @@ pub fn test_create_from_vec() {
 
 #[test]
 pub fn test_iter() {
-    let wrapper = ConsWrapper::create_from_vec(&vec![-4, 8, -3, -3, 5, 0, 2, 1]);
+    let mut wrapper = ConsWrapper::create_from_vec(&vec![-4, 8, -3, -3, 5, 0, 2, 1]);
     let mut wrapper_iter = wrapper.iter();
 
     assert!(wrapper_iter.next() == Some(Rc::new(ConsList{
@@ -88,6 +88,35 @@ pub fn test_iter() {
     assert!(wrapper_iter.next() == Some(Rc::new(ConsList{
 	value: Some(Rc::new(Rcl::new(1))),
 	remaining: None})));
+
+    assert!(wrapper_iter.next() == None);
+
+    wrapper = ConsWrapper::create_from_vec(&vec![-2, 5]);
+    wrapper_iter = wrapper.iter();
+
+    assert!(wrapper_iter.next() == Some(Rc::new(ConsList{
+	value: Some(Rc::new(Rcl::new(-2))),
+	remaining: Some(Rc::new(ConsList{
+	    value: Some(Rc::new(Rcl::new(5))),
+	    remaining: None}))})));
+
+    assert!(wrapper_iter.next() == Some(Rc::new(ConsList{
+	value: Some(Rc::new(Rcl::new(5))),
+	remaining: None})));
+
+    assert!(wrapper_iter.next() == None);
+
+    wrapper = ConsWrapper::create_from_vec(&vec![-3]);
+    wrapper_iter = wrapper.iter();
+
+    assert!(wrapper_iter.next() == Some(Rc::new(ConsList{
+	value: Some(Rc::new(Rcl::new(-3))),
+	remaining: None})));
+
+    assert!(wrapper_iter.next() == None);
+
+    wrapper = ConsWrapper::create();
+    wrapper_iter = wrapper.iter();
 
     assert!(wrapper_iter.next() == None);
 }

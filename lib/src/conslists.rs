@@ -128,8 +128,29 @@ impl<T: Copy + std::cmp::PartialEq> ConsWrapper<T> {
 	self.count = 0;
     }
 
-    pub fn value(&self) -> &Option<Rc<ConsList::<T>>> {
-	&self.list
+    pub fn content(&self) -> Vec<T> {
+	let mut result = Vec::new();
+
+	if let Some(current_list) = self.list.clone() {
+	    let mut current_value = current_list.value.clone();
+	    let mut remaining_list = current_list.remaining.clone();
+
+	    loop {
+		if let Some(value) = current_value {
+		    result.push(*value.borrow());
+
+		    if let Some(rem_list) = remaining_list {
+			current_value = rem_list.value.clone();
+			remaining_list = rem_list.remaining.clone();
+			continue;
+		    }
+		}
+
+		break;
+	    }
+	}
+
+	result
     }
 
     pub fn size(&self) -> usize {

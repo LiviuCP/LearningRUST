@@ -46,6 +46,53 @@ pub fn test_create_from_vec() {
 }
 
 #[test]
+pub fn test_iter() {
+    let wrapper = ConsWrapper::create_from_vec(&vec![-4, 8, -3, -3, 5, 0, 2, 1]);
+    let mut wrapper_iter = wrapper.iter();
+
+    assert!(wrapper_iter.next() == Some(Rc::new(ConsList{
+	value: Some(Rc::new(Rcl::new(-4))),
+	remaining: Some(Rc::new(ConsList{
+	    value: Some(Rc::new(Rcl::new(8))),
+	    remaining: Some(Rc::new(ConsList{
+		value: Some(Rc::new(Rcl::new(-3))),
+		remaining: Some(Rc::new(ConsList{
+		    value: Some(Rc::new(Rcl::new(-3))),
+		    remaining: Some(Rc::new(ConsList{
+			value: Some(Rc::new(Rcl::new(5))),
+			remaining: Some(Rc::new(ConsList{
+			    value: Some(Rc::new(Rcl::new(0))),
+			    remaining: Some(Rc::new(ConsList{
+				value: Some(Rc::new(Rcl::new(2))),
+				remaining: Some(Rc::new(ConsList{
+				    value: Some(Rc::new(Rcl::new(1))),
+				    remaining: None}))}))}))}))}))}))}))})));
+
+    wrapper_iter.next();
+    wrapper_iter.next();
+    wrapper_iter.next();
+
+    assert!(wrapper_iter.next() == Some(Rc::new(ConsList{
+	value: Some(Rc::new(Rcl::new(5))),
+	remaining: Some(Rc::new(ConsList{
+	    value: Some(Rc::new(Rcl::new(0))),
+	    remaining: Some(Rc::new(ConsList{
+		value: Some(Rc::new(Rcl::new(2))),
+		remaining: Some(Rc::new(ConsList{
+		    value: Some(Rc::new(Rcl::new(1))),
+		    remaining: None}))}))}))})));
+
+    wrapper_iter.next();
+    wrapper_iter.next();
+
+    assert!(wrapper_iter.next() == Some(Rc::new(ConsList{
+	value: Some(Rc::new(Rcl::new(1))),
+	remaining: None})));
+
+    assert!(wrapper_iter.next() == None);
+}
+
+#[test]
 pub fn test_prepend() {
     let mut wrapper = ConsWrapper::create();
     let mut value = -3;

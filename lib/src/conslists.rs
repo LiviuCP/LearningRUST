@@ -1,7 +1,3 @@
-/*
-TODO: create (mut) iterators
- */
-
 use std::{rc::Rc, cell::RefCell};
 
 #[derive(PartialEq, Debug, Clone)]
@@ -13,14 +9,6 @@ pub struct ConsList<T> {
 pub struct ConsWrapper<T> {
     list: Option<Rc<ConsList<T>>>,
     count: usize
-}
-
-impl<T: Copy + std::cmp::PartialEq> Iterator for ConsWrapper<T> {
-    type Item = Rc<RefCell<T>>;
-
-    fn next(&mut self) -> Option<Self::Item> {
-	return self.head();
-    }
 }
 
 impl<T: Copy + std::cmp::PartialEq> ConsWrapper<T> {
@@ -36,6 +24,12 @@ impl<T: Copy + std::cmp::PartialEq> ConsWrapper<T> {
 	}
 
 	result
+    }
+
+    pub fn iter(&self) -> ConsIterator<T> {
+	ConsIterator {
+	    list: self.list.clone()
+	}
     }
 
     pub fn prepend(&mut self, val: &T) {
@@ -144,5 +138,23 @@ impl<T: Copy + std::cmp::PartialEq> ConsWrapper<T> {
 
     pub fn empty(&self) -> bool {
 	self.count == 0
+    }
+}
+
+pub struct ConsIterator<T> {
+    list: Option<Rc<ConsList<T>>>
+}
+
+impl<T> Iterator for ConsIterator<T> {
+    type Item = Rc<ConsList<T>>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+	let result = self.list.clone();
+
+	if let Some(cons_list) = self.list.clone() {
+	    self.list = cons_list.remaining.clone();
+	}
+
+	result
     }
 }

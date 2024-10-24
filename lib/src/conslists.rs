@@ -32,6 +32,12 @@ impl<T: Copy + std::cmp::PartialEq> ConsWrapper<T> {
 	}
     }
 
+    pub fn alt_iter(&self) -> AltConsIterator<T> {
+	AltConsIterator {
+	    list: self.list.clone()
+	}
+    }
+
     pub fn prepend(&mut self, val: &T) {
 	self.list = Some(Rc::new(ConsList{value: Some(Rc::new(RefCell::new(*val))), remaining: self.list.clone()}));
 	self.count += 1;
@@ -173,6 +179,31 @@ impl<T> Iterator for ConsIterator<T> {
 	let result = self.list.clone();
 
 	if let Some(cons_list) = self.list.clone() {
+	    self.list = cons_list.remaining.clone();
+	}
+
+	result
+    }
+}
+
+pub struct AltConsIterator<T> {
+    list: Option<Rc<ConsList<T>>>
+}
+
+impl<T> Iterator for AltConsIterator<T> {
+    type Item = Rc<RefCell<T>>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+	let mut result = None;
+
+	if let Some(cons_list) = self.list.clone() {
+	    if let Some(value) = cons_list.value.clone() {
+		result = Some(value);
+	    }
+	    else {
+		panic!("Value should not be invalid!");
+	    }
+
 	    self.list = cons_list.remaining.clone();
 	}
 

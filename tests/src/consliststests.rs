@@ -25,6 +25,31 @@ pub fn test_create_from_vec() {
 }
 
 #[test]
+pub fn alt_test_iter() {
+    let wrapper = ConsWrapper::create_from_vec(&vec![-4, 8, -3, -3, 5, 0, 2, 1]);
+    let mut wrapper_iter = wrapper.alt_iter();
+
+    wrapper_iter.next();
+    let val = wrapper_iter.next();
+
+    if let Some(unwrapped_val) = val {
+	assert_eq!(*unwrapped_val.borrow(), 8);
+    }
+
+    let mut write_wrapper_iter = wrapper.alt_iter();
+    write_wrapper_iter.next();
+    write_wrapper_iter.next();
+    write_wrapper_iter.next();
+
+    let val_to_change = write_wrapper_iter.next();
+
+    if let Some(unwrapped_val) = val_to_change {
+	*unwrapped_val.borrow_mut() = 9;
+	assert!(wrapper.content() == vec![-4, 8, -3, 9, 5, 0, 2, 1] && wrapper.size() == 8);
+    }
+}
+
+#[test]
 pub fn test_iter() {
     let mut wrapper = ConsWrapper::create_from_vec(&vec![-4, 8, -3, -3, 5, 0, 2, 1]);
     let mut wrapper_iter = wrapper.iter();

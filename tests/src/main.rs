@@ -3,6 +3,7 @@ extern crate learn_rust_lib;
 mod numberstests;
 mod romannumeralstests;
 mod stringstests;
+mod consliststests;
 mod utilitiestests;
 
 fn main() {

@@ -18,7 +18,7 @@ pub struct ConsIterator<T> {
 #[derive(PartialEq, Debug)]
 pub struct InvalidIndex;
 
-impl<T: Copy + PartialEq + std::fmt::Debug> ConsList<T> {
+impl<T: Clone + PartialEq + std::fmt::Debug> ConsList<T> {
     pub fn create() -> ConsList<T> {
 	ConsList::<T>{first: None, count: 0}
     }
@@ -41,7 +41,7 @@ impl<T: Copy + PartialEq + std::fmt::Debug> ConsList<T> {
     }
 
     pub fn push_front(&mut self, val: &T) {
-	self.first = Some(Rc::new(ConsItem{value: Some(Rc::new(RefCell::new(*val))), next: self.first.clone()}));
+	self.first = Some(Rc::new(ConsItem{value: Some(Rc::new(RefCell::new(val.clone()))), next: self.first.clone()}));
 	self.count += 1;
     }
 
@@ -333,7 +333,7 @@ impl<T: Copy + PartialEq + std::fmt::Debug> ConsList<T> {
 
 	    loop {
 		if let Some(value) = current_value {
-		    result.push(*value.borrow());
+		    result.push(value.borrow().clone());
 
 		    if let Some(next) = next_item {
 			current_value = next.value.clone();

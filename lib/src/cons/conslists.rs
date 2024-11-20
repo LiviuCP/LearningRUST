@@ -1,6 +1,7 @@
 /* Cons lists with mutable elements (interior mutability pattern) */
 
 use std::{rc::Rc, cell::RefCell, result::Result};
+use crate::cons::InvalidIndex;
 
 #[derive(PartialEq, Debug)]
 struct ConsItem<T> {
@@ -16,9 +17,6 @@ pub struct ConsList<T> {
 pub struct ConsIterator<T> {
     current: Option<Rc<ConsItem<T>>>
 }
-
-#[derive(PartialEq, Debug)]
-pub struct InvalidIndex;
 
 impl<T: Clone + PartialEq + std::fmt::Debug> ConsList<T> {
     pub fn create() -> ConsList<T> {

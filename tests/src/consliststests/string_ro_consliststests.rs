@@ -1,6 +1,6 @@
 #[cfg(test)]
 
-use learn_rust_lib::cons::ro_conslists::{RoConsList, InvalidIndex};
+use learn_rust_lib::cons::{ro_conslists::RoConsList, InvalidIndex};
 
 #[test]
 pub fn test_create() {

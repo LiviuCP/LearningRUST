@@ -1,6 +1,7 @@
 /* Read-only cons lists where the item value cannot be modified (no interior mutability pattern) */
 
 use std::{rc::Rc, result::Result};
+use crate::cons::InvalidIndex;
 
 #[derive(PartialEq, Debug)]
 struct RoConsItem<T> {
@@ -16,9 +17,6 @@ pub struct RoConsList<T> {
 pub struct RoConsIterator<T> {
     current: Option<Rc<RoConsItem<T>>>
 }
-
-#[derive(PartialEq, Debug)]
-pub struct InvalidIndex;
 
 impl<T: Clone + PartialEq + std::fmt::Debug> RoConsList<T> {
     pub fn create() -> RoConsList<T> {

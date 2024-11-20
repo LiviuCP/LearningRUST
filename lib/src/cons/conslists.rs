@@ -1,3 +1,5 @@
+/* Cons lists with mutable elements (interior mutability pattern) */
+
 use std::{rc::Rc, cell::RefCell, result::Result};
 
 #[derive(PartialEq, Debug)]

@@ -1,11 +1,9 @@
-/* Cons lists with mutable elements (interior mutability pattern) */
-
-use std::{rc::Rc, cell::RefCell, result::Result};
+use std::{rc::Rc, result::Result, fmt::Debug};
 use crate::cons::InvalidIndex;
 
 #[derive(PartialEq, Debug)]
 struct ConsItem<T> {
-    value: Option<Rc<RefCell<T>>>,
+    value: T,
     next: Option<Rc<ConsItem<T>>>
 }
 
@@ -33,23 +31,22 @@ impl<T: Clone + PartialEq + std::fmt::Debug> ConsList<T> {
 	result
     }
 
-    // this iterator uses the interior mutability pattern, hence choosing a different name from the "standard" iterators (iter(), iter_mut())
-    pub fn im_iter(&self) -> ConsIterator<T> {
+    pub fn iter(&self) -> ConsIterator<T> {
 	ConsIterator {
 	    current: self.first.clone()
 	}
     }
 
     pub fn push_front(&mut self, val: &T) {
-	self.first = Some(Rc::new(ConsItem{value: Some(Rc::new(RefCell::new(val.clone()))), next: self.first.clone()}));
+	self.first = Some(Rc::new(ConsItem{value: val.clone(), next: self.first.clone()}));
 	self.count += 1;
     }
 
-    pub fn pop_front(&mut self) -> Option<Rc<RefCell<T>>> {
+    pub fn pop_front(&mut self) -> Option<T> {
 	let mut result = None;
 	
 	if let Some(first_item) = self.first.clone() {
-	    result = first_item.value.clone();
+	    result = Some(first_item.value.clone());
 	    self.first = first_item.next.clone();
 	    self.count -= 1;
 	}
@@ -65,20 +62,15 @@ impl<T: Clone + PartialEq + std::fmt::Debug> ConsList<T> {
 	    self.push_front(&val);
 
 	    loop {
-		if let Some(first_value) = first_item.value.clone() {
-		    self.first = Some(Rc::new(ConsItem{value: Some(first_value), next: self.first.clone()}));
-		    self.count += 1;
+		self.first = Some(Rc::new(ConsItem{value: first_item.value.clone(), next: self.first.clone()}));
+		self.count += 1;
 
-		    if let Some(next_item) = first_item.next.clone() {
-			first_item = next_item;
-			continue;
-		    }
+		if let Some(next_item) = first_item.next.clone() {
+		    first_item = next_item;
+		    continue;
+		}
 
-		    break;
-		}
-		else {
-		    panic!("Value is not allowed to be none!");
-		}
+		break;
 	    }
 	}
 	else {
@@ -86,7 +78,7 @@ impl<T: Clone + PartialEq + std::fmt::Debug> ConsList<T> {
 	}
     }
 
-    pub fn pop_back(&mut self) -> Option<Rc<RefCell<T>>> {
+    pub fn pop_back(&mut self) -> Option<T> {
 	let mut result = None;
 
 	if self.count > 0 {
@@ -94,7 +86,7 @@ impl<T: Clone + PartialEq + std::fmt::Debug> ConsList<T> {
 	    let last = self.stack_items(self.count - 1, &mut all_items_but_last);
 
 	    if let Some(last_item) = last {
-		result = last_item.value.clone();
+		result = Some(last_item.value.clone());
 
 		self.clear();
 		self.recover_items_from_stack(&all_items_but_last);
@@ -141,7 +133,7 @@ impl<T: Clone + PartialEq + std::fmt::Debug> ConsList<T> {
 	result
     }
 
-    pub fn remove(&mut self, index: usize) -> Result<Rc<RefCell<T>>, InvalidIndex> {
+    pub fn remove(&mut self, index: usize) -> Result<T, InvalidIndex> {
 	let mut result = Err(InvalidIndex);
 
 	if index < self.count {
@@ -151,15 +143,10 @@ impl<T: Clone + PartialEq + std::fmt::Debug> ConsList<T> {
 
 	    if let Some(mut first_item) = resulting_first_item {
 		// step 2: grab the removed value
-		if let Some(first_value) = first_item.value.clone() {
-		    result = Ok(first_value);
+		result = Ok(first_item.value.clone());
 
-		    if let Some(next_item) = first_item.next.clone() {
-			first_item = next_item;
-		    }
-		}
-		else {
-		    panic!("Removed item value is not allowed to be none!");
+		if let Some(next_item) = first_item.next.clone() {
+		    first_item = next_item;
 		}
 
 		// step 3: rebuild list by keeping the items that follow the removal position
@@ -187,14 +174,12 @@ impl<T: Clone + PartialEq + std::fmt::Debug> ConsList<T> {
 	    self.clear();
 
 	    loop {
-		if let Some(value) = first_item.value.clone() {
-		    self.first = Some(Rc::new(ConsItem{value: Some(value), next: self.first.clone()}));
-		    self.count += 1;
+		self.first = Some(Rc::new(ConsItem{value: first_item.value.clone(), next: self.first.clone()}));
+		self.count += 1;
 
-		    if let Some(next_item) = first_item.next.clone() {
-			first_item = next_item;
-			continue;
-		    }
+		if let Some(next_item) = first_item.next.clone() {
+		    first_item = next_item;
+		    continue;
 		}
 
 		break;
@@ -209,14 +194,12 @@ impl<T: Clone + PartialEq + std::fmt::Debug> ConsList<T> {
 	    self.clear();
 
 	    loop {
-		if let Some(value) = first_item.value.clone() {
-		    list.first = Some(Rc::new(ConsItem{value: Some(value), next: list.first.clone()}));
-		    list.count += 1;
+		list.first = Some(Rc::new(ConsItem{value: first_item.value.clone(), next: list.first.clone()}));
+		list.count += 1;
 
-		    if let Some(next_item) = first_item.next.clone() {
-			first_item = next_item;
-			continue;
-		    }
+		if let Some(next_item) = first_item.next.clone() {
+		    first_item = next_item;
+		    continue;
 		}
 
 		break;
@@ -259,16 +242,16 @@ impl<T: Clone + PartialEq + std::fmt::Debug> ConsList<T> {
 	result
     }
 
-    pub fn head(&self) -> Option<Rc<RefCell<T>>> {
+    pub fn head(&self) -> Option<T> {
 	if let Some(first_item) = self.first.clone() {
-	    first_item.value.clone()
+	    Some(first_item.value.clone())
 	}
 	else {
 	    None
 	}
     }
 
-    pub fn tail(&self) -> Option<Rc<RefCell<T>>> {
+    pub fn tail(&self) -> Option<T> {
 	let mut result = None;
 
 	if let Some(first_item) = self.first.clone() {
@@ -282,7 +265,7 @@ impl<T: Clone + PartialEq + std::fmt::Debug> ConsList<T> {
 		    continue;
 		}
 
-		result = current_value;
+		result = Some(current_value);
 		break;
 	    }
 	}
@@ -290,7 +273,7 @@ impl<T: Clone + PartialEq + std::fmt::Debug> ConsList<T> {
 	result
     }
 
-    pub fn at(&self, index: usize) -> Result<Rc<RefCell<T>>, InvalidIndex> {
+    pub fn at(&self, index: usize) -> Result<T, InvalidIndex> {
 	let mut result = Err(InvalidIndex);
 
 	if index < self.count {
@@ -307,12 +290,7 @@ impl<T: Clone + PartialEq + std::fmt::Debug> ConsList<T> {
 		    panic!("Next item is not allowed to be none!");
 		}
 
-		if let Some(first_value) = first_item.value.clone() {
-		    result = Ok(first_value);
-		}
-		else {
-		    panic!("Value is not allowed to be none!");
-		}
+		result = Ok(first_item.value.clone());
 	    }
 	}
 
@@ -332,14 +310,12 @@ impl<T: Clone + PartialEq + std::fmt::Debug> ConsList<T> {
 	    let mut next_item = first_item.next.clone();
 
 	    loop {
-		if let Some(value) = current_value {
-		    result.push(value.borrow().clone());
+		result.push(current_value.clone());
 
-		    if let Some(next) = next_item {
-			current_value = next.value.clone();
-			next_item = next.next.clone();
-			continue;
-		    }
+		if let Some(next) = next_item {
+		    current_value = next.value.clone();
+		    next_item = next.next.clone();
+		    continue;
 		}
 
 		break;
@@ -375,22 +351,18 @@ impl<T: Clone + PartialEq + std::fmt::Debug> ConsList<T> {
 	    let mut current_index: usize = 0;
 
 	    while current_index < items_to_stack_count {
-		if let Some(first_value) = first_item.value.clone() {
-		    stack.first = Some(Rc::new(ConsItem{value: Some(first_value), next: stack.first.clone()}));
-		    stack.count += 1;
+		stack.first = Some(Rc::new(ConsItem{value: first_item.value.clone(), next: stack.first.clone()}));
+		stack.count += 1;
 
-		    if let Some(next_item) = first_item.next.clone() {
-			first_item = next_item;
-			first_unstacked_item = Some(first_item.clone());
-			current_index += 1;
-			continue;
-		    }
-
-		    first_unstacked_item = None;
-		    break;
+		if let Some(next_item) = first_item.next.clone() {
+		    first_item = next_item;
+		    first_unstacked_item = Some(first_item.clone());
+		    current_index += 1;
+		    continue;
 		}
 
-		panic!("Value is not allowed to be none!");
+		first_unstacked_item = None;
+		break;
 	    }
 	}
 
@@ -400,36 +372,28 @@ impl<T: Clone + PartialEq + std::fmt::Debug> ConsList<T> {
     fn recover_items_from_stack(&mut self, stack: &ConsList::<T>) {
 	if let Some(mut first_item) = stack.first.clone() {
 	    loop {
-		if let Some(first_value) = first_item.value.clone() {
-		    self.first = Some(Rc::new(ConsItem{value: Some(first_value), next: self.first.clone()}));
-		    self.count += 1;
+		self.first = Some(Rc::new(ConsItem{value: first_item.value.clone(), next: self.first.clone()}));
+		self.count += 1;
 
-		    if let Some(next_item) = first_item.next.clone() {
-			first_item = next_item;
-			continue;
-		    }
-
-		    break;
+		if let Some(next_item) = first_item.next.clone() {
+		    first_item = next_item;
+		    continue;
 		}
+
+		break;
 	    }
 	}
     }
 }
 
-impl<T> Iterator for ConsIterator<T> {
-    type Item = Rc<RefCell<T>>;
+impl<T: Clone> Iterator for ConsIterator<T> {
+    type Item = T;
 
     fn next(&mut self) -> Option<Self::Item> {
 	let mut result = None;
 
 	if let Some(current_item) = self.current.clone() {
-	    if let Some(value) = current_item.value.clone() {
-		result = Some(value);
-	    }
-	    else {
-		panic!("Value should not be invalid!");
-	    }
-
+	    result = Some(current_item.value.clone());
 	    self.current = current_item.next.clone();
 	}
 

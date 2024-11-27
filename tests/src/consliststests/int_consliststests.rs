@@ -24,96 +24,50 @@ pub fn test_create_from_vec() {
 }
 
 #[test]
-pub fn test_im_iter_read() {
+pub fn test_iter() {
     let mut list = ConsList::create_from_vec(&vec![-4, 8, -3, -3, 5, 0, 2, 1]);
-    let mut list_iter = list.im_iter();
+    let mut list_iter = list.iter();
 
-    assert_eq!(*list_iter.next().unwrap().borrow(), -4);
-
-    list_iter.next();
-    list_iter.next();
-    list_iter.next();
-
-    assert_eq!(*list_iter.next().unwrap().borrow(), 5);
+    assert_eq!(list_iter.next().unwrap(), -4);
 
     list_iter.next();
     list_iter.next();
+    list_iter.next();
 
-    assert_eq!(*list_iter.next().unwrap().borrow(), 1);
+    assert_eq!(list_iter.next().unwrap(), 5);
+
+    list_iter.next();
+    list_iter.next();
+
+    assert_eq!(list_iter.next().unwrap(), 1);
     assert_eq!(list_iter.next(), None);
 
     list = ConsList::create_from_vec(&vec![-2, 5]);
-    list_iter = list.im_iter();
+    list_iter = list.iter();
 
-    assert_eq!(*list_iter.next().unwrap().borrow(), -2);
-    assert_eq!(*list_iter.next().unwrap().borrow(), 5);
+    assert_eq!(list_iter.next().unwrap(), -2);
+    assert_eq!(list_iter.next().unwrap(), 5);
     assert!(list_iter.next() == None);
 
     list = ConsList::create_from_vec(&vec![-3]);
-    list_iter = list.im_iter();
+    list_iter = list.iter();
 
-    assert_eq!(*list_iter.next().unwrap().borrow(), -3);
+    assert_eq!(list_iter.next().unwrap(), -3);
     assert!(list_iter.next() == None);
 
     list = ConsList::create();
-    list_iter = list.im_iter();
+    list_iter = list.iter();
 
     assert!(list_iter.next() == None);
 }
 
 #[test]
-pub fn test_im_iter_write() {
+pub fn test_iter_with_lambda() {
     let list = ConsList::create_from_vec(&vec![-4, 8, -3, -3, 5, 0, 2, 1]);
-    let mut list_iter = list.im_iter();
-
-    *list_iter.next().unwrap().borrow_mut() = 7;
-
-    list_iter.next();
-    list_iter.next();
-
-    *list_iter.next().unwrap().borrow_mut() = 9;
-
-    list_iter.next();
-    list_iter.next();
-    list_iter.next();
-
-    *list_iter.next().unwrap().borrow_mut() = -8;
-
-    assert!(list.content() == vec![7, 8, -3, 9, 5, 0, 2, -8] && list.size() == 8);
-    assert_eq!(list_iter.next(), None);
-}
-
-#[test]
-pub fn test_im_iter_read_write() {
-    let list = ConsList::create_from_vec(&vec![-4, 8, -3, -3, 5, 0, 2, 1]);
-
-    for item in list.im_iter() {
-	*item.borrow_mut() += 2;
-    }
-
-    assert!(list.content() == vec![-2, 10, -1, -1, 7, 2, 4, 3] && list.size() == 8);
-
-    for item in list.im_iter() {	
-	// variable required as it is not allowed to borrow twice in the same statement
-	let temp = *item.borrow();
-	
-	*item.borrow_mut() = temp / 2;
-    }
-
-    assert!(list.content() == vec![-1, 5, 0, 0, 3, 1, 2, 1] && list.size() == 8);
-}
-
-#[test]
-pub fn test_im_iter_with_lambda() {
-    let list = ConsList::create_from_vec(&vec![-4, 8, -3, -3, 5, 0, 2, 1]);
-    let arr: Vec<i32> = list.im_iter().map(|item| *item.borrow() * 2).collect();
+    let arr: Vec<i32> = list.iter().map(|item| item * 2).collect();
 
     assert_eq!(arr, vec![-8, 16, -6, -6, 10, 0, 4, 2]);
     assert!(list.content() == vec![-4, 8, -3, -3, 5, 0, 2, 1] && list.size() == 8);
-
-    list.im_iter().for_each(|item| *item.borrow_mut() %= 2);
-
-    assert!(list.content() == vec![0, 0, -1, -1, 1, 0, 0, 1] && list.size() == 8);
 }
 
 #[test]
@@ -142,17 +96,17 @@ pub fn test_pop_front() {
     let mut list = ConsList::create_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     let mut result = list.pop_front();
 
-    assert!(*result.unwrap().borrow() == 8 && list.content() == vec![-3, -3, 5, 0, 2, 1, -4] && list.size() == 7);
+    assert!(result.unwrap() == 8 && list.content() == vec![-3, -3, 5, 0, 2, 1, -4] && list.size() == 7);
 
     list = ConsList::create_from_vec(&vec![3, 0]);
     result = list.pop_front();
 
-    assert!(*result.unwrap().borrow() == 3 && list.content() == vec![0] && list.size() == 1);
+    assert!(result.unwrap() == 3 && list.content() == vec![0] && list.size() == 1);
 
     list = ConsList::create_from_vec(&vec![-2]);
     result = list.pop_front();
 
-    assert!(*result.unwrap().borrow() == -2 && list.empty());
+    assert!(result.unwrap() == -2 && list.empty());
 
     list = ConsList::create();
     result = list.pop_front();
@@ -186,17 +140,17 @@ pub fn test_pop_back() {
     let mut list = ConsList::create_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     let mut result = list.pop_back();
 
-    assert!(*result.unwrap().borrow() == -4 && list.content() == vec![8, -3, -3, 5, 0, 2, 1] && list.size() == 7);
+    assert!(result.unwrap() == -4 && list.content() == vec![8, -3, -3, 5, 0, 2, 1] && list.size() == 7);
 
     list = ConsList::create_from_vec(&vec![3, 0]);
     result = list.pop_back();
 
-    assert!(*result.unwrap().borrow() == 0 && list.content() == vec![3] && list.size() == 1);
+    assert!(result.unwrap() == 0 && list.content() == vec![3] && list.size() == 1);
 
     list = ConsList::create_from_vec(&vec![-2]);
     result = list.pop_back();
 
-    assert!(*result.unwrap().borrow() == -2 && list.empty());
+    assert!(result.unwrap() == -2 && list.empty());
 
     list = ConsList::create();
     result = list.pop_back();
@@ -312,17 +266,17 @@ pub fn test_remove() {
     let mut list = ConsList::create_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     let mut result = list.remove(0);
 
-    assert!(*result.unwrap().borrow() == 8 && list.content() == vec![-3, -3, 5, 0, 2, 1, -4] && list.size() == 7);
+    assert!(result.unwrap() == 8 && list.content() == vec![-3, -3, 5, 0, 2, 1, -4] && list.size() == 7);
 
     list = ConsList::create_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     result = list.remove(4);
 
-    assert!(*result.unwrap().borrow() == 0 && list.content() == vec![8, -3, -3, 5, 2, 1, -4] && list.size() == 7);
+    assert!(result.unwrap() == 0 && list.content() == vec![8, -3, -3, 5, 2, 1, -4] && list.size() == 7);
 
     list = ConsList::create_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     result = list.remove(7);
 
-    assert!(*result.unwrap().borrow() == -4 && list.content() == vec![8, -3, -3, 5, 0, 2, 1] && list.size() == 7);
+    assert!(result.unwrap() == -4 && list.content() == vec![8, -3, -3, 5, 0, 2, 1] && list.size() == 7);
 
     list = ConsList::create_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     result = list.remove(8);
@@ -332,17 +286,17 @@ pub fn test_remove() {
     list = ConsList::create_from_vec(&vec![2, 4, -3]);
     result = list.remove(0);
 
-    assert!(*result.unwrap().borrow() == 2 && list.content() == vec![4, -3] && list.size() == 2);
+    assert!(result.unwrap() == 2 && list.content() == vec![4, -3] && list.size() == 2);
 
     list = ConsList::create_from_vec(&vec![2, 4, -3]);
     result = list.remove(1);
 
-    assert!(*result.unwrap().borrow() == 4 && list.content() == vec![2, -3] && list.size() == 2);
+    assert!(result.unwrap() == 4 && list.content() == vec![2, -3] && list.size() == 2);
 
     list = ConsList::create_from_vec(&vec![2, 4, -3]);
     result = list.remove(2);
 
-    assert!(*result.unwrap().borrow() == -3 && list.content() == vec![2, 4] && list.size() == 2);
+    assert!(result.unwrap() == -3 && list.content() == vec![2, 4] && list.size() == 2);
 
     list = ConsList::create_from_vec(&vec![2, 4, -3]);
     result = list.remove(3);
@@ -352,12 +306,12 @@ pub fn test_remove() {
     list = ConsList::create_from_vec(&vec![9, 5]);
     result = list.remove(0);
 
-    assert!(*result.unwrap().borrow() == 9 && list.content() == vec![5] && list.size() == 1);
+    assert!(result.unwrap() == 9 && list.content() == vec![5] && list.size() == 1);
 
     list = ConsList::create_from_vec(&vec![9, 5]);
     result = list.remove(1);
 
-    assert!(*result.unwrap().borrow() == 5 && list.content() == vec![9] && list.size() == 1);
+    assert!(result.unwrap() == 5 && list.content() == vec![9] && list.size() == 1);
 
     list = ConsList::create_from_vec(&vec![9, 5]);
     result = list.remove(2);
@@ -367,7 +321,7 @@ pub fn test_remove() {
     list = ConsList::create_from_vec(&vec![-4]);
     result = list.remove(0);
 
-    assert!(*result.unwrap().borrow() == -4 && list.empty());
+    assert!(result.unwrap() == -4 && list.empty());
 
     list = ConsList::create_from_vec(&vec![-4]);
     result = list.remove(1);
@@ -623,23 +577,13 @@ pub fn test_head() {
     assert_ne!(list.head(), None);
 
     let mut read_head = list.head();
-    assert_eq!(*read_head.unwrap().borrow(), 2);
-
-    let mut write_head = list.head();
-    *write_head.unwrap().borrow_mut() = -10;
-
-    assert!(list.content() == vec![-10, 5, -3, 4] && list.size() == 4);
+    assert_eq!(read_head.unwrap(), 2);
 
     list = ConsList::create_from_vec(&vec![-8]);
     assert_ne!(list.head(), None);
 
     read_head = list.head();
-    assert_eq!(*read_head.unwrap().borrow(), -8);
-
-    write_head = list.head();
-    *write_head.unwrap().borrow_mut() = 9;
-
-    assert!(list.content() == vec![9] && list.size() == 1);
+    assert_eq!(read_head.unwrap(), -8);
 
     list = ConsList::create();
     assert_eq!(list.head(), None);
@@ -651,56 +595,46 @@ pub fn test_tail() {
     assert_ne!(list.tail(), None);
 
     let mut read_tail = list.tail();
-    assert_eq!(*read_tail.unwrap().borrow(), 4);
-
-    let mut write_tail = list.tail();
-    *write_tail.unwrap().borrow_mut() = 9;
-
-    assert!(list.content() == vec![2, 5, -3, 9] && list.size() == 4);
+    assert_eq!(read_tail.unwrap(), 4);
 
     list = ConsList::create_from_vec(&vec![-8]);
     assert_ne!(list.tail(), None);
 
     read_tail = list.tail();
-    assert_eq!(*read_tail.unwrap().borrow(), -8);
-
-    write_tail = list.tail();
-    *write_tail.unwrap().borrow_mut() = -10;
-
-    assert!(list.content() == vec![-10] && list.size() == 1);
+    assert_eq!(read_tail.unwrap(), -8);
 
     list = ConsList::create();
     assert_eq!(list.tail(), None);
 }
 
 #[test]
-pub fn test_at_read() {
+pub fn test_at() {
     let mut list = ConsList::create_from_vec(&vec![9, -3, -3, 5, 0, 2, 1, -4]);
 
-    assert_eq!(*list.at(0).unwrap().borrow(), 9);
-    assert_eq!(*list.at(4).unwrap().borrow(), 0);
-    assert_eq!(*list.at(7).unwrap().borrow(), -4);
+    assert_eq!(list.at(0).unwrap(), 9);
+    assert_eq!(list.at(4).unwrap(), 0);
+    assert_eq!(list.at(7).unwrap(), -4);
     assert_eq!(list.at(8), Err(InvalidIndex));
     assert!(list.content() == vec![9, -3, -3, 5, 0, 2, 1, -4] && list.size() == 8);
 
     list = ConsList::create_from_vec(&vec![2, 4, -3]);
 
-    assert_eq!(*list.at(0).unwrap().borrow(), 2);
-    assert_eq!(*list.at(1).unwrap().borrow(), 4);
-    assert_eq!(*list.at(2).unwrap().borrow(), -3);
+    assert_eq!(list.at(0).unwrap(), 2);
+    assert_eq!(list.at(1).unwrap(), 4);
+    assert_eq!(list.at(2).unwrap(), -3);
     assert_eq!(list.at(3), Err(InvalidIndex));
     assert!(list.content() == vec![2, 4, -3] && list.size() == 3);
 
     list = ConsList::create_from_vec(&vec![9, 5]);
 
-    assert_eq!(*list.at(0).unwrap().borrow(), 9);
-    assert_eq!(*list.at(1).unwrap().borrow(), 5);
+    assert_eq!(list.at(0).unwrap(), 9);
+    assert_eq!(list.at(1).unwrap(), 5);
     assert_eq!(list.at(2), Err(InvalidIndex));
     assert!(list.content() == vec![9, 5] && list.size() == 2);
 
     list = ConsList::create_from_vec(&vec![-4]);
 
-    assert_eq!(*list.at(0).unwrap().borrow(), -4);
+    assert_eq!(list.at(0).unwrap(), -4);
     assert_eq!(list.at(1), Err(InvalidIndex));
     assert!(list.content() == vec![-4] && list.size() == 1);
 
@@ -708,38 +642,6 @@ pub fn test_at_read() {
 
     assert_eq!(list.at(0), Err(InvalidIndex));
     assert!(list.empty());
-}
-
-#[test]
-pub fn test_at_write() {
-    let mut list = ConsList::create_from_vec(&vec![9, -3, -3, 5, 0, 2, 1, -4]);
-
-    *list.at(0).unwrap().borrow_mut() = -1;
-    *list.at(4).unwrap().borrow_mut() = 7;
-    *list.at(7).unwrap().borrow_mut() = -8;
-
-    assert!(list.content() == vec![-1, -3, -3, 5, 7, 2, 1, -8] && list.size() == 8);
-
-    list = ConsList::create_from_vec(&vec![2, 4, -3]);
-
-    *list.at(0).unwrap().borrow_mut() = 7;
-    *list.at(1).unwrap().borrow_mut() = -2;
-    *list.at(2).unwrap().borrow_mut() = -7;
-
-    assert!(list.content() == vec![7, -2, -7] && list.size() == 3);
-
-    list = ConsList::create_from_vec(&vec![9, 5]);
-
-    *list.at(0).unwrap().borrow_mut() = -5;
-    *list.at(1).unwrap().borrow_mut() = -9;
-
-    assert!(list.content() == vec![-5, -9] && list.size() == 2);
-
-    list = ConsList::create_from_vec(&vec![-4]);
-
-    *list.at(0).unwrap().borrow_mut() = 8;
-
-    assert!(list.content() == vec![8] && list.size() == 1);
 }
 
 #[test]

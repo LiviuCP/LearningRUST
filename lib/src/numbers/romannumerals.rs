@@ -1,7 +1,10 @@
-use std::collections::HashMap;
+use std::{str::FromStr, collections::HashMap};
 use crate::utilities;
 use phf::phf_map;
 use regex::Regex;
+
+#[derive(PartialEq, Debug)]
+pub struct ParseRomanNumeralError;
 
 #[derive(Eq, PartialEq, Clone, Hash, Debug)]
 pub enum RomanDigit {
@@ -44,6 +47,32 @@ impl RomanDigit {
 #[derive(PartialEq, Clone, Debug)]
 pub struct RomanNumeral {
     content: Vec::<RomanDigit>
+}
+
+impl FromStr for RomanNumeral {
+    type Err = ParseRomanNumeralError;
+
+    fn from_str(numeral_str: &str) -> Result<Self, Self::Err> {
+	let mut result = Err(ParseRomanNumeralError);
+
+	if Self::is_valid_roman_numeral_string(numeral_str) {
+	    let mut numeral = Self {content: Vec::new()};
+
+	    for ch in numeral_str.chars() {
+		if let Some(roman_digit) = RomanDigit::from_char(ch) {
+		    numeral.content.push(roman_digit);
+		    continue;
+		}
+
+		numeral.content.clear();
+		panic!("Invalid roman digit detected! (should have been filtered out by regex)");
+	    }
+
+	    result = Ok(numeral);
+	}
+
+	result
+    }
 }
 
 impl RomanNumeral {

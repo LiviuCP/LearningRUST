@@ -1,7 +1,9 @@
 #[cfg(test)]
+use std::str::FromStr;
 use learn_rust_lib::numbers::romannumerals as rnum;
 use learn_rust_lib::numbers::romannumerals::RomanDigit as RD;
 use learn_rust_lib::numbers::romannumerals::RomanNumeral as RN;
+use rnum::ParseRomanNumeralError;
 use RD::{I, V, X, L, C, D, M};
 
 #[test]
@@ -116,22 +118,23 @@ pub fn test_is_valid_roman_numeral_string() {
 
 #[test]
 pub fn test_roman_numeral_from_string() {
-    assert_eq!(*RN::from_string("MCMLXXVII").get_content(), vec![M, C, M, L, X, X, V, I, I]);
-    assert_eq!(*RN::from_string("MmCcXxIi").get_content(), vec![M, M, C, C, X, X, I, I]);
-    assert_eq!(*RN::from_string("DlV").get_content(), vec![D, L, V]);
-    assert_eq!(*RN::from_string("dLV").get_content(), vec![D, L, V]);
-    assert_eq!(*RN::from_string("DLv").get_content(), vec![D, L, V]);
-    assert_eq!(*RN::from_string("X").get_content(), vec![X]);
-    assert_eq!(*RN::from_string("c").get_content(), vec![C]);
-    assert!(RN::from_string("IVMCDLCXM").empty());
-    assert!(RN::from_string("MCNLXXVII").empty());
-    assert!(RN::from_string("MC_LXXVII").empty());
-    assert!(RN::from_string("MC LXXVII").empty());
-    assert!(RN::from_string("MC\nLXXVII").empty());
-    assert!(RN::from_string("MC1LXXVII").empty());
-    assert!(RN::from_string("MCMLXXVII ").empty());
-    assert!(RN::from_string(" MCMLXXVII ").empty());
-    assert!(RN::from_string("").empty());
+    assert_eq!(*RN::from_str("MCMLXXVII").unwrap().get_content(), vec![M, C, M, L, X, X, V, I, I]);
+    assert_eq!(*RN::from_str("MCMLXXVII").unwrap().get_content(), vec![M, C, M, L, X, X, V, I, I]);
+    assert_eq!(*RN::from_str("MmCcXxIi").unwrap().get_content(), vec![M, M, C, C, X, X, I, I]);
+    assert_eq!(*RN::from_str("DlV").unwrap().get_content(), vec![D, L, V]);
+    assert_eq!(*RN::from_str("dLV").unwrap().get_content(), vec![D, L, V]);
+    assert_eq!(*RN::from_str("DLv").unwrap().get_content(), vec![D, L, V]);
+    assert_eq!(*RN::from_str("X").unwrap().get_content(), vec![X]);
+    assert_eq!(*RN::from_str("c").unwrap().get_content(), vec![C]);
+    assert_eq!(RN::from_str("IVMCDLCXM"), Err(ParseRomanNumeralError));
+    assert_eq!(RN::from_str("MCNLXXVII"), Err(ParseRomanNumeralError));
+    assert_eq!(RN::from_str("MC_LXXVII"), Err(ParseRomanNumeralError));
+    assert_eq!(RN::from_str("MC LXXVII"), Err(ParseRomanNumeralError));
+    assert_eq!(RN::from_str("MC\nLXXVII"), Err(ParseRomanNumeralError));
+    assert_eq!(RN::from_str("MC1LXXVII"), Err(ParseRomanNumeralError));
+    assert_eq!(RN::from_str("MCMLXXVII "), Err(ParseRomanNumeralError));
+    assert_eq!(RN::from_str(" MCMLXXVII "), Err(ParseRomanNumeralError));
+    assert_eq!(RN::from_str(""), Err(ParseRomanNumeralError));
 }
 
 #[test]

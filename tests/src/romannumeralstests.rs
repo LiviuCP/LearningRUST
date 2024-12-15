@@ -175,6 +175,19 @@ pub fn test_roman_numeral_clone() {
 }
 
 #[test]
+pub fn test_roman_numeral_clear() {
+    let mut numeral = RN::from_str("MCDXLIV").unwrap();
+    numeral.clear();
+
+    assert_eq!(numeral, RN::create());
+
+    numeral = RN::create();
+    numeral.clear();
+
+    assert_eq!(numeral, RN::create());
+}
+
+#[test]
 pub fn test_convert_number_to_roman_numeral() {
     let mut converter = rnum::NumberToRomanNumeralConverter::create();
 

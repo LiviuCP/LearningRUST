@@ -258,15 +258,14 @@ impl<T: Clone + PartialEq + std::fmt::Debug> ConsList<T> {
 	    let mut current_value = first_item.value.clone();
 	    let mut next_item = first_item.next.clone();
 
-	    loop {
+	    result = loop {
 		if let Some(next) = next_item {
 		    current_value = next.value.clone();
 		    next_item = next.next.clone();
 		    continue;
 		}
 
-		result = Some(current_value);
-		break;
+		break Some(current_value);
 	    }
 	}
 

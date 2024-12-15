@@ -117,7 +117,7 @@ pub fn test_is_valid_roman_numeral_string() {
 }
 
 #[test]
-pub fn test_roman_numeral_from_string() {
+pub fn test_roman_numeral_from_str() {
     assert_eq!(*RN::from_str("MCMLXXVII").unwrap().get_content(), vec![M, C, M, L, X, X, V, I, I]);
     assert_eq!(*RN::from_str("MCMLXXVII").unwrap().get_content(), vec![M, C, M, L, X, X, V, I, I]);
     assert_eq!(*RN::from_str("MmCcXxIi").unwrap().get_content(), vec![M, M, C, C, X, X, I, I]);
@@ -139,22 +139,14 @@ pub fn test_roman_numeral_from_string() {
 
 #[test]
 pub fn test_roman_numeral_to_string() {
-    assert_eq!(RN::from_string("MCMLXXVII").to_string(), "MCMLXXVII".to_string());
-    assert_eq!(RN::from_string("MmCcXxIi").to_string(), "MMCCXXII".to_string());
-    assert_eq!(RN::from_string("DlV").to_string(), "DLV".to_string());
-    assert_eq!(RN::from_string("dLV").to_string(), "DLV".to_string());
-    assert_eq!(RN::from_string("DLv").to_string(), "DLV".to_string());
-    assert_eq!(RN::from_string("X").to_string(), "X".to_string());
-    assert_eq!(RN::from_string("c").to_string(), "C".to_string());
-    assert_eq!(RN::from_string("IVMCDLCXM").to_string(), "".to_string());
-    assert_eq!(RN::from_string("MCNLXXVII").to_string(), "".to_string());
-    assert_eq!(RN::from_string("MC_LXXVII").to_string(), "".to_string());
-    assert_eq!(RN::from_string("MC LXXVII").to_string(), "".to_string());
-    assert_eq!(RN::from_string("MC\nLXXVII").to_string(), "".to_string());
-    assert_eq!(RN::from_string("MC1LXXVII").to_string(), "".to_string());
-    assert_eq!(RN::from_string("MCMLXXVII ").to_string(), "".to_string());
-    assert_eq!(RN::from_string(" MCMLXXVII ").to_string(), "".to_string());
-    assert_eq!(RN::from_string("").to_string(), "".to_string());
+    assert_eq!(RN::from_str("MCMLXXVII").unwrap().to_string(), "MCMLXXVII".to_string());
+    assert_eq!(RN::from_str("MmCcXxIi").unwrap().to_string(), "MMCCXXII".to_string());
+    assert_eq!(RN::from_str("DlV").unwrap().to_string(), "DLV".to_string());
+    assert_eq!(RN::from_str("dLV").unwrap().to_string(), "DLV".to_string());
+    assert_eq!(RN::from_str("DLv").unwrap().to_string(), "DLV".to_string());
+    assert_eq!(RN::from_str("X").unwrap().to_string(), "X".to_string());
+    assert_eq!(RN::from_str("c").unwrap().to_string(), "C".to_string());
+    assert!(RN::create().to_string().is_empty());
 }
 
 #[test]
@@ -169,13 +161,13 @@ pub fn test_roman_numeral_from_roman_digits() {
 
 #[test]
 pub fn test_roman_numeral_clone() {
-    let numeral = RN::from_string("MCDXLIV");
+    let numeral = RN::from_str("MCDXLIV").unwrap();
     let cloned_numeral = numeral.clone();
 
     assert_eq!(*numeral.get_content(), vec![M, C, D, X, L, I, V]);
     assert_eq!(*cloned_numeral.get_content(), vec![M, C, D, X, L, I, V]);
 
-    let numeral = RN::from_string("");
+    let numeral = RN::create();
     let cloned_numeral = numeral.clone();
 
     assert!(numeral.empty());
@@ -301,92 +293,57 @@ pub fn test_roman_numeral_to_number_converter() {
     let mut converter = rnum::RomanNumeralToNumberConverter::create();
 
     // building blocks
-    assert_eq!(converter.convert(&RN::from_string("I")), 1);
-    assert_eq!(converter.convert(&RN::from_string("IV")), 4);
-    assert_eq!(converter.convert(&RN::from_string("V")), 5);
-    assert_eq!(converter.convert(&RN::from_string("IX")), 9);
-    assert_eq!(converter.convert(&RN::from_string("X")), 10);
-    assert_eq!(converter.convert(&RN::from_string("XL")), 40);
-    assert_eq!(converter.convert(&RN::from_string("L")), 50);
-    assert_eq!(converter.convert(&RN::from_string("XC")), 90);
-    assert_eq!(converter.convert(&RN::from_string("C")), 100);
-    assert_eq!(converter.convert(&RN::from_string("CD")), 400);
-    assert_eq!(converter.convert(&RN::from_string("D")), 500);
-    assert_eq!(converter.convert(&RN::from_string("CM")), 900);
-    assert_eq!(converter.convert(&RN::from_string("M")), 1000);
-    assert_eq!(converter.convert(&RN::from_string("MMMM")), 4000);
+    assert_eq!(converter.convert(&RN::from_str("I").unwrap()), 1);
+    assert_eq!(converter.convert(&RN::from_str("IV").unwrap()), 4);
+    assert_eq!(converter.convert(&RN::from_str("V").unwrap()), 5);
+    assert_eq!(converter.convert(&RN::from_str("IX").unwrap()), 9);
+    assert_eq!(converter.convert(&RN::from_str("X").unwrap()), 10);
+    assert_eq!(converter.convert(&RN::from_str("XL").unwrap()), 40);
+    assert_eq!(converter.convert(&RN::from_str("L").unwrap()), 50);
+    assert_eq!(converter.convert(&RN::from_str("XC").unwrap()), 90);
+    assert_eq!(converter.convert(&RN::from_str("C").unwrap()), 100);
+    assert_eq!(converter.convert(&RN::from_str("CD").unwrap()), 400);
+    assert_eq!(converter.convert(&RN::from_str("D").unwrap()), 500);
+    assert_eq!(converter.convert(&RN::from_str("CM").unwrap()), 900);
+    assert_eq!(converter.convert(&RN::from_str("M").unwrap()), 1000);
+    assert_eq!(converter.convert(&RN::from_str("MMMM").unwrap()), 4000);
 
     // random
-    assert_eq!(converter.convert(&RN::from_string("II")), 2);
-    assert_eq!(converter.convert(&RN::from_string("VIII")), 8);
-    assert_eq!(converter.convert(&RN::from_string("XXV")), 25);
-    assert_eq!(converter.convert(&RN::from_string("XLIV")), 44);
-    assert_eq!(converter.convert(&RN::from_string("LXXVI")), 76);
-    assert_eq!(converter.convert(&RN::from_string("CCXXXVII")), 237);
-    assert_eq!(converter.convert(&RN::from_string("CDXII")), 412);
-    assert_eq!(converter.convert(&RN::from_string("DLV")), 555);
-    assert_eq!(converter.convert(&RN::from_string("DCCLXXVII")), 777);
-    assert_eq!(converter.convert(&RN::from_string("MCXI")), 1111);
-    assert_eq!(converter.convert(&RN::from_string("MCCXXXIV")), 1234);
-    assert_eq!(converter.convert(&RN::from_string("MCDLIII")), 1453);
-    assert_eq!(converter.convert(&RN::from_string("MDCCCLXXVII")), 1877);
-    assert_eq!(converter.convert(&RN::from_string("MCMXVIII")), 1918);
-    assert_eq!(converter.convert(&RN::from_string("MMXX")), 2020);
-    assert_eq!(converter.convert(&RN::from_string("MMCCXXII")), 2222);
-    assert_eq!(converter.convert(&RN::from_string("MMCCCXCIV")), 2394);
-    assert_eq!(converter.convert(&RN::from_string("MMDCXCV")), 2695);
-    assert_eq!(converter.convert(&RN::from_string("MMDCCC")), 2800);
-    assert_eq!(converter.convert(&RN::from_string("MMM")), 3000);
-    assert_eq!(converter.convert(&RN::from_string("MMMCCCXXXIII")), 3333);
-    assert_eq!(converter.convert(&RN::from_string("MMMCDLVI")), 3456);
-    assert_eq!(converter.convert(&RN::from_string("MMMDCCCLXXIX")), 3879);
-    assert_eq!(converter.convert(&RN::from_string("MMMCMLXXXVII")), 3987);
-    assert_eq!(converter.convert(&RN::from_string("MMMMCLXVI")), 4166);
-    assert_eq!(converter.convert(&RN::from_string("MMMMCDXLIV")), 4444);
-    assert_eq!(converter.convert(&RN::from_string("MMMMDCCCLXXXVIII")), 4888);
-    assert_eq!(converter.convert(&RN::from_string("MMMMCMLXXXVII")), 4987);
-    assert_eq!(converter.convert(&RN::from_string("MMMMCMXCIX")), 4999);
+    assert_eq!(converter.convert(&RN::from_str("II").unwrap()), 2);
+    assert_eq!(converter.convert(&RN::from_str("VIII").unwrap()), 8);
+    assert_eq!(converter.convert(&RN::from_str("XXV").unwrap()), 25);
+    assert_eq!(converter.convert(&RN::from_str("XLIV").unwrap()), 44);
+    assert_eq!(converter.convert(&RN::from_str("LXXVI").unwrap()), 76);
+    assert_eq!(converter.convert(&RN::from_str("CCXXXVII").unwrap()), 237);
+    assert_eq!(converter.convert(&RN::from_str("CDXII").unwrap()), 412);
+    assert_eq!(converter.convert(&RN::from_str("DLV").unwrap()), 555);
+    assert_eq!(converter.convert(&RN::from_str("DCCLXXVII").unwrap()), 777);
+    assert_eq!(converter.convert(&RN::from_str("MCXI").unwrap()), 1111);
+    assert_eq!(converter.convert(&RN::from_str("MCCXXXIV").unwrap()), 1234);
+    assert_eq!(converter.convert(&RN::from_str("MCDLIII").unwrap()), 1453);
+    assert_eq!(converter.convert(&RN::from_str("MDCCCLXXVII").unwrap()), 1877);
+    assert_eq!(converter.convert(&RN::from_str("MCMXVIII").unwrap()), 1918);
+    assert_eq!(converter.convert(&RN::from_str("MMXX").unwrap()), 2020);
+    assert_eq!(converter.convert(&RN::from_str("MMCCXXII").unwrap()), 2222);
+    assert_eq!(converter.convert(&RN::from_str("MMCCCXCIV").unwrap()), 2394);
+    assert_eq!(converter.convert(&RN::from_str("MMDCXCV").unwrap()), 2695);
+    assert_eq!(converter.convert(&RN::from_str("MMDCCC").unwrap()), 2800);
+    assert_eq!(converter.convert(&RN::from_str("MMM").unwrap()), 3000);
+    assert_eq!(converter.convert(&RN::from_str("MMMCCCXXXIII").unwrap()), 3333);
+    assert_eq!(converter.convert(&RN::from_str("MMMCDLVI").unwrap()), 3456);
+    assert_eq!(converter.convert(&RN::from_str("MMMDCCCLXXIX").unwrap()), 3879);
+    assert_eq!(converter.convert(&RN::from_str("MMMCMLXXXVII").unwrap()), 3987);
+    assert_eq!(converter.convert(&RN::from_str("MMMMCLXVI").unwrap()), 4166);
+    assert_eq!(converter.convert(&RN::from_str("MMMMCDXLIV").unwrap()), 4444);
+    assert_eq!(converter.convert(&RN::from_str("MMMMDCCCLXXXVIII").unwrap()), 4888);
+    assert_eq!(converter.convert(&RN::from_str("MMMMCMLXXXVII").unwrap()), 4987);
+    assert_eq!(converter.convert(&RN::from_str("MMMMCMXCIX").unwrap()), 4999);
 
     // lower or mixed case numerals
-    assert_eq!(converter.convert(&RN::from_string("MmDCclXxViI")), 2777);
-    assert_eq!(converter.convert(&RN::from_string("dLv")), 555);
-    assert_eq!(converter.convert(&RN::from_string("mdclxvi")), 1666);
+    assert_eq!(converter.convert(&RN::from_str("MmDCclXxViI").unwrap()), 2777);
+    assert_eq!(converter.convert(&RN::from_str("dLv").unwrap()), 555);
+    assert_eq!(converter.convert(&RN::from_str("mdclxvi").unwrap()), 1666);
 
-    // error cases
-    assert_eq!(converter.convert(&RN::from_string("MMMMMXCIX")), 0);
-    assert_eq!(converter.convert(&RN::from_string("MDCCCCXVIII")), 0);
-    assert_eq!(converter.convert(&RN::from_string("CLXXXX")), 0);
-    assert_eq!(converter.convert(&RN::from_string("XVIIII")), 0);
-    assert_eq!(converter.convert(&RN::from_string("DDCL")), 0);
-    assert_eq!(converter.convert(&RN::from_string("LLX")), 0);
-    assert_eq!(converter.convert(&RN::from_string("XVVI")), 0);
-    assert_eq!(converter.convert(&RN::from_string("DM")), 0);
-    assert_eq!(converter.convert(&RN::from_string("MLMV")), 0);
-    assert_eq!(converter.convert(&RN::from_string("XMV")), 0);
-    assert_eq!(converter.convert(&RN::from_string("CVMII")), 0);
-    assert_eq!(converter.convert(&RN::from_string("IMII")), 0);
-    assert_eq!(converter.convert(&RN::from_string("LCXX")), 0);
-    assert_eq!(converter.convert(&RN::from_string("VCI")), 0);
-    assert_eq!(converter.convert(&RN::from_string("ICII")), 0);
-    assert_eq!(converter.convert(&RN::from_string("VXII")), 0);
-    assert_eq!(converter.convert(&RN::from_string("MLDXII")), 0);
-    assert_eq!(converter.convert(&RN::from_string("CXDII")), 0);
-    assert_eq!(converter.convert(&RN::from_string("VDII")), 0);
-    assert_eq!(converter.convert(&RN::from_string("IDI")), 0);
-    assert_eq!(converter.convert(&RN::from_string("CVLII")), 0);
-    assert_eq!(converter.convert(&RN::from_string("CCILI")), 0);
-    assert_eq!(converter.convert(&RN::from_string("MCCM")), 0);
-    assert_eq!(converter.convert(&RN::from_string("MCCDXX")), 0);
-    assert_eq!(converter.convert(&RN::from_string("DXXCV")), 0);
-    assert_eq!(converter.convert(&RN::from_string("XXLV")), 0);
-    assert_eq!(converter.convert(&RN::from_string("XIIX")), 0);
-    assert_eq!(converter.convert(&RN::from_string("IIV")), 0);
-    assert_eq!(converter.convert(&RN::from_string("MMMNCMXCIX")), 0);
-    assert_eq!(converter.convert(&RN::from_string("MMMMCM_CIX")), 0);
-    assert_eq!(converter.convert(&RN::from_string("MMMMCMXC9X")), 0);
-    assert_eq!(converter.convert(&RN::from_string("MMMMCM XCIX")), 0);
-    assert_eq!(converter.convert(&RN::from_string("N")), 0);
-    assert_eq!(converter.convert(&RN::from_string("2")), 0);
-    assert_eq!(converter.convert(&RN::from_string("-")), 0);
-    assert_eq!(converter.convert(&RN::from_string("")), 0);
+    // empty numeral
+    assert_eq!(converter.convert(&RN::create()), 0);
 }

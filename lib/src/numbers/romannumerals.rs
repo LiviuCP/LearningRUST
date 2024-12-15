@@ -56,7 +56,7 @@ impl FromStr for RomanNumeral {
 	let mut result = Err(ParseRomanNumeralError);
 
 	if Self::is_valid_roman_numeral_string(numeral_str) {
-	    let mut numeral = Self {content: Vec::new()};
+	    let mut numeral = RomanNumeral::create();
 
 	    for ch in numeral_str.chars() {
 		if let Some(roman_digit) = RomanDigit::from_char(ch) {
@@ -78,6 +78,18 @@ impl FromStr for RomanNumeral {
 impl RomanNumeral {
     const MAX_CHARS_COUNT: usize = 16;
 
+    pub fn create() -> Self {
+	RomanNumeral{content: Vec::new()}
+    }
+
+    pub fn from_roman_digits(digits: &Vec::<RomanDigit>) -> Self {
+	let numeral_str: String = digits.iter().map(|roman_digit| roman_digit.as_char()).collect();
+	match Self::from_str(&numeral_str) {
+	    Ok(numeral) => numeral,
+	    Err(_) => RomanNumeral::create()
+	}
+    }
+
     pub fn is_valid_roman_numeral_string(numeral_str: &str) -> bool {
 	let mut is_valid = false;
 	let numeral_size = numeral_str.len();
@@ -90,31 +102,8 @@ impl RomanNumeral {
 	return is_valid;
     }
 
-    pub fn from_string(numeral_str: &str) -> Self {
-	let mut result = Self {content: Vec::new()};
-
-	if Self::is_valid_roman_numeral_string(numeral_str) {
-	    for ch in numeral_str.chars() {
-		if let Some(roman_digit) = RomanDigit::from_char(ch) {
-		    result.content.push(roman_digit);
-		    continue;
-		}
-
-		result.content.clear();
-		panic!("Invalid roman digit detected! (should have been filtered out by regex)");
-	    }
-	}
-
-	result
-    }
-
     pub fn to_string(&self) -> String {
 	self.content.iter().map(|roman_digit| roman_digit.as_char()).collect()
-    }
-
-    pub fn from_roman_digits(digits: &Vec::<RomanDigit>) -> Self {
-	let numeral_str: String = digits.iter().map(|roman_digit| roman_digit.as_char()).collect();
-	Self::from_string(&numeral_str)
     }
 
     pub fn get_content(&self) -> &Vec::<RomanDigit> {
@@ -193,7 +182,10 @@ impl NumberToRomanNumeralConverter {
 	    self.handle_same_appended_char_threshold(1, 'I');
 	}
 
-	RomanNumeral::from_string(&self.result_str)
+	match RomanNumeral::from_str(&self.result_str) {
+	    Ok(numeral) => numeral,
+	    Err(_) => RomanNumeral::create()
+	}
     }
 
     fn handle_same_appended_char_threshold(&mut self, threshold: u16, char_to_append: char) -> bool {
@@ -288,7 +280,10 @@ pub fn convert_number_to_roman_numeral_using_hash(number: u16) -> RomanNumeral {
 	}).collect();
     }
 
-    RomanNumeral::from_string(&result)
+    match RomanNumeral::from_str(&result) {
+	Ok(numeral) => numeral,
+	Err(_) => RomanNumeral::create()
+    }
 }
 
 // the inner value is the value of the digit

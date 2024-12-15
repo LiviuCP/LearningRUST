@@ -1,4 +1,4 @@
-use std::{str::FromStr, collections::HashMap};
+use std::{fmt, str::FromStr, collections::HashMap};
 use crate::utilities;
 use phf::phf_map;
 use regex::Regex;
@@ -75,6 +75,13 @@ impl FromStr for RomanNumeral {
     }
 }
 
+impl fmt::Display for RomanNumeral {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+	let numeral_str = self.content.iter().map(|roman_digit| roman_digit.as_char()).collect::<String>();
+	write!(f, "{}", numeral_str)
+    }
+}
+
 impl RomanNumeral {
     const MAX_CHARS_COUNT: usize = 16;
 
@@ -97,10 +104,6 @@ impl RomanNumeral {
 	}
 
 	return is_valid;
-    }
-
-    pub fn to_string(&self) -> String {
-	self.content.iter().map(|roman_digit| roman_digit.as_char()).collect()
     }
 
     pub fn get_content(&self) -> &Vec::<RomanDigit> {

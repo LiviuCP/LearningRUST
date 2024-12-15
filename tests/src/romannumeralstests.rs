@@ -1,9 +1,7 @@
 #[cfg(test)]
 use std::str::FromStr;
 use learn_rust_lib::numbers::romannumerals as rnum;
-use learn_rust_lib::numbers::romannumerals::RomanDigit as RD;
-use learn_rust_lib::numbers::romannumerals::RomanNumeral as RN;
-use rnum::ParseRomanNumeralError;
+use rnum::{RomanDigit as RD, RomanNumeral as RN, ParseRomanNumeralError};
 use RD::{I, V, X, L, C, D, M};
 
 #[test]
@@ -117,6 +115,16 @@ pub fn test_is_valid_roman_numeral_string() {
 }
 
 #[test]
+pub fn test_roman_numeral_from_roman_digits() {
+    assert_eq!(*RN::from_roman_digits(&vec![M, C, M, L, X, X, V, I, I]).get_content(), vec![M, C, M, L, X, X, V, I, I]);
+    assert_eq!(*RN::from_roman_digits(&vec![D, L, V]).get_content(), vec![D, L, V]);
+    assert_eq!(*RN::from_roman_digits(&vec![X]).get_content(), vec![X]);
+    assert!(RN::from_roman_digits(&vec![I, V, M, C, D, L, C, X, M]).empty());
+    assert!(RN::from_roman_digits(&vec![M, C, M, L, X, X, V, I, V]).empty());
+    assert!(RN::from_roman_digits(&Vec::new()).empty());
+}
+
+#[test]
 pub fn test_roman_numeral_from_str() {
     assert_eq!(*RN::from_str("MCMLXXVII").unwrap().get_content(), vec![M, C, M, L, X, X, V, I, I]);
     assert_eq!(*RN::from_str("MCMLXXVII").unwrap().get_content(), vec![M, C, M, L, X, X, V, I, I]);
@@ -139,24 +147,14 @@ pub fn test_roman_numeral_from_str() {
 
 #[test]
 pub fn test_roman_numeral_to_string() {
-    assert_eq!(RN::from_str("MCMLXXVII").unwrap().to_string(), "MCMLXXVII".to_string());
-    assert_eq!(RN::from_str("MmCcXxIi").unwrap().to_string(), "MMCCXXII".to_string());
-    assert_eq!(RN::from_str("DlV").unwrap().to_string(), "DLV".to_string());
-    assert_eq!(RN::from_str("dLV").unwrap().to_string(), "DLV".to_string());
-    assert_eq!(RN::from_str("DLv").unwrap().to_string(), "DLV".to_string());
-    assert_eq!(RN::from_str("X").unwrap().to_string(), "X".to_string());
-    assert_eq!(RN::from_str("c").unwrap().to_string(), "C".to_string());
+    assert_eq!(RN::from_roman_digits(&vec![M, C, M, L, X, X, V, I, I]).to_string(), "MCMLXXVII".to_string());
+    assert_eq!(RN::from_roman_digits(&vec![D, L, V]).to_string(), "DLV".to_string());
+    assert_eq!(RN::from_roman_digits(&vec![X]).to_string(), "X".to_string());
+    assert_eq!(RN::from_roman_digits(&vec![C]).to_string(), "C".to_string());
+    assert!(RN::from_roman_digits(&vec![I, V, M, C, D, L, C, X, M]).to_string().is_empty());
+    assert!(RN::from_roman_digits(&vec![M, C, M, L, X, X, V, I, V]).to_string().is_empty());
+    assert!(RN::from_roman_digits(&Vec::new()).to_string().is_empty());
     assert!(RN::create().to_string().is_empty());
-}
-
-#[test]
-pub fn test_roman_numeral_from_roman_digits() {
-    assert_eq!(*RN::from_roman_digits(&vec![M, C, M, L, X, X, V, I, I]).get_content(), vec![M, C, M, L, X, X, V, I, I]);
-    assert_eq!(*RN::from_roman_digits(&vec![D, L, V]).get_content(), vec![D, L, V]);
-    assert_eq!(*RN::from_roman_digits(&vec![X]).get_content(), vec![X]);
-    assert!(RN::from_roman_digits(&vec![I, V, M, C, D, L, C, X, M]).empty());
-    assert!(RN::from_roman_digits(&vec![M, C, M, L, X, X, V, I, V]).empty());
-    assert!(RN::from_roman_digits(&Vec::new()).empty());
 }
 
 #[test]

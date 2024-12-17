@@ -60,16 +60,13 @@ fn parse_input_string(input_str:&String) -> Option<(u64,u8)> {
 
 fn convert_prefixed_int_to_string(number:(u64, u8)) -> String {
     let mut result = String::new();
-    if number.1 > 0 {
-	let mut zeroes_count = number.1;
-	result.push_str("(");
-	while zeroes_count > 0 {
-            result.push('0');
-            zeroes_count -= 1;
-	}
-	result.push_str(")");
+    let (concrete_number, preceding_zeroes_count) = number;
+
+    if preceding_zeroes_count > 0 {
+	result = format!("({one_zero_digit:0>zeroes_count_to_prepend$})", one_zero_digit = 0, zeroes_count_to_prepend = preceding_zeroes_count as usize);
     }
-    result.push_str(number.0.to_string().as_str());
+
+    result.push_str(concrete_number.to_string().as_str());
     result
 }
 

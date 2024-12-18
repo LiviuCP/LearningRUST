@@ -95,9 +95,14 @@ impl RomanNumeral {
     }
 
     pub fn from_roman_digits(digits: &Vec::<RomanDigit>) -> Result<Self, ParseRomanNumeralDigitsError> {
-	let numeral_str: String = digits.iter().map(|roman_digit| roman_digit.as_char()).collect();
-	let numeral = Self::from_string(&numeral_str);
-	let result = if !numeral.empty() || digits.is_empty() {Ok(numeral)} else {Err(ParseRomanNumeralDigitsError)};
+	let mut result = Ok(RomanNumeral::create());
+
+	if !digits.is_empty() {
+	    let numeral_str: String = digits.iter().map(|roman_digit| roman_digit.as_char()).collect();
+	    let numeral = Self::from_string(&numeral_str);
+	    result = if !numeral.empty() {Ok(numeral)} else {Err(ParseRomanNumeralDigitsError)};
+	}
+
 	result
     }
 

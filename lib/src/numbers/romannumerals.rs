@@ -1,4 +1,4 @@
-use std::{fmt, str::FromStr, collections::HashMap};
+use std::{fmt, str::FromStr, convert::TryFrom, collections::HashMap};
 use crate::utilities;
 use phf::phf_map;
 use regex::Regex;
@@ -87,14 +87,10 @@ impl fmt::Display for RomanNumeral {
     }
 }
 
-impl RomanNumeral {
-    const MAX_CHARS_COUNT: usize = 16;
+impl TryFrom<Vec<RomanDigit>> for RomanNumeral {
+    type Error = ParseRomanNumeralDigitsError;
 
-    pub fn create() -> Self {
-	RomanNumeral{content: Vec::new()}
-    }
-
-    pub fn from_roman_digits(digits: &Vec::<RomanDigit>) -> Result<Self, ParseRomanNumeralDigitsError> {
+    fn try_from(digits: Vec<RomanDigit>) -> Result<Self, Self::Error> {
 	let mut result = Ok(RomanNumeral::create());
 
 	if !digits.is_empty() {
@@ -104,6 +100,14 @@ impl RomanNumeral {
 	}
 
 	result
+    }
+}
+
+impl RomanNumeral {
+    const MAX_CHARS_COUNT: usize = 16;
+
+    pub fn create() -> Self {
+	RomanNumeral{content: Vec::new()}
     }
 
     pub fn is_valid_roman_numeral_string(numeral_str: &str) -> bool {

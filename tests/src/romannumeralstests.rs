@@ -116,12 +116,12 @@ pub fn test_is_valid_roman_numeral_string() {
 
 #[test]
 pub fn test_roman_numeral_from_roman_digits() {
-    assert_eq!(*RN::from_roman_digits(&vec![M, C, M, L, X, X, V, I, I]).unwrap().get_content(), vec![M, C, M, L, X, X, V, I, I]);
-    assert_eq!(*RN::from_roman_digits(&vec![D, L, V]).unwrap().get_content(), vec![D, L, V]);
-    assert_eq!(*RN::from_roman_digits(&vec![X]).unwrap().get_content(), vec![X]);
-    assert_eq!(RN::from_roman_digits(&vec![I, V, M, C, D, L, C, X, M]), Err(ParseRomanNumeralDigitsError));
-    assert_eq!(RN::from_roman_digits(&vec![M, C, M, L, X, X, V, I, V]), Err(ParseRomanNumeralDigitsError));
-    assert!(RN::from_roman_digits(&Vec::new()).unwrap().empty());
+    assert_eq!(*RN::try_from(vec![M, C, M, L, X, X, V, I, I]).unwrap().get_content(), vec![M, C, M, L, X, X, V, I, I]);
+    assert_eq!(*RN::try_from(vec![D, L, V]).unwrap().get_content(), vec![D, L, V]);
+    assert_eq!(*RN::try_from(vec![X]).unwrap().get_content(), vec![X]);
+    assert_eq!(RN::try_from(vec![I, V, M, C, D, L, C, X, M]), Err(ParseRomanNumeralDigitsError));
+    assert_eq!(RN::try_from(vec![M, C, M, L, X, X, V, I, V]), Err(ParseRomanNumeralDigitsError));
+    assert!(RN::try_from(Vec::new()).unwrap().empty());
 }
 
 #[test]
@@ -147,10 +147,10 @@ pub fn test_roman_numeral_from_str() {
 
 #[test]
 pub fn test_roman_numeral_to_string() {
-    assert_eq!(RN::from_roman_digits(&vec![M, C, M, L, X, X, V, I, I]).unwrap().to_string(), "MCMLXXVII".to_string());
-    assert_eq!(RN::from_roman_digits(&vec![D, L, V]).unwrap().to_string(), "DLV".to_string());
-    assert_eq!(RN::from_roman_digits(&vec![X]).unwrap().to_string(), "X".to_string());
-    assert!(RN::from_roman_digits(&Vec::new()).unwrap().to_string().is_empty());
+    assert_eq!(RN::try_from(vec![M, C, M, L, X, X, V, I, I]).unwrap().to_string(), "MCMLXXVII".to_string());
+    assert_eq!(RN::try_from(vec![D, L, V]).unwrap().to_string(), "DLV".to_string());
+    assert_eq!(RN::try_from(vec![X]).unwrap().to_string(), "X".to_string());
+    assert!(RN::try_from(Vec::new()).unwrap().to_string().is_empty());
     assert!(RN::create().to_string().is_empty());
 }
 

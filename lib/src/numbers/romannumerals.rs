@@ -4,7 +4,9 @@ use phf::phf_map;
 use regex::Regex;
 
 #[derive(PartialEq, Debug)]
-pub struct ParseRomanNumeralError;
+pub struct ParseRomanNumeralStringError;
+#[derive(PartialEq, Debug)]
+pub struct ParseRomanNumeralDigitsError;
 
 #[derive(Eq, PartialEq, Clone, Hash, Debug)]
 pub enum RomanDigit {
@@ -50,10 +52,10 @@ pub struct RomanNumeral {
 }
 
 impl FromStr for RomanNumeral {
-    type Err = ParseRomanNumeralError;
+    type Err = ParseRomanNumeralStringError;
 
     fn from_str(numeral_str: &str) -> Result<Self, Self::Err> {
-	let mut result = Err(ParseRomanNumeralError);
+	let mut result = Err(ParseRomanNumeralStringError);
 
 	if Self::is_valid_roman_numeral_string(numeral_str) {
 	    let mut numeral = Self::create();
@@ -69,6 +71,9 @@ impl FromStr for RomanNumeral {
 	    }
 
 	    result = Ok(numeral);
+	}
+	else if numeral_str.is_empty() {
+	    result = Ok(RomanNumeral::create());
 	}
 
 	result
@@ -89,9 +94,11 @@ impl RomanNumeral {
 	RomanNumeral{content: Vec::new()}
     }
 
-    pub fn from_roman_digits(digits: &Vec::<RomanDigit>) -> Self {
+    pub fn from_roman_digits(digits: &Vec::<RomanDigit>) -> Result<Self, ParseRomanNumeralDigitsError> {
 	let numeral_str: String = digits.iter().map(|roman_digit| roman_digit.as_char()).collect();
-	Self::from_string(&numeral_str)
+	let numeral = Self::from_string(&numeral_str);
+	let result = if !numeral.empty() || digits.is_empty() {Ok(numeral)} else {Err(ParseRomanNumeralDigitsError)};
+	result
     }
 
     pub fn is_valid_roman_numeral_string(numeral_str: &str) -> bool {

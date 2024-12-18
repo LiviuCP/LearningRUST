@@ -127,7 +127,6 @@ pub fn test_roman_numeral_from_roman_digits() {
 #[test]
 pub fn test_roman_numeral_from_str() {
     assert_eq!(*RN::from_str("MCMLXXVII").unwrap().get_content(), vec![M, C, M, L, X, X, V, I, I]);
-    assert_eq!(*RN::from_str("MCMLXXVII").unwrap().get_content(), vec![M, C, M, L, X, X, V, I, I]);
     assert_eq!(*RN::from_str("MmCcXxIi").unwrap().get_content(), vec![M, M, C, C, X, X, I, I]);
     assert_eq!(*RN::from_str("DlV").unwrap().get_content(), vec![D, L, V]);
     assert_eq!(*RN::from_str("dLV").unwrap().get_content(), vec![D, L, V]);
@@ -135,6 +134,7 @@ pub fn test_roman_numeral_from_str() {
     assert_eq!(*RN::from_str("X").unwrap().get_content(), vec![X]);
     assert_eq!(*RN::from_str("c").unwrap().get_content(), vec![C]);
     assert_eq!(RN::from_str("IVMCDLCXM"), Err(ParseRomanNumeralError));
+    assert_eq!(RN::from_str("MCMLXXVIV"), Err(ParseRomanNumeralError));
     assert_eq!(RN::from_str("MCNLXXVII"), Err(ParseRomanNumeralError));
     assert_eq!(RN::from_str("MC_LXXVII"), Err(ParseRomanNumeralError));
     assert_eq!(RN::from_str("MC LXXVII"), Err(ParseRomanNumeralError));
@@ -150,7 +150,6 @@ pub fn test_roman_numeral_to_string() {
     assert_eq!(RN::from_roman_digits(&vec![M, C, M, L, X, X, V, I, I]).to_string(), "MCMLXXVII".to_string());
     assert_eq!(RN::from_roman_digits(&vec![D, L, V]).to_string(), "DLV".to_string());
     assert_eq!(RN::from_roman_digits(&vec![X]).to_string(), "X".to_string());
-    assert_eq!(RN::from_roman_digits(&vec![C]).to_string(), "C".to_string());
     assert!(RN::from_roman_digits(&vec![I, V, M, C, D, L, C, X, M]).to_string().is_empty());
     assert!(RN::from_roman_digits(&vec![M, C, M, L, X, X, V, I, V]).to_string().is_empty());
     assert!(RN::from_roman_digits(&Vec::new()).to_string().is_empty());

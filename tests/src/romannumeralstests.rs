@@ -116,12 +116,32 @@ pub fn test_is_valid_roman_numeral_string() {
 
 #[test]
 pub fn test_roman_numeral_from_roman_digits() {
+    // with try_from
     assert_eq!(*RN::try_from(vec![M, C, M, L, X, X, V, I, I]).unwrap().get_content(), vec![M, C, M, L, X, X, V, I, I]);
     assert_eq!(*RN::try_from(vec![D, L, V]).unwrap().get_content(), vec![D, L, V]);
     assert_eq!(*RN::try_from(vec![X]).unwrap().get_content(), vec![X]);
     assert_eq!(RN::try_from(vec![I, V, M, C, D, L, C, X, M]), Err(ParseRomanNumeralDigitsError));
     assert_eq!(RN::try_from(vec![M, C, M, L, X, X, V, I, V]), Err(ParseRomanNumeralDigitsError));
     assert!(RN::try_from(Vec::new()).unwrap().empty());
+
+    // with try_into
+    let mut numeral: RN = vec![M, C, M, L, X, X, V, I, I].try_into().unwrap();
+    assert_eq!(*numeral.get_content(), vec![M, C, M, L, X, X, V, I, I]);
+
+    numeral = vec![D, L, V].try_into().unwrap();
+    assert_eq!(*numeral.get_content(), vec![D, L, V]);
+
+    numeral = vec![X].try_into().unwrap();
+    assert_eq!(*numeral.get_content(), vec![X]);
+
+    let mut numeral_error: Result<RN, ParseRomanNumeralDigitsError> = vec![I, V, M, C, D, L, C, X, M].try_into();
+    assert_eq!(numeral_error, Err(ParseRomanNumeralDigitsError));
+
+    numeral_error = vec![M, C, M, L, X, X, V, I, V].try_into();
+    assert_eq!(numeral_error, Err(ParseRomanNumeralDigitsError));
+
+    numeral = Vec::new().try_into().unwrap();
+    assert!(numeral.empty());
 }
 
 #[test]

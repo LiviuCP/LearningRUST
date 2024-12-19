@@ -125,6 +125,33 @@ pub fn test_roman_numeral_from_roman_digits() {
 }
 
 #[test]
+pub fn test_roman_numeral_to_roman_digits() {
+    let mut content: Vec::<RD> = RN::from_str("MCMLXXVII").unwrap().into();
+    assert_eq!(content, vec![M, C, M, L, X, X, V, I, I]);
+
+    content = RN::from_str("MmCcXxIi").unwrap().into();
+    assert_eq!(content, vec![M, M, C, C, X, X, I, I]);
+
+    content = RN::from_str("DlV").unwrap().into();
+    assert_eq!(content, vec![D, L, V]);
+
+    content = RN::from_str("dLV").unwrap().into();
+    assert_eq!(content, vec![D, L, V]);
+
+    content = RN::from_str("DLv").unwrap().into();
+    assert_eq!(content, vec![D, L, V]);
+
+    content = RN::from_str("X").unwrap().into();
+    assert_eq!(content, vec![X]);
+
+    content = RN::from_str("c").unwrap().into();
+    assert_eq!(content, vec![C]);
+
+    content = RN::from_str("").unwrap().into();
+    assert_eq!(content, Vec::new());
+}
+
+#[test]
 pub fn test_roman_numeral_from_str() {
     assert_eq!(*RN::from_str("MCMLXXVII").unwrap().get_content(), vec![M, C, M, L, X, X, V, I, I]);
     assert_eq!(*RN::from_str("MmCcXxIi").unwrap().get_content(), vec![M, M, C, C, X, X, I, I]);

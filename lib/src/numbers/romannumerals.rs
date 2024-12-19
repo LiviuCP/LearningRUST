@@ -1,4 +1,4 @@
-use std::{fmt, str::FromStr, convert::TryFrom, collections::HashMap};
+use std::{fmt, str::FromStr, convert::{TryFrom, Into}, collections::HashMap};
 use crate::utilities;
 use phf::phf_map;
 use regex::Regex;
@@ -100,6 +100,12 @@ impl TryFrom<Vec<RomanDigit>> for RomanNumeral {
 	}
 
 	result
+    }
+}
+
+impl Into<Vec<RomanDigit>> for RomanNumeral {
+    fn into(self) -> Vec<RomanDigit> {
+	return self.content
     }
 }
 

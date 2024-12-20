@@ -302,8 +302,9 @@ static ROMAN_NUMERALS_CONVERSION_MAP: phf::Map<[u8;2], &'static str> = phf_map! 
 };
 
 /* Alternative method for converting integer to roman numeral, same constraints */
-pub fn convert_number_to_roman_numeral_using_hash(number: u16) -> RomanNumeral {
-    let mut result = String::new();
+pub fn convert_number_to_roman_numeral_using_hash(number: u16) -> Result<RomanNumeral, MaxNumberExceededError> {
+    let mut result_str = String::new();
+    let mut max_nr_exceeded = false;
 
     if number > 0 && number < 5000 {
 	let digits = utilities::get_digits(number as u32);
@@ -311,13 +312,18 @@ pub fn convert_number_to_roman_numeral_using_hash(number: u16) -> RomanNumeral {
 	// no need to check the digits_count is > 0 for getting power_of_ten_index (see below), an integer should have min. 1 digit
 	let digits_count = digits.len();
 
-	result = digits.iter().enumerate().map(|(index, digit)| {
+	result_str = digits.iter().enumerate().map(|(index, digit)| {
 	    let power_of_ten_index = (digits_count - 1 - index) as u8; // place of the digit within the number, e.g. for thousands it is 3 corresponding to 10^3
 	    ROMAN_NUMERALS_CONVERSION_MAP.get(&[power_of_ten_index, *digit]).unwrap_or(&"").to_string()
 	}).collect();
     }
+    else if number != 0 {
+	max_nr_exceeded = true;
+    }
 
-    RomanNumeral::from_string(&result)
+    // out-of-range is treated differently in respect to "direction": 0 results in empty numeral while exceeding threshold is considered an error
+    let result = if !max_nr_exceeded {Ok(RomanNumeral::from_string(&result_str))} else {Err(MaxNumberExceededError)};
+    result
 }
 
 // the inner value is the value of the digit

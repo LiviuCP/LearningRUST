@@ -1,7 +1,7 @@
 #[cfg(test)]
 use std::str::FromStr;
 use learn_rust_lib::numbers::romannumerals as rnum;
-use rnum::{RomanDigit as RD, RomanNumeral as RN, ParseRomanNumeralStringError, ParseRomanNumeralDigitsError};
+use rnum::{RomanDigit as RD, RomanNumeral as RN, ParseRomanNumeralStringError, ParseRomanNumeralDigitsError, MaxNumberExceededError};
 use RD::{I, V, X, L, C, D, M};
 
 #[test]
@@ -234,57 +234,57 @@ pub fn test_convert_number_to_roman_numeral() {
     let mut converter = rnum::NumberToRomanNumeralConverter::create();
 
     // building blocks
-    assert_eq!(*converter.convert(1).get_content(), vec![I]);
-    assert_eq!(*converter.convert(4).get_content(), vec![I, V]);
-    assert_eq!(*converter.convert(5).get_content(), vec![V]);
-    assert_eq!(*converter.convert(9).get_content(), vec![I, X]);
-    assert_eq!(*converter.convert(10).get_content(), vec![X]);
-    assert_eq!(*converter.convert(40).get_content(), vec![X, L]);
-    assert_eq!(*converter.convert(50).get_content(), vec![L]);
-    assert_eq!(*converter.convert(90).get_content(), vec![X, C]);
-    assert_eq!(*converter.convert(100).get_content(), vec![C]);
-    assert_eq!(*converter.convert(400).get_content(), vec![C, D]);
-    assert_eq!(*converter.convert(500).get_content(), vec![D]);
-    assert_eq!(*converter.convert(900).get_content(), vec![C, M]);
-    assert_eq!(*converter.convert(1000).get_content(), vec![M]);
-    assert_eq!(*converter.convert(4000).get_content(), vec![M, M, M, M]);
+    assert_eq!(*converter.convert(1).unwrap().get_content(), vec![I]);
+    assert_eq!(*converter.convert(4).unwrap().get_content(), vec![I, V]);
+    assert_eq!(*converter.convert(5).unwrap().get_content(), vec![V]);
+    assert_eq!(*converter.convert(9).unwrap().get_content(), vec![I, X]);
+    assert_eq!(*converter.convert(10).unwrap().get_content(), vec![X]);
+    assert_eq!(*converter.convert(40).unwrap().get_content(), vec![X, L]);
+    assert_eq!(*converter.convert(50).unwrap().get_content(), vec![L]);
+    assert_eq!(*converter.convert(90).unwrap().get_content(), vec![X, C]);
+    assert_eq!(*converter.convert(100).unwrap().get_content(), vec![C]);
+    assert_eq!(*converter.convert(400).unwrap().get_content(), vec![C, D]);
+    assert_eq!(*converter.convert(500).unwrap().get_content(), vec![D]);
+    assert_eq!(*converter.convert(900).unwrap().get_content(), vec![C, M]);
+    assert_eq!(*converter.convert(1000).unwrap().get_content(), vec![M]);
+    assert_eq!(*converter.convert(4000).unwrap().get_content(), vec![M, M, M, M]);
 
     // bounds and beyond bounds
-    assert_eq!(*converter.convert(0).get_content(), Vec::<RD>::new());
-    assert_eq!(*converter.convert(5000).get_content(), Vec::<RD>::new());
-    assert_eq!(*converter.convert(5001).get_content(), Vec::<RD>::new());
-    assert_eq!(*converter.convert(9875).get_content(), Vec::<RD>::new());
+    assert_eq!(*converter.convert(0).unwrap().get_content(), Vec::<RD>::new());
+    assert_eq!(converter.convert(5000), Err(MaxNumberExceededError));
+    assert_eq!(converter.convert(5001), Err(MaxNumberExceededError));
+    assert_eq!(converter.convert(9875), Err(MaxNumberExceededError));
 
     // random
-    assert_eq!(*converter.convert(2).get_content(), vec![I, I]);
-    assert_eq!(*converter.convert(8).get_content(), vec![V, I, I, I]);
-    assert_eq!(*converter.convert(25).get_content(), vec![X, X, V]);
-    assert_eq!(*converter.convert(44).get_content(), vec![X, L, I, V]);
-    assert_eq!(*converter.convert(76).get_content(), vec![L, X, X, V, I]);
-    assert_eq!(*converter.convert(237).get_content(), vec![C, C, X, X, X, V, I, I]);
-    assert_eq!(*converter.convert(412).get_content(), vec![C, D, X, I, I]);
-    assert_eq!(*converter.convert(555).get_content(), vec![D, L, V]);
-    assert_eq!(*converter.convert(777).get_content(), vec![D, C, C, L, X, X, V, I, I]);
-    assert_eq!(*converter.convert(1111).get_content(), vec![M, C, X, I]);
-    assert_eq!(*converter.convert(1234).get_content(), vec![M, C, C, X, X, X, I, V]);
-    assert_eq!(*converter.convert(1453).get_content(), vec![M, C, D, L, I, I, I]);
-    assert_eq!(*converter.convert(1877).get_content(), vec![M, D, C, C, C, L, X, X, V, I, I]);
-    assert_eq!(*converter.convert(1918).get_content(), vec![M, C, M, X, V, I, I, I]);
-    assert_eq!(*converter.convert(2020).get_content(), vec![M, M, X, X]);
-    assert_eq!(*converter.convert(2222).get_content(), vec![M, M, C, C, X, X, I, I]);
-    assert_eq!(*converter.convert(2394).get_content(), vec![M, M, C, C, C, X, C, I, V]);
-    assert_eq!(*converter.convert(2695).get_content(), vec![M, M, D, C, X, C, V]);
-    assert_eq!(*converter.convert(2800).get_content(), vec![M, M, D, C, C, C]);
-    assert_eq!(*converter.convert(3000).get_content(), vec![M, M, M]);
-    assert_eq!(*converter.convert(3333).get_content(), vec![M, M, M, C, C, C, X, X, X, I, I, I]);
-    assert_eq!(*converter.convert(3456).get_content(), vec![M, M, M, C, D, L, V, I]);
-    assert_eq!(*converter.convert(3879).get_content(), vec![M, M, M, D, C, C, C, L, X, X, I, X]);
-    assert_eq!(*converter.convert(3987).get_content(), vec![M, M, M, C, M, L, X, X, X, V, I, I]);
-    assert_eq!(*converter.convert(4166).get_content(), vec![M, M, M, M, C, L, X, V, I]);
-    assert_eq!(*converter.convert(4444).get_content(), vec![M, M, M, M, C, D, X, L, I, V]);
-    assert_eq!(*converter.convert(4888).get_content(), vec![M, M, M, M, D, C, C, C, L, X, X, X, V, I, I, I]);
-    assert_eq!(*converter.convert(4987).get_content(), vec![M, M, M, M, C, M, L, X, X, X, V, I, I]);
-    assert_eq!(*converter.convert(4999).get_content(), vec![M, M, M, M, C, M, X, C, I, X]);
+    assert_eq!(*converter.convert(2).unwrap().get_content(), vec![I, I]);
+    assert_eq!(*converter.convert(8).unwrap().get_content(), vec![V, I, I, I]);
+    assert_eq!(*converter.convert(25).unwrap().get_content(), vec![X, X, V]);
+    assert_eq!(*converter.convert(44).unwrap().get_content(), vec![X, L, I, V]);
+    assert_eq!(*converter.convert(76).unwrap().get_content(), vec![L, X, X, V, I]);
+    assert_eq!(*converter.convert(237).unwrap().get_content(), vec![C, C, X, X, X, V, I, I]);
+    assert_eq!(*converter.convert(412).unwrap().get_content(), vec![C, D, X, I, I]);
+    assert_eq!(*converter.convert(555).unwrap().get_content(), vec![D, L, V]);
+    assert_eq!(*converter.convert(777).unwrap().get_content(), vec![D, C, C, L, X, X, V, I, I]);
+    assert_eq!(*converter.convert(1111).unwrap().get_content(), vec![M, C, X, I]);
+    assert_eq!(*converter.convert(1234).unwrap().get_content(), vec![M, C, C, X, X, X, I, V]);
+    assert_eq!(*converter.convert(1453).unwrap().get_content(), vec![M, C, D, L, I, I, I]);
+    assert_eq!(*converter.convert(1877).unwrap().get_content(), vec![M, D, C, C, C, L, X, X, V, I, I]);
+    assert_eq!(*converter.convert(1918).unwrap().get_content(), vec![M, C, M, X, V, I, I, I]);
+    assert_eq!(*converter.convert(2020).unwrap().get_content(), vec![M, M, X, X]);
+    assert_eq!(*converter.convert(2222).unwrap().get_content(), vec![M, M, C, C, X, X, I, I]);
+    assert_eq!(*converter.convert(2394).unwrap().get_content(), vec![M, M, C, C, C, X, C, I, V]);
+    assert_eq!(*converter.convert(2695).unwrap().get_content(), vec![M, M, D, C, X, C, V]);
+    assert_eq!(*converter.convert(2800).unwrap().get_content(), vec![M, M, D, C, C, C]);
+    assert_eq!(*converter.convert(3000).unwrap().get_content(), vec![M, M, M]);
+    assert_eq!(*converter.convert(3333).unwrap().get_content(), vec![M, M, M, C, C, C, X, X, X, I, I, I]);
+    assert_eq!(*converter.convert(3456).unwrap().get_content(), vec![M, M, M, C, D, L, V, I]);
+    assert_eq!(*converter.convert(3879).unwrap().get_content(), vec![M, M, M, D, C, C, C, L, X, X, I, X]);
+    assert_eq!(*converter.convert(3987).unwrap().get_content(), vec![M, M, M, C, M, L, X, X, X, V, I, I]);
+    assert_eq!(*converter.convert(4166).unwrap().get_content(), vec![M, M, M, M, C, L, X, V, I]);
+    assert_eq!(*converter.convert(4444).unwrap().get_content(), vec![M, M, M, M, C, D, X, L, I, V]);
+    assert_eq!(*converter.convert(4888).unwrap().get_content(), vec![M, M, M, M, D, C, C, C, L, X, X, X, V, I, I, I]);
+    assert_eq!(*converter.convert(4987).unwrap().get_content(), vec![M, M, M, M, C, M, L, X, X, X, V, I, I]);
+    assert_eq!(*converter.convert(4999).unwrap().get_content(), vec![M, M, M, M, C, M, X, C, I, X]);
 }
 
 #[test]

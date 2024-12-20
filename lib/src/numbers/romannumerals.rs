@@ -5,8 +5,12 @@ use regex::Regex;
 
 #[derive(PartialEq, Debug)]
 pub struct ParseRomanNumeralStringError;
+
 #[derive(PartialEq, Debug)]
 pub struct ParseRomanNumeralDigitsError;
+
+#[derive(PartialEq, Debug)]
+pub struct MaxNumberExceededError;
 
 #[derive(Eq, PartialEq, Clone, Hash, Debug)]
 pub enum RomanDigit {
@@ -164,8 +168,10 @@ impl NumberToRomanNumeralConverter {
     /*
     This method converts a number between 1 and 4999 to a roman numeral by using multiple integer thresholds (along with (modulo) division operations) for obtaining the output
      */
-    pub fn convert(&mut self, number: u16) -> RomanNumeral {
+    pub fn convert(&mut self, number: u16) -> Result<RomanNumeral, MaxNumberExceededError> {
 	self.reset();
+
+	let mut max_nr_exceeded = false;
 
 	if Self::is_within_valid_range(number) {
 	    self.remainder = number;
@@ -210,8 +216,13 @@ impl NumberToRomanNumeralConverter {
 
 	    self.handle_same_appended_char_threshold(1, 'I');
 	}
+	else if number != 0 {
+	    max_nr_exceeded = true;
+	}
 
-	RomanNumeral::from_string(&self.result_str)
+	// out-of-range is treated differently in respect to "direction": 0 results in empty numeral while exceeding threshold is considered an error
+	let result = if !max_nr_exceeded {Ok(RomanNumeral::from_string(&self.result_str))} else {Err(MaxNumberExceededError)};
+	result
     }
 
     fn handle_same_appended_char_threshold(&mut self, threshold: u16, char_to_append: char) -> bool {

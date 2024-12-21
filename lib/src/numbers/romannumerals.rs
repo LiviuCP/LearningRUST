@@ -84,6 +84,7 @@ impl FromStr for RomanNumeral {
     }
 }
 
+// provides display AND ToStr trait (for ToStr: see tests)
 impl fmt::Display for RomanNumeral {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
 	let numeral_str = self.content.iter().map(|roman_digit| roman_digit.as_char()).collect::<String>();
@@ -91,6 +92,7 @@ impl fmt::Display for RomanNumeral {
     }
 }
 
+// provides TryInto as well (see tests)
 impl TryFrom<Vec<RomanDigit>> for RomanNumeral {
     type Error = ParseRomanNumeralDigitsError;
 
@@ -144,6 +146,11 @@ impl RomanNumeral {
 	self.content.len() == 0
     }
 
+    /* error-free version of the from_str() method
+    - the string parsing error is turned into empty numeral
+    - the caller should interpret the empty result accordingly in relation to string input / should capture specific errors in advance (before calling this method)
+    - in other words this method should be called only "when the caller is sure" that the passed input is the "ok" one from requirements point of view
+    */
     fn from_string(numeral_str: &str) -> Self {
 	match Self::from_str(&numeral_str) {
 	    Ok(numeral) => numeral,
@@ -167,6 +174,7 @@ impl NumberToRomanNumeralConverter {
 
     /*
     This method converts a number between 1 and 4999 to a roman numeral by using multiple integer thresholds (along with (modulo) division operations) for obtaining the output
+    Special case: 0 (converted into empty numeral)
      */
     pub fn convert(&mut self, number: u16) -> Result<RomanNumeral, MaxNumberExceededError> {
 	self.reset();
@@ -220,7 +228,7 @@ impl NumberToRomanNumeralConverter {
 	    max_nr_exceeded = true;
 	}
 
-	// out-of-range is treated differently in respect to "direction": 0 results in empty numeral while exceeding threshold is considered an error
+	// out-of-range is treated in different ways: 0 results in empty numeral while exceeding threshold is considered an error
 	let result = if !max_nr_exceeded {Ok(RomanNumeral::from_string(&self.result_str))} else {Err(MaxNumberExceededError)};
 	result
     }
@@ -301,7 +309,7 @@ static ROMAN_NUMERALS_CONVERSION_MAP: phf::Map<[u8;2], &'static str> = phf_map! 
     [3, 4] => "MMMM"
 };
 
-/* Alternative method for converting integer to roman numeral, same constraints */
+/* Alternative method for converting integer to roman numeral, same constraints, same special case: 0 */
 pub fn convert_number_to_roman_numeral_using_hash(number: u16) -> Result<RomanNumeral, MaxNumberExceededError> {
     let mut result_str = String::new();
     let mut max_nr_exceeded = false;
@@ -321,7 +329,7 @@ pub fn convert_number_to_roman_numeral_using_hash(number: u16) -> Result<RomanNu
 	max_nr_exceeded = true;
     }
 
-    // out-of-range is treated differently in respect to "direction": 0 results in empty numeral while exceeding threshold is considered an error
+    // out-of-range is treated in different ways: 0 results in empty numeral while exceeding threshold is considered an error
     let result = if !max_nr_exceeded {Ok(RomanNumeral::from_string(&result_str))} else {Err(MaxNumberExceededError)};
     result
 }

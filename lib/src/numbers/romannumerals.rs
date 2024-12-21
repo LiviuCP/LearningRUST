@@ -1,7 +1,24 @@
-use std::collections::HashMap;
+use std::{fmt, str::FromStr, convert::{TryFrom, Into}, collections::HashMap};
 use crate::utilities;
 use phf::phf_map;
 use regex::Regex;
+
+/* A more general error, might occur when:
+- the roman numeral string has invalid characters
+- the roman numeral build rules are not followed (roman numeral format is not valid)
+*/
+#[derive(PartialEq, Debug)]
+pub struct ParseRomanNumeralStringError;
+
+/* A more specific error, occurs when the roman numeral build rules are not followed (e.g. numeral "IVI" is not valid) */
+#[derive(PartialEq, Debug)]
+pub struct ParseRomanNumeralDigitsError;
+
+/* A more specific error, occurs when the integer to be converted into roman numeral exceeds the maximum allowed value
+   (for this library this is currently 4999)
+*/
+#[derive(PartialEq, Debug)]
+pub struct MaxNumberExceededError;
 
 #[derive(Eq, PartialEq, Clone, Hash, Debug)]
 pub enum RomanDigit {
@@ -46,8 +63,72 @@ pub struct RomanNumeral {
     content: Vec::<RomanDigit>
 }
 
+impl FromStr for RomanNumeral {
+    type Err = ParseRomanNumeralStringError;
+
+    fn from_str(numeral_str: &str) -> Result<Self, Self::Err> {
+	let mut result = Err(ParseRomanNumeralStringError);
+
+	if Self::is_valid_roman_numeral_string(numeral_str) {
+	    let mut numeral = Self::create();
+
+	    for ch in numeral_str.chars() {
+		if let Some(roman_digit) = RomanDigit::from_char(ch) {
+		    numeral.content.push(roman_digit);
+		    continue;
+		}
+
+		numeral.content.clear();
+		panic!("Invalid roman digit detected! (should have been filtered out by regex)");
+	    }
+
+	    result = Ok(numeral);
+	}
+	else if numeral_str.is_empty() {
+	    result = Ok(RomanNumeral::create());
+	}
+
+	result
+    }
+}
+
+// provides display AND ToStr trait (for ToStr: see tests)
+impl fmt::Display for RomanNumeral {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+	let numeral_str = self.content.iter().map(|roman_digit| roman_digit.as_char()).collect::<String>();
+	write!(f, "{}", numeral_str)
+    }
+}
+
+// provides TryInto as well (see tests)
+impl TryFrom<Vec<RomanDigit>> for RomanNumeral {
+    type Error = ParseRomanNumeralDigitsError;
+
+    fn try_from(digits: Vec<RomanDigit>) -> Result<Self, Self::Error> {
+	let mut result = Ok(RomanNumeral::create());
+
+	if !digits.is_empty() {
+	    let numeral_str: String = digits.iter().map(|roman_digit| roman_digit.as_char()).collect();
+	    let numeral = Self::from_string(&numeral_str);
+	    result = if !numeral.empty() {Ok(numeral)} else {Err(ParseRomanNumeralDigitsError)};
+	}
+
+	result
+    }
+}
+
+impl Into<Vec<RomanDigit>> for RomanNumeral {
+    fn into(self) -> Vec<RomanDigit> {
+	return self.content
+    }
+}
+
 impl RomanNumeral {
     const MAX_CHARS_COUNT: usize = 16;
+
+    pub fn create() -> Self {
+	RomanNumeral{content: Vec::new()}
+    }
 
     pub fn is_valid_roman_numeral_string(numeral_str: &str) -> bool {
 	let mut is_valid = false;
@@ -61,33 +142,6 @@ impl RomanNumeral {
 	return is_valid;
     }
 
-    pub fn from_string(numeral_str: &str) -> Self {
-	let mut result = Self {content: Vec::new()};
-
-	if Self::is_valid_roman_numeral_string(numeral_str) {
-	    for ch in numeral_str.chars() {
-		if let Some(roman_digit) = RomanDigit::from_char(ch) {
-		    result.content.push(roman_digit);
-		    continue;
-		}
-
-		result.content.clear();
-		panic!("Invalid roman digit detected! (should have been filtered out by regex)");
-	    }
-	}
-
-	result
-    }
-
-    pub fn to_string(&self) -> String {
-	self.content.iter().map(|roman_digit| roman_digit.as_char()).collect()
-    }
-
-    pub fn from_roman_digits(digits: &Vec::<RomanDigit>) -> Self {
-	let numeral_str: String = digits.iter().map(|roman_digit| roman_digit.as_char()).collect();
-	Self::from_string(&numeral_str)
-    }
-
     pub fn get_content(&self) -> &Vec::<RomanDigit> {
 	&self.content
     }
@@ -98,6 +152,18 @@ impl RomanNumeral {
 
     pub fn empty(&self) -> bool {
 	self.content.len() == 0
+    }
+
+    /* error-free version of the from_str() method
+    - the string parsing error is turned into empty numeral
+    - the caller should interpret the empty result accordingly in relation to string input / should capture specific errors in advance (before calling this method)
+    - in other words this method should be called only "when the caller is sure" that the passed input is the "ok" one from requirements point of view
+    */
+    fn from_string(numeral_str: &str) -> Self {
+	match Self::from_str(&numeral_str) {
+	    Ok(numeral) => numeral,
+	    Err(_) => Self::create()
+	}
     }
 }
 
@@ -116,9 +182,12 @@ impl NumberToRomanNumeralConverter {
 
     /*
     This method converts a number between 1 and 4999 to a roman numeral by using multiple integer thresholds (along with (modulo) division operations) for obtaining the output
+    Special case: 0 (converted into empty numeral)
      */
-    pub fn convert(&mut self, number: u16) -> RomanNumeral {
+    pub fn convert(&mut self, number: u16) -> Result<RomanNumeral, MaxNumberExceededError> {
 	self.reset();
+
+	let mut max_nr_exceeded = false;
 
 	if Self::is_within_valid_range(number) {
 	    self.remainder = number;
@@ -163,8 +232,13 @@ impl NumberToRomanNumeralConverter {
 
 	    self.handle_same_appended_char_threshold(1, 'I');
 	}
+	else if number != 0 {
+	    max_nr_exceeded = true;
+	}
 
-	RomanNumeral::from_string(&self.result_str)
+	// out-of-range is treated in different ways: 0 results in empty numeral while exceeding threshold is considered an error
+	let result = if !max_nr_exceeded {Ok(RomanNumeral::from_string(&self.result_str))} else {Err(MaxNumberExceededError)};
+	result
     }
 
     fn handle_same_appended_char_threshold(&mut self, threshold: u16, char_to_append: char) -> bool {
@@ -243,9 +317,10 @@ static ROMAN_NUMERALS_CONVERSION_MAP: phf::Map<[u8;2], &'static str> = phf_map! 
     [3, 4] => "MMMM"
 };
 
-/* Alternative method for converting integer to roman numeral, same constraints */
-pub fn convert_number_to_roman_numeral_using_hash(number: u16) -> RomanNumeral {
-    let mut result = String::new();
+/* Alternative method for converting integer to roman numeral, same constraints, same special case: 0 */
+pub fn convert_number_to_roman_numeral_using_hash(number: u16) -> Result<RomanNumeral, MaxNumberExceededError> {
+    let mut result_str = String::new();
+    let mut max_nr_exceeded = false;
 
     if number > 0 && number < 5000 {
 	let digits = utilities::get_digits(number as u32);
@@ -253,13 +328,18 @@ pub fn convert_number_to_roman_numeral_using_hash(number: u16) -> RomanNumeral {
 	// no need to check the digits_count is > 0 for getting power_of_ten_index (see below), an integer should have min. 1 digit
 	let digits_count = digits.len();
 
-	result = digits.iter().enumerate().map(|(index, digit)| {
+	result_str = digits.iter().enumerate().map(|(index, digit)| {
 	    let power_of_ten_index = (digits_count - 1 - index) as u8; // place of the digit within the number, e.g. for thousands it is 3 corresponding to 10^3
 	    ROMAN_NUMERALS_CONVERSION_MAP.get(&[power_of_ten_index, *digit]).unwrap_or(&"").to_string()
 	}).collect();
     }
+    else if number != 0 {
+	max_nr_exceeded = true;
+    }
 
-    RomanNumeral::from_string(&result)
+    // out-of-range is treated in different ways: 0 results in empty numeral while exceeding threshold is considered an error
+    let result = if !max_nr_exceeded {Ok(RomanNumeral::from_string(&result_str))} else {Err(MaxNumberExceededError)};
+    result
 }
 
 // the inner value is the value of the digit

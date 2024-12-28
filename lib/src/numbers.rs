@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{cmp, collections::HashMap};
 
 pub mod romannumerals;
 
@@ -89,4 +89,45 @@ pub fn compute_mode(numbers_list: &Vec::<i32>) -> (usize, Vec::<i32>) {
     values_with_mode.sort();
 
     (mode, values_with_mode)
+}
+
+/* Some use cases for lifetimes */
+
+pub fn divide_higher_number_by_two<'a>(first: &'a mut i32, second: &'a mut i32) -> &'a i32 {
+    let result = if first >= second {first} else {second};
+    *result /= 2;
+    result
+}
+
+pub struct IntVectorWrapper<'a> {
+    int_vector: &'a mut Vec<i32>
+}
+
+impl<'a> IntVectorWrapper<'a> {
+    pub fn create(int_vec: &mut Vec<i32>) -> IntVectorWrapper {
+	IntVectorWrapper{int_vector: int_vec}
+    }
+
+    pub fn content(&self) -> &Vec<i32> {
+	self.int_vector
+    }
+
+    pub fn add_vector(&mut self, int_vector: &Vec<i32>) -> usize {
+	let nr_of_elements_to_add = cmp::min(self.int_vector.len(), int_vector.len());
+
+	for i in 0..nr_of_elements_to_add {
+	    self.int_vector[i] += int_vector[i];
+	}
+
+	nr_of_elements_to_add
+    }
+
+    pub fn push_element(&mut self, element: &i32) -> &i32 {
+	self.int_vector.push(*element);
+	&self.int_vector[self.int_vector.len() - 1]
+    }
+
+    pub fn clear(&mut self) {
+	self.int_vector.clear();
+    }
 }

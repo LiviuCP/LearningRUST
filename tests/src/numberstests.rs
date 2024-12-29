@@ -113,6 +113,47 @@ pub fn test_divide_higher_number_by_two() {
 }
 
 #[test]
+pub fn test_move_add() {
+    let mut to_be_added_to = vec![5, -3, 9, 2, 9];
+    let mut to_add = vec![4, 9, 9, 0, 5];
+
+    assert!(*numbers::move_add(&mut to_be_added_to, &mut to_add) == vec![9, 6, 18, 2, 14] && to_be_added_to == vec![9, 6, 18, 2, 14] && to_add.is_empty());
+
+    to_be_added_to = vec![2, 3, -4, 5];
+    to_add = vec![4, 9, 9, 0, 5];
+
+    assert!(*numbers::move_add(&mut to_be_added_to, &mut to_add) == vec![6, 12, 5, 5] && to_be_added_to == vec![6, 12, 5, 5] && to_add.is_empty());
+
+    to_be_added_to = vec![10, 8, 7, 6, 5, 4];
+    to_add = vec![4, 9, 9, 0, 5];
+
+    assert!(*numbers::move_add(&mut to_be_added_to, &mut to_add) == vec![14, 17, 16, 6, 10, 4] && to_be_added_to == vec![14, 17, 16, 6, 10, 4] && to_add.is_empty());
+
+    to_be_added_to = Vec::new();
+    to_add = vec![4, 9, 9, 0, 5];
+
+    assert!(numbers::move_add(&mut to_be_added_to, &mut to_add).is_empty() && to_be_added_to.is_empty() && to_add.is_empty());
+
+    to_be_added_to = vec![4, 9, 9, 0, 5];
+    to_add = Vec::new();
+
+    assert!(*numbers::move_add(&mut to_be_added_to, &mut to_add) == vec![4, 9, 9, 0, 5] && to_be_added_to == vec![4, 9, 9, 0, 5] && to_add.is_empty());
+
+    // scope testing
+    to_be_added_to = vec![2, -5, 4, 8, 0];
+    let result;
+
+    {
+	let mut to_add_another = vec![0, -2, 5, 10, 2];
+	result = numbers::move_add(&mut to_be_added_to, &mut to_add_another);
+
+	assert!(to_add_another.is_empty());
+    }
+
+    assert!(*result == [2, -7, 9, 18, 2] && to_be_added_to == [2, -7, 9, 18, 2]);
+}
+
+#[test]
 pub fn test_int_vector_wrapper_create() {
     let mut int_vec = vec![5, -3, 4, 2, 8];
     let mut avg = 0;

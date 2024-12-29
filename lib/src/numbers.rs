@@ -99,6 +99,18 @@ pub fn divide_higher_number_by_two<'a>(first: &'a mut i32, second: &'a mut i32) 
     result
 }
 
+pub fn move_add<'a>(to_be_added_to: &'a mut Vec<i32>, to_add: &mut Vec<i32>) -> &'a Vec<i32> {
+    let nr_of_elements_to_add = cmp::min(to_be_added_to.len(), to_add.len());
+
+    for i in 0..nr_of_elements_to_add {
+	to_be_added_to[i] += to_add[i];
+    }
+
+    to_add.clear();
+
+    to_be_added_to
+}
+
 pub struct IntVectorWrapper<'a> {
     int_vector: &'a mut Vec<i32>,
     average: &'a mut i32

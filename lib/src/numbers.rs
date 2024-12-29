@@ -100,16 +100,23 @@ pub fn divide_higher_number_by_two<'a>(first: &'a mut i32, second: &'a mut i32) 
 }
 
 pub struct IntVectorWrapper<'a> {
-    int_vector: &'a mut Vec<i32>
+    int_vector: &'a mut Vec<i32>,
+    average: &'a mut i32
 }
 
 impl<'a> IntVectorWrapper<'a> {
-    pub fn create(int_vec: &mut Vec<i32>) -> IntVectorWrapper {
-	IntVectorWrapper{int_vector: int_vec}
+    pub fn create(int_vec: &'a mut Vec<i32>, avg: &'a mut i32) -> IntVectorWrapper<'a> {
+	let mut result = IntVectorWrapper{int_vector: int_vec, average: avg};
+	result.compute_average();
+	result
     }
 
     pub fn content(&self) -> &Vec<i32> {
 	self.int_vector
+    }
+
+    pub fn average(&self) -> &i32 {
+	self.average
     }
 
     pub fn add_vector(&mut self, int_vector: &Vec<i32>) -> usize {
@@ -119,15 +126,32 @@ impl<'a> IntVectorWrapper<'a> {
 	    self.int_vector[i] += int_vector[i];
 	}
 
+	if nr_of_elements_to_add > 0 {
+	    self.compute_average();
+	}
+
 	nr_of_elements_to_add
     }
 
     pub fn push_element(&mut self, element: &i32) -> &i32 {
 	self.int_vector.push(*element);
+	self.compute_average();
 	&self.int_vector[self.int_vector.len() - 1]
     }
 
     pub fn clear(&mut self) {
 	self.int_vector.clear();
+	*self.average = 0;
+    }
+
+    fn compute_average(&mut self) {
+	let mut sum = 0;
+
+	for element in self.int_vector.iter() {
+	    sum += *element;
+	}
+
+	let count = self.int_vector.len() as i32;
+	*self.average = if count > 0 {sum / count} else {0};
     }
 }

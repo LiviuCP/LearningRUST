@@ -115,122 +115,129 @@ pub fn test_divide_higher_number_by_two() {
 #[test]
 pub fn test_int_vector_wrapper_create() {
     let mut int_vec = vec![5, -3, 4, 2, 8];
-    let mut int_vec_wrapper = numbers::IntVectorWrapper::create(&mut int_vec);
+    let mut avg = 0;
+    let mut int_vec_wrapper = numbers::IntVectorWrapper::create(&mut int_vec, &mut avg);
 
-    assert_eq!(*int_vec_wrapper.content(), vec![5, -3, 4, 2, 8]);
+    assert!(*int_vec_wrapper.content() == vec![5, -3, 4, 2, 8] && *int_vec_wrapper.average() == 3);
 
     int_vec = vec![9];
-    int_vec_wrapper = numbers::IntVectorWrapper::create(&mut int_vec);
+    int_vec_wrapper = numbers::IntVectorWrapper::create(&mut int_vec, &mut avg);
 
-    assert_eq!(*int_vec_wrapper.content(), vec![9]);
+    assert!(*int_vec_wrapper.content() == vec![9] && *int_vec_wrapper.average() == 9);
 
     int_vec.clear();
-    int_vec_wrapper = numbers::IntVectorWrapper::create(&mut int_vec);
+    int_vec_wrapper = numbers::IntVectorWrapper::create(&mut int_vec, &mut avg);
 
-    assert!(int_vec_wrapper.content().is_empty());
+    assert!(int_vec_wrapper.content().is_empty() && *int_vec_wrapper.average() == 0);
 }
 
 #[test]
 pub fn test_int_vector_wrapper_add_vector() {
     let mut int_vec = vec![5, -3, 9, 2, 9];
+    let mut avg = 0;
     let int_vec_to_add = vec![4, 9, 9, 0, 5];
-    let mut int_vec_wrapper = numbers::IntVectorWrapper::create(&mut int_vec);
+    let int_vec_to_add_average = 5;
+    let mut int_vec_wrapper = numbers::IntVectorWrapper::create(&mut int_vec, &mut avg);
     let mut added_elements_count = int_vec_wrapper.add_vector(&int_vec_to_add);
 
-    assert!(added_elements_count == 5 && *int_vec_wrapper.content() == vec![9, 6, 18, 2, 14]);
+    assert!(added_elements_count == 5 && *int_vec_wrapper.content() == vec![9, 6, 18, 2, 14] && *int_vec_wrapper.average() == 9);
 
     int_vec = vec![2, 3, -4, 5];
-    int_vec_wrapper = numbers::IntVectorWrapper::create(&mut int_vec);
+    int_vec_wrapper = numbers::IntVectorWrapper::create(&mut int_vec, &mut avg);
     added_elements_count = int_vec_wrapper.add_vector(&int_vec_to_add);
 
-    assert!(added_elements_count == 4 && *int_vec_wrapper.content() == vec![6, 12, 5, 5]);
+    assert!(added_elements_count == 4 && *int_vec_wrapper.content() == vec![6, 12, 5, 5] && *int_vec_wrapper.average() == 7);
 
     int_vec = vec![10, 8, 7, 6, 5, 4];
-    int_vec_wrapper = numbers::IntVectorWrapper::create(&mut int_vec);
+    int_vec_wrapper = numbers::IntVectorWrapper::create(&mut int_vec, &mut avg);
     added_elements_count = int_vec_wrapper.add_vector(&int_vec_to_add);
 
-    assert!(added_elements_count == 5 && *int_vec_wrapper.content() == vec![14, 17, 16, 6, 10, 4]);
+    assert!(added_elements_count == 5 && *int_vec_wrapper.content() == vec![14, 17, 16, 6, 10, 4] && *int_vec_wrapper.average() == 11);
 
     int_vec = Vec::new();
-    int_vec_wrapper = numbers::IntVectorWrapper::create(&mut int_vec);
+    int_vec_wrapper = numbers::IntVectorWrapper::create(&mut int_vec, &mut avg);
     added_elements_count = int_vec_wrapper.add_vector(&int_vec_to_add);
 
-    assert!(added_elements_count == 0 && int_vec_wrapper.content().is_empty());
+    assert!(added_elements_count == 0 && int_vec_wrapper.content().is_empty() && *int_vec_wrapper.average() == 0);
 
     int_vec = int_vec_to_add.clone();
-    int_vec_wrapper = numbers::IntVectorWrapper::create(&mut int_vec);
+    int_vec_wrapper = numbers::IntVectorWrapper::create(&mut int_vec, &mut avg);
     added_elements_count = int_vec_wrapper.add_vector(&Vec::new());
 
-    assert!(added_elements_count == 0 && *int_vec_wrapper.content() == int_vec_to_add);
+    assert!(added_elements_count == 0 && *int_vec_wrapper.content() == int_vec_to_add && *int_vec_wrapper.average() == int_vec_to_add_average);
 }
 
 #[test]
 pub fn test_int_vector_wrapper_push_element() {
     let mut int_vec = vec![5, -3, 9, 2, 9];
-    let mut int_vec_wrapper = numbers::IntVectorWrapper::create(&mut int_vec);
+    let mut avg = 0;
+    let mut int_vec_wrapper = numbers::IntVectorWrapper::create(&mut int_vec, &mut avg);
     let element = 40;
 
-    assert!(*int_vec_wrapper.push_element(&element) == 40 && *int_vec_wrapper.content() == vec![5, -3, 9, 2, 9, 40]);
-    assert!(*int_vec_wrapper.push_element(&-30) == -30 && *int_vec_wrapper.content() == vec![5, -3, 9, 2, 9, 40, -30]);
+    assert!(*int_vec_wrapper.push_element(&element) == 40 && *int_vec_wrapper.content() == vec![5, -3, 9, 2, 9, 40] && *int_vec_wrapper.average() == 10);
+    assert!(*int_vec_wrapper.push_element(&-30) == -30 && *int_vec_wrapper.content() == vec![5, -3, 9, 2, 9, 40, -30] && *int_vec_wrapper.average() == 4);
 
     int_vec = Vec::new();
-    int_vec_wrapper = numbers::IntVectorWrapper::create(&mut int_vec);
+    int_vec_wrapper = numbers::IntVectorWrapper::create(&mut int_vec, &mut avg);
 
-    assert!(*int_vec_wrapper.push_element(&-30) == -30 && *int_vec_wrapper.content() == vec![-30]);
-    assert!(*int_vec_wrapper.push_element(&element) == 40 && *int_vec_wrapper.content() == vec![-30, 40]);
+    assert!(*int_vec_wrapper.push_element(&-30) == -30 && *int_vec_wrapper.content() == vec![-30] && *int_vec_wrapper.average() == -30);
+    assert!(*int_vec_wrapper.push_element(&element) == 40 && *int_vec_wrapper.content() == vec![-30, 40] && *int_vec_wrapper.average() == 5);
 }
 
 #[test]
 pub fn test_int_vector_wrapper_clear() {
     let mut int_vec = vec![5, -3, 9, 2, 9];
-    let mut int_vec_wrapper = numbers::IntVectorWrapper::create(&mut int_vec);
+    let mut avg = -1;
+    let mut int_vec_wrapper = numbers::IntVectorWrapper::create(&mut int_vec, &mut avg);
     int_vec_wrapper.clear();
 
-    assert!(int_vec_wrapper.content().is_empty());
+    assert!(int_vec_wrapper.content().is_empty() && *int_vec_wrapper.average() == 0);
 
-    let mut int_vec = Vec::new();
-    let mut int_vec_wrapper = numbers::IntVectorWrapper::create(&mut int_vec);
+    int_vec = Vec::new();
+    avg = -1;
+    int_vec_wrapper = numbers::IntVectorWrapper::create(&mut int_vec, &mut avg);
     int_vec_wrapper.clear();
 
-    assert!(int_vec_wrapper.content().is_empty());
+    assert!(int_vec_wrapper.content().is_empty() && *int_vec_wrapper.average() == 0);
 }
 
 #[test]
 pub fn test_int_vector_mixed() {
     let mut int_vec = vec![5, -3, 9, 2, 9];
+    let mut avg = 0;
 
     {
-	let mut first_int_vec_wrapper = numbers::IntVectorWrapper::create(&mut int_vec);
+	let mut first_int_vec_wrapper = numbers::IntVectorWrapper::create(&mut int_vec, &mut avg);
 	first_int_vec_wrapper.add_vector(&vec![3, 6, 9, 12]);
     } // not mandatory but to illustrate this wrapper cannot be re-used (int_vec to be borrowed immutably into assert and then mutably to another wrapper)
 
-    assert_eq!(int_vec, vec![8, 3, 18, 14, 9]);
+    assert!(int_vec == vec![8, 3, 18, 14, 9] && avg == 10);
 
     {
-	let mut second_int_vec_wrapper = numbers::IntVectorWrapper::create(&mut int_vec);
+	let mut second_int_vec_wrapper = numbers::IntVectorWrapper::create(&mut int_vec, &mut avg);
 	second_int_vec_wrapper.push_element(&20);
     } // same here
 
-    assert_eq!(int_vec, vec![8, 3, 18, 14, 9, 20]);
+    assert!(int_vec == vec![8, 3, 18, 14, 9, 20] && avg == 12);
 
     {
-	let mut third_int_vec_wrapper = numbers::IntVectorWrapper::create(&mut int_vec);
+	let mut third_int_vec_wrapper = numbers::IntVectorWrapper::create(&mut int_vec, &mut avg);
 	third_int_vec_wrapper.clear();
     } // same here
 
-    assert!(int_vec.is_empty());
+    assert!(int_vec.is_empty() && avg == 0);
 
     int_vec.push(5);
 
     {
-	let mut fourth_int_vec_wrapper = numbers::IntVectorWrapper::create(&mut int_vec);
+	let mut fourth_int_vec_wrapper = numbers::IntVectorWrapper::create(&mut int_vec, &mut avg);
 	fourth_int_vec_wrapper.push_element(&-9);
-	assert_eq!(*fourth_int_vec_wrapper.content(), vec![5, -9]);
+	assert!(*fourth_int_vec_wrapper.content() == vec![5, -9] && *fourth_int_vec_wrapper.average() == -2);
 
 	fourth_int_vec_wrapper.add_vector(&vec![9, 10]);
-	assert_eq!(*fourth_int_vec_wrapper.content(), vec![14, 1]);
+	assert!(*fourth_int_vec_wrapper.content() == vec![14, 1] && *fourth_int_vec_wrapper.average() == 7);
     } // not mandatory but to illustrate this wrapper cannot be re-used (int_vec retakes control)
 
     int_vec.clear();
-    assert!(int_vec.is_empty());
+    assert!(int_vec.is_empty() && avg == 7);
 }

@@ -1,4 +1,4 @@
-use std::{cmp, collections::HashMap};
+use std::collections::HashMap;
 
 pub mod romannumerals;
 
@@ -100,14 +100,11 @@ pub fn divide_higher_number_by_two<'a>(first: &'a mut i32, second: &'a mut i32) 
 }
 
 pub fn move_add<'a>(to_be_added_to: &'a mut Vec<i32>, to_add: &mut Vec<i32>) -> &'a Vec<i32> {
-    let nr_of_elements_to_add = cmp::min(to_be_added_to.len(), to_add.len());
-
-    for i in 0..nr_of_elements_to_add {
-	to_be_added_to[i] += to_add[i];
+    for (dest_element, src_element) in to_be_added_to.iter_mut().zip(to_add.iter()) {
+	*dest_element += src_element;
     }
 
     to_add.clear();
-
     to_be_added_to
 }
 
@@ -132,17 +129,19 @@ impl<'a> IntVectorWrapper<'a> {
     }
 
     pub fn add_vector(&mut self, int_vector: &Vec<i32>) -> usize {
-	let nr_of_elements_to_add = cmp::min(self.int_vector.len(), int_vector.len());
+	let mut added_elements_count = 0;
 
-	for i in 0..nr_of_elements_to_add {
-	    self.int_vector[i] += int_vector[i];
+	for (dest_element, src_element) in self.int_vector.iter_mut().zip(int_vector.iter()) {
+	    *dest_element += src_element;
+	    added_elements_count += 1;
 	}
-
-	if nr_of_elements_to_add > 0 {
+	
+	
+	if added_elements_count > 0 {
 	    self.compute_average();
 	}
 
-	nr_of_elements_to_add
+	added_elements_count
     }
 
     pub fn push_element(&mut self, element: &i32) -> &i32 {
@@ -157,13 +156,6 @@ impl<'a> IntVectorWrapper<'a> {
     }
 
     fn compute_average(&mut self) {
-	let mut sum = 0;
-
-	for element in self.int_vector.iter() {
-	    sum += *element;
-	}
-
-	let count = self.int_vector.len() as i32;
-	*self.average = if count > 0 {sum / count} else {0};
+	*self.average = if !self.int_vector.is_empty() {self.int_vector.iter().sum::<i32>() / self.int_vector.len() as i32} else {0};
     }
 }

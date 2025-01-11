@@ -16,5 +16,8 @@ pub fn test_get_digits() {
     assert_eq!(utilities::get_digits(23), vec![2, 3]);
     assert_eq!(utilities::get_digits(412), vec![4, 1, 2]);
     assert_eq!(utilities::get_digits(6295), vec![6, 2, 9, 5]);
-    assert_eq!(utilities::get_digits(20543219), vec![2, 0, 5, 4, 3, 2, 1, 9]);
+    assert_eq!(
+        utilities::get_digits(20543219),
+        vec![2, 0, 5, 4, 3, 2, 1, 9]
+    );
 }

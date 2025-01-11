@@ -1,7 +1,10 @@
 #[cfg(test)]
-
-use learn_rust_lib::cons::{conslists::ConsList, conslisthelpers::{create_rc_im_list, create_rc_im_list_from_vec, values}, InvalidIndex};
-use std::{rc::Rc, cell::RefCell};
+use learn_rust_lib::cons::{
+    conslisthelpers::{create_rc_im_list, create_rc_im_list_from_vec, values},
+    conslists::ConsList,
+    InvalidIndex,
+};
+use std::{cell::RefCell, rc::Rc};
 
 #[test]
 pub fn test_create() {
@@ -12,7 +15,11 @@ pub fn test_create() {
 #[test]
 pub fn test_create_from_vec() {
     let mut list = create_rc_im_list_from_vec(&vec![-4, 8, -3, -3, 5, 0, 2, 1]);
-    assert!(values(&list.content()) == vec![-4, 8, -3, -3, 5, 0, 2, 1] && list.size() == 8 && !list.empty());
+    assert!(
+        values(&list.content()) == vec![-4, 8, -3, -3, 5, 0, 2, 1]
+            && list.size() == 8
+            && !list.empty()
+    );
 
     list = create_rc_im_list_from_vec(&vec![2, 5]);
     assert!(values(&list.content()) == vec![2, 5] && list.size() == 2 && !list.empty());
@@ -89,16 +96,16 @@ pub fn test_im_iter_read_write() {
     let list = create_rc_im_list_from_vec(&vec![-4, 8, -3, -3, 5, 0, 2, 1]);
 
     for item in list.iter() {
-	*item.borrow_mut() += 2;
+        *item.borrow_mut() += 2;
     }
 
     assert!(values(&list.content()) == vec![-2, 10, -1, -1, 7, 2, 4, 3] && list.size() == 8);
 
     for item in list.iter() {
-	// variable required as it is not allowed to borrow twice in the same statement
-	let temp = *item.borrow();
-	
-	*item.borrow_mut() = temp / 2;
+        // variable required as it is not allowed to borrow twice in the same statement
+        let temp = *item.borrow();
+
+        *item.borrow_mut() = temp / 2;
     }
 
     assert!(values(&list.content()) == vec![-1, 5, 0, 0, 3, 1, 2, 1] && list.size() == 8);
@@ -143,12 +150,18 @@ pub fn test_pop_front() {
     let mut list = create_rc_im_list_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     let mut result = list.pop_front();
 
-    assert!(*result.unwrap().borrow() == 8 && values(&list.content()) == vec![-3, -3, 5, 0, 2, 1, -4] && list.size() == 7);
+    assert!(
+        *result.unwrap().borrow() == 8
+            && values(&list.content()) == vec![-3, -3, 5, 0, 2, 1, -4]
+            && list.size() == 7
+    );
 
     list = create_rc_im_list_from_vec(&vec![3, 0]);
     result = list.pop_front();
 
-    assert!(*result.unwrap().borrow() == 3 && values(&list.content()) == vec![0] && list.size() == 1);
+    assert!(
+        *result.unwrap().borrow() == 3 && values(&list.content()) == vec![0] && list.size() == 1
+    );
 
     list = create_rc_im_list_from_vec(&vec![-2]);
     result = list.pop_front();
@@ -187,12 +200,18 @@ pub fn test_pop_back() {
     let mut list = create_rc_im_list_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     let mut result = list.pop_back();
 
-    assert!(*result.unwrap().borrow() == -4 && values(&list.content()) == vec![8, -3, -3, 5, 0, 2, 1] && list.size() == 7);
+    assert!(
+        *result.unwrap().borrow() == -4
+            && values(&list.content()) == vec![8, -3, -3, 5, 0, 2, 1]
+            && list.size() == 7
+    );
 
     list = create_rc_im_list_from_vec(&vec![3, 0]);
     result = list.pop_back();
 
-    assert!(*result.unwrap().borrow() == 0 && values(&list.content()) == vec![3] && list.size() == 1);
+    assert!(
+        *result.unwrap().borrow() == 0 && values(&list.content()) == vec![3] && list.size() == 1
+    );
 
     list = create_rc_im_list_from_vec(&vec![-2]);
     result = list.pop_back();
@@ -211,27 +230,47 @@ pub fn test_insert() {
     let mut value = Rc::new(RefCell::new(9));
     let mut result = list.insert(&value, 0);
 
-    assert!(result == Ok(0) && values(&list.content()) == vec![9, 8, -3, -3, 5, 0, 2, 1, -4] && list.size() == 9);
+    assert!(
+        result == Ok(0)
+            && values(&list.content()) == vec![9, 8, -3, -3, 5, 0, 2, 1, -4]
+            && list.size() == 9
+    );
 
     list = create_rc_im_list_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     result = list.insert(&value, 2);
 
-    assert!(result == Ok(2) && values(&list.content()) == vec![8, -3, 9, -3, 5, 0, 2, 1, -4] && list.size() == 9);
+    assert!(
+        result == Ok(2)
+            && values(&list.content()) == vec![8, -3, 9, -3, 5, 0, 2, 1, -4]
+            && list.size() == 9
+    );
 
     list = create_rc_im_list_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     result = list.insert(&value, 7);
 
-    assert!(result == Ok(7) && values(&list.content()) == vec![8, -3, -3, 5, 0, 2, 1, 9, -4] && list.size() == 9);
+    assert!(
+        result == Ok(7)
+            && values(&list.content()) == vec![8, -3, -3, 5, 0, 2, 1, 9, -4]
+            && list.size() == 9
+    );
 
     list = create_rc_im_list_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     result = list.insert(&value, 8);
 
-    assert!(result == Ok(8) && values(&list.content()) == vec![8, -3, -3, 5, 0, 2, 1, -4, 9] && list.size() == 9);
+    assert!(
+        result == Ok(8)
+            && values(&list.content()) == vec![8, -3, -3, 5, 0, 2, 1, -4, 9]
+            && list.size() == 9
+    );
 
     list = create_rc_im_list_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     result = list.insert(&value, 9);
 
-    assert!(result == Err(InvalidIndex) && values(&list.content()) == vec![8, -3, -3, 5, 0, 2, 1, -4] && list.size() == 8);
+    assert!(
+        result == Err(InvalidIndex)
+            && values(&list.content()) == vec![8, -3, -3, 5, 0, 2, 1, -4]
+            && list.size() == 8
+    );
 
     list = create_rc_im_list_from_vec(&vec![2, 4, -3]);
     value = Rc::new(RefCell::new(8));
@@ -257,7 +296,11 @@ pub fn test_insert() {
     list = create_rc_im_list_from_vec(&vec![2, 4, -3]);
     result = list.insert(&value, 4);
 
-    assert!(result == Err(InvalidIndex) && values(&list.content()) == vec![2, 4, -3] && list.size() == 3);
+    assert!(
+        result == Err(InvalidIndex)
+            && values(&list.content()) == vec![2, 4, -3]
+            && list.size() == 3
+    );
 
     list = create_rc_im_list_from_vec(&vec![9, 5]);
     value = Rc::new(RefCell::new(-7));
@@ -278,7 +321,9 @@ pub fn test_insert() {
     list = create_rc_im_list_from_vec(&vec![9, 5]);
     result = list.insert(&value, 3);
 
-    assert!(result == Err(InvalidIndex) && values(&list.content()) == vec![9, 5] && list.size() == 2);
+    assert!(
+        result == Err(InvalidIndex) && values(&list.content()) == vec![9, 5] && list.size() == 2
+    );
 
     list = create_rc_im_list_from_vec(&vec![-4]);
     value = Rc::new(RefCell::new(5));
@@ -313,57 +358,95 @@ pub fn test_remove() {
     let mut list = create_rc_im_list_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     let mut result = list.remove(0);
 
-    assert!(*result.unwrap().borrow() == 8 && values(&list.content()) == vec![-3, -3, 5, 0, 2, 1, -4] && list.size() == 7);
+    assert!(
+        *result.unwrap().borrow() == 8
+            && values(&list.content()) == vec![-3, -3, 5, 0, 2, 1, -4]
+            && list.size() == 7
+    );
 
     list = create_rc_im_list_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     result = list.remove(4);
 
-    assert!(*result.unwrap().borrow() == 0 && values(&list.content()) == vec![8, -3, -3, 5, 2, 1, -4] && list.size() == 7);
+    assert!(
+        *result.unwrap().borrow() == 0
+            && values(&list.content()) == vec![8, -3, -3, 5, 2, 1, -4]
+            && list.size() == 7
+    );
 
     list = create_rc_im_list_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     result = list.remove(7);
 
-    assert!(*result.unwrap().borrow() == -4 && values(&list.content()) == vec![8, -3, -3, 5, 0, 2, 1] && list.size() == 7);
+    assert!(
+        *result.unwrap().borrow() == -4
+            && values(&list.content()) == vec![8, -3, -3, 5, 0, 2, 1]
+            && list.size() == 7
+    );
 
     list = create_rc_im_list_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     result = list.remove(8);
 
-    assert!(result == Err(InvalidIndex) && values(&list.content()) == vec![8, -3, -3, 5, 0, 2, 1, -4] && list.size() == 8);
+    assert!(
+        result == Err(InvalidIndex)
+            && values(&list.content()) == vec![8, -3, -3, 5, 0, 2, 1, -4]
+            && list.size() == 8
+    );
 
     list = create_rc_im_list_from_vec(&vec![2, 4, -3]);
     result = list.remove(0);
 
-    assert!(*result.unwrap().borrow() == 2 && values(&list.content()) == vec![4, -3] && list.size() == 2);
+    assert!(
+        *result.unwrap().borrow() == 2
+            && values(&list.content()) == vec![4, -3]
+            && list.size() == 2
+    );
 
     list = create_rc_im_list_from_vec(&vec![2, 4, -3]);
     result = list.remove(1);
 
-    assert!(*result.unwrap().borrow() == 4 && values(&list.content()) == vec![2, -3] && list.size() == 2);
+    assert!(
+        *result.unwrap().borrow() == 4
+            && values(&list.content()) == vec![2, -3]
+            && list.size() == 2
+    );
 
     list = create_rc_im_list_from_vec(&vec![2, 4, -3]);
     result = list.remove(2);
 
-    assert!(*result.unwrap().borrow() == -3 && values(&list.content()) == vec![2, 4] && list.size() == 2);
+    assert!(
+        *result.unwrap().borrow() == -3
+            && values(&list.content()) == vec![2, 4]
+            && list.size() == 2
+    );
 
     list = create_rc_im_list_from_vec(&vec![2, 4, -3]);
     result = list.remove(3);
 
-    assert!(result == Err(InvalidIndex) && values(&list.content()) == vec![2, 4, -3] && list.size() == 3);
+    assert!(
+        result == Err(InvalidIndex)
+            && values(&list.content()) == vec![2, 4, -3]
+            && list.size() == 3
+    );
 
     list = create_rc_im_list_from_vec(&vec![9, 5]);
     result = list.remove(0);
 
-    assert!(*result.unwrap().borrow() == 9 && values(&list.content()) == vec![5] && list.size() == 1);
+    assert!(
+        *result.unwrap().borrow() == 9 && values(&list.content()) == vec![5] && list.size() == 1
+    );
 
     list = create_rc_im_list_from_vec(&vec![9, 5]);
     result = list.remove(1);
 
-    assert!(*result.unwrap().borrow() == 5 && values(&list.content()) == vec![9] && list.size() == 1);
+    assert!(
+        *result.unwrap().borrow() == 5 && values(&list.content()) == vec![9] && list.size() == 1
+    );
 
     list = create_rc_im_list_from_vec(&vec![9, 5]);
     result = list.remove(2);
 
-    assert!(result == Err(InvalidIndex) && values(&list.content()) == vec![9, 5] && list.size() == 2);
+    assert!(
+        result == Err(InvalidIndex) && values(&list.content()) == vec![9, 5] && list.size() == 2
+    );
 
     list = create_rc_im_list_from_vec(&vec![-4]);
     result = list.remove(0);
@@ -459,14 +542,18 @@ pub fn test_merge() {
     second_list = create_rc_im_list_from_vec(&vec![9, 1, 1, 8]);
     first_list.merge(&mut second_list);
 
-    assert!(values(&first_list.content()) == vec![2, -5, 4, 3, 4, 9, 1, 1, 8] && first_list.size() == 9);
+    assert!(
+        values(&first_list.content()) == vec![2, -5, 4, 3, 4, 9, 1, 1, 8] && first_list.size() == 9
+    );
     assert!(second_list.empty());
 
     first_list = create_rc_im_list_from_vec(&vec![9, 1, 1, 8]);
     second_list = create_rc_im_list_from_vec(&vec![2, -5, 4, 3, 4]);
     first_list.merge(&mut second_list);
 
-    assert!(values(&first_list.content()) == vec![9, 1, 1, 8, 2, -5, 4, 3, 4] && first_list.size() == 9);
+    assert!(
+        values(&first_list.content()) == vec![9, 1, 1, 8, 2, -5, 4, 3, 4] && first_list.size() == 9
+    );
     assert!(second_list.empty());
 }
 
@@ -478,7 +565,10 @@ pub fn test_split() {
 
     assert_eq!(result, Ok(0));
     assert!(first_list.empty());
-    assert!(values(&second_list.content()) == vec![2, -5, 4, 3, 4, 9, 1, 1, 8] && second_list.size() == 9);
+    assert!(
+        values(&second_list.content()) == vec![2, -5, 4, 3, 4, 9, 1, 1, 8]
+            && second_list.size() == 9
+    );
 
     first_list = create_rc_im_list_from_vec(&vec![2, -5, 4, 3, 4, 9, 1, 1, 8]);
     second_list = ConsList::create();
@@ -486,7 +576,9 @@ pub fn test_split() {
 
     assert_eq!(result, Ok(1));
     assert!(values(&first_list.content()) == vec![2] && first_list.size() == 1);
-    assert!(values(&second_list.content()) == vec![-5, 4, 3, 4, 9, 1, 1, 8] && second_list.size() == 8);
+    assert!(
+        values(&second_list.content()) == vec![-5, 4, 3, 4, 9, 1, 1, 8] && second_list.size() == 8
+    );
 
     first_list = create_rc_im_list_from_vec(&vec![2, -5, 4, 3, 4, 9, 1, 1, 8]);
     second_list = ConsList::create();
@@ -509,7 +601,9 @@ pub fn test_split() {
     result = first_list.split(&mut second_list, 8);
 
     assert_eq!(result, Ok(8));
-    assert!(values(&first_list.content()) == vec![2, -5, 4, 3, 4, 9, 1, 1] && first_list.size() == 8);
+    assert!(
+        values(&first_list.content()) == vec![2, -5, 4, 3, 4, 9, 1, 1] && first_list.size() == 8
+    );
     assert!(values(&second_list.content()) == vec![8] && second_list.size() == 1);
 
     first_list = create_rc_im_list_from_vec(&vec![2, -5, 4, 3, 4, 9, 1, 1, 8]);
@@ -517,7 +611,9 @@ pub fn test_split() {
     result = first_list.split(&mut second_list, 9);
 
     assert_eq!(result, Err(InvalidIndex));
-    assert!(values(&first_list.content()) == vec![2, -5, 4, 3, 4, 9, 1, 1, 8] && first_list.size() == 9);
+    assert!(
+        values(&first_list.content()) == vec![2, -5, 4, 3, 4, 9, 1, 1, 8] && first_list.size() == 9
+    );
     assert!(second_list.empty());
 
     first_list = create_rc_im_list_from_vec(&vec![9, -7, 8]);
@@ -614,7 +710,9 @@ pub fn test_split() {
     result = first_list.split(&mut second_list, 9);
 
     assert_eq!(result, Err(InvalidIndex));
-    assert!(values(&first_list.content()) == vec![2, -5, 4, 3, 4, 9, 1, 1, 8] && first_list.size() == 9);
+    assert!(
+        values(&first_list.content()) == vec![2, -5, 4, 3, 4, 9, 1, 1, 8] && first_list.size() == 9
+    );
     assert!(values(&second_list.content()) == vec![4, 0, -2, -4] && second_list.size() == 4);
 }
 

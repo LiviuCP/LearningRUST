@@ -1,6 +1,9 @@
 #[cfg(test)]
-
-use learn_rust_lib::cons::{conslists::ConsList, conslisthelpers::{create_rc_ro_list, create_rc_ro_list_from_vec, ro_values}, InvalidIndex};
+use learn_rust_lib::cons::{
+    conslisthelpers::{create_rc_ro_list, create_rc_ro_list_from_vec, ro_values},
+    conslists::ConsList,
+    InvalidIndex,
+};
 use std::rc::Rc;
 
 #[test]
@@ -12,7 +15,11 @@ pub fn test_create() {
 #[test]
 pub fn test_create_from_vec() {
     let mut list = create_rc_ro_list_from_vec(&vec![-4, 8, -3, -3, 5, 0, 2, 1]);
-    assert!(ro_values(&list.content()) == vec![-4, 8, -3, -3, 5, 0, 2, 1] && list.size() == 8 && !list.empty());
+    assert!(
+        ro_values(&list.content()) == vec![-4, 8, -3, -3, 5, 0, 2, 1]
+            && list.size() == 8
+            && !list.empty()
+    );
 
     list = create_rc_ro_list_from_vec(&vec![2, 5]);
     assert!(ro_values(&list.content()) == vec![2, 5] && list.size() == 2 && !list.empty());
@@ -97,7 +104,11 @@ pub fn test_pop_front() {
     let mut list = create_rc_ro_list_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     let mut result = list.pop_front();
 
-    assert!(*result.unwrap() == 8 && ro_values(&list.content()) == vec![-3, -3, 5, 0, 2, 1, -4] && list.size() == 7);
+    assert!(
+        *result.unwrap() == 8
+            && ro_values(&list.content()) == vec![-3, -3, 5, 0, 2, 1, -4]
+            && list.size() == 7
+    );
 
     list = create_rc_ro_list_from_vec(&vec![3, 0]);
     result = list.pop_front();
@@ -141,7 +152,11 @@ pub fn test_pop_back() {
     let mut list = create_rc_ro_list_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     let mut result = list.pop_back();
 
-    assert!(*result.unwrap() == -4 && ro_values(&list.content()) == vec![8, -3, -3, 5, 0, 2, 1] && list.size() == 7);
+    assert!(
+        *result.unwrap() == -4
+            && ro_values(&list.content()) == vec![8, -3, -3, 5, 0, 2, 1]
+            && list.size() == 7
+    );
 
     list = create_rc_ro_list_from_vec(&vec![3, 0]);
     result = list.pop_back();
@@ -165,27 +180,47 @@ pub fn test_insert() {
     let mut value = Rc::new(9);
     let mut result = list.insert(&value, 0);
 
-    assert!(result == Ok(0) && ro_values(&list.content()) == vec![9, 8, -3, -3, 5, 0, 2, 1, -4] && list.size() == 9);
+    assert!(
+        result == Ok(0)
+            && ro_values(&list.content()) == vec![9, 8, -3, -3, 5, 0, 2, 1, -4]
+            && list.size() == 9
+    );
 
     list = create_rc_ro_list_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     result = list.insert(&value, 2);
 
-    assert!(result == Ok(2) && ro_values(&list.content()) == vec![8, -3, 9, -3, 5, 0, 2, 1, -4] && list.size() == 9);
+    assert!(
+        result == Ok(2)
+            && ro_values(&list.content()) == vec![8, -3, 9, -3, 5, 0, 2, 1, -4]
+            && list.size() == 9
+    );
 
     list = create_rc_ro_list_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     result = list.insert(&value, 7);
 
-    assert!(result == Ok(7) && ro_values(&list.content()) == vec![8, -3, -3, 5, 0, 2, 1, 9, -4] && list.size() == 9);
+    assert!(
+        result == Ok(7)
+            && ro_values(&list.content()) == vec![8, -3, -3, 5, 0, 2, 1, 9, -4]
+            && list.size() == 9
+    );
 
     list = create_rc_ro_list_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     result = list.insert(&value, 8);
 
-    assert!(result == Ok(8) && ro_values(&list.content()) == vec![8, -3, -3, 5, 0, 2, 1, -4, 9] && list.size() == 9);
+    assert!(
+        result == Ok(8)
+            && ro_values(&list.content()) == vec![8, -3, -3, 5, 0, 2, 1, -4, 9]
+            && list.size() == 9
+    );
 
     list = create_rc_ro_list_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     result = list.insert(&value, 9);
 
-    assert!(result == Err(InvalidIndex) && ro_values(&list.content()) == vec![8, -3, -3, 5, 0, 2, 1, -4] && list.size() == 8);
+    assert!(
+        result == Err(InvalidIndex)
+            && ro_values(&list.content()) == vec![8, -3, -3, 5, 0, 2, 1, -4]
+            && list.size() == 8
+    );
 
     list = create_rc_ro_list_from_vec(&vec![2, 4, -3]);
     value = Rc::new(8);
@@ -211,7 +246,11 @@ pub fn test_insert() {
     list = create_rc_ro_list_from_vec(&vec![2, 4, -3]);
     result = list.insert(&value, 4);
 
-    assert!(result == Err(InvalidIndex) && ro_values(&list.content()) == vec![2, 4, -3] && list.size() == 3);
+    assert!(
+        result == Err(InvalidIndex)
+            && ro_values(&list.content()) == vec![2, 4, -3]
+            && list.size() == 3
+    );
 
     list = create_rc_ro_list_from_vec(&vec![9, 5]);
     value = Rc::new(-7);
@@ -232,7 +271,9 @@ pub fn test_insert() {
     list = create_rc_ro_list_from_vec(&vec![9, 5]);
     result = list.insert(&value, 3);
 
-    assert!(result == Err(InvalidIndex) && ro_values(&list.content()) == vec![9, 5] && list.size() == 2);
+    assert!(
+        result == Err(InvalidIndex) && ro_values(&list.content()) == vec![9, 5] && list.size() == 2
+    );
 
     list = create_rc_ro_list_from_vec(&vec![-4]);
     value = Rc::new(5);
@@ -248,7 +289,9 @@ pub fn test_insert() {
     list = create_rc_ro_list_from_vec(&vec![-4]);
     result = list.insert(&value, 2);
 
-    assert!(result == Err(InvalidIndex) && ro_values(&list.content()) == vec![-4] && list.size() == 1);
+    assert!(
+        result == Err(InvalidIndex) && ro_values(&list.content()) == vec![-4] && list.size() == 1
+    );
 
     list = ConsList::create();
     value = Rc::new(-3);
@@ -267,22 +310,38 @@ pub fn test_remove() {
     let mut list = create_rc_ro_list_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     let mut result = list.remove(0);
 
-    assert!(*result.unwrap() == 8 && ro_values(&list.content()) == vec![-3, -3, 5, 0, 2, 1, -4] && list.size() == 7);
+    assert!(
+        *result.unwrap() == 8
+            && ro_values(&list.content()) == vec![-3, -3, 5, 0, 2, 1, -4]
+            && list.size() == 7
+    );
 
     list = create_rc_ro_list_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     result = list.remove(4);
 
-    assert!(*result.unwrap() == 0 && ro_values(&list.content()) == vec![8, -3, -3, 5, 2, 1, -4] && list.size() == 7);
+    assert!(
+        *result.unwrap() == 0
+            && ro_values(&list.content()) == vec![8, -3, -3, 5, 2, 1, -4]
+            && list.size() == 7
+    );
 
     list = create_rc_ro_list_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     result = list.remove(7);
 
-    assert!(*result.unwrap() == -4 && ro_values(&list.content()) == vec![8, -3, -3, 5, 0, 2, 1] && list.size() == 7);
+    assert!(
+        *result.unwrap() == -4
+            && ro_values(&list.content()) == vec![8, -3, -3, 5, 0, 2, 1]
+            && list.size() == 7
+    );
 
     list = create_rc_ro_list_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     result = list.remove(8);
 
-    assert!(result == Err(InvalidIndex) && ro_values(&list.content()) == vec![8, -3, -3, 5, 0, 2, 1, -4] && list.size() == 8);
+    assert!(
+        result == Err(InvalidIndex)
+            && ro_values(&list.content()) == vec![8, -3, -3, 5, 0, 2, 1, -4]
+            && list.size() == 8
+    );
 
     list = create_rc_ro_list_from_vec(&vec![2, 4, -3]);
     result = list.remove(0);
@@ -302,7 +361,11 @@ pub fn test_remove() {
     list = create_rc_ro_list_from_vec(&vec![2, 4, -3]);
     result = list.remove(3);
 
-    assert!(result == Err(InvalidIndex) && ro_values(&list.content()) == vec![2, 4, -3] && list.size() == 3);
+    assert!(
+        result == Err(InvalidIndex)
+            && ro_values(&list.content()) == vec![2, 4, -3]
+            && list.size() == 3
+    );
 
     list = create_rc_ro_list_from_vec(&vec![9, 5]);
     result = list.remove(0);
@@ -317,7 +380,9 @@ pub fn test_remove() {
     list = create_rc_ro_list_from_vec(&vec![9, 5]);
     result = list.remove(2);
 
-    assert!(result == Err(InvalidIndex) && ro_values(&list.content()) == vec![9, 5] && list.size() == 2);
+    assert!(
+        result == Err(InvalidIndex) && ro_values(&list.content()) == vec![9, 5] && list.size() == 2
+    );
 
     list = create_rc_ro_list_from_vec(&vec![-4]);
     result = list.remove(0);
@@ -327,7 +392,9 @@ pub fn test_remove() {
     list = create_rc_ro_list_from_vec(&vec![-4]);
     result = list.remove(1);
 
-    assert!(result == Err(InvalidIndex) && ro_values(&list.content()) == vec![-4] && list.size() == 1);
+    assert!(
+        result == Err(InvalidIndex) && ro_values(&list.content()) == vec![-4] && list.size() == 1
+    );
 
     list = ConsList::create();
     result = list.remove(0);
@@ -413,14 +480,20 @@ pub fn test_merge() {
     second_list = create_rc_ro_list_from_vec(&vec![9, 1, 1, 8]);
     first_list.merge(&mut second_list);
 
-    assert!(ro_values(&first_list.content()) == vec![2, -5, 4, 3, 4, 9, 1, 1, 8] && first_list.size() == 9);
+    assert!(
+        ro_values(&first_list.content()) == vec![2, -5, 4, 3, 4, 9, 1, 1, 8]
+            && first_list.size() == 9
+    );
     assert!(second_list.empty());
 
     first_list = create_rc_ro_list_from_vec(&vec![9, 1, 1, 8]);
     second_list = create_rc_ro_list_from_vec(&vec![2, -5, 4, 3, 4]);
     first_list.merge(&mut second_list);
 
-    assert!(ro_values(&first_list.content()) == vec![9, 1, 1, 8, 2, -5, 4, 3, 4] && first_list.size() == 9);
+    assert!(
+        ro_values(&first_list.content()) == vec![9, 1, 1, 8, 2, -5, 4, 3, 4]
+            && first_list.size() == 9
+    );
     assert!(second_list.empty());
 }
 
@@ -432,7 +505,10 @@ pub fn test_split() {
 
     assert_eq!(result, Ok(0));
     assert!(first_list.empty());
-    assert!(ro_values(&second_list.content()) == vec![2, -5, 4, 3, 4, 9, 1, 1, 8] && second_list.size() == 9);
+    assert!(
+        ro_values(&second_list.content()) == vec![2, -5, 4, 3, 4, 9, 1, 1, 8]
+            && second_list.size() == 9
+    );
 
     first_list = create_rc_ro_list_from_vec(&vec![2, -5, 4, 3, 4, 9, 1, 1, 8]);
     second_list = ConsList::create();
@@ -440,7 +516,10 @@ pub fn test_split() {
 
     assert_eq!(result, Ok(1));
     assert!(ro_values(&first_list.content()) == vec![2] && first_list.size() == 1);
-    assert!(ro_values(&second_list.content()) == vec![-5, 4, 3, 4, 9, 1, 1, 8] && second_list.size() == 8);
+    assert!(
+        ro_values(&second_list.content()) == vec![-5, 4, 3, 4, 9, 1, 1, 8]
+            && second_list.size() == 8
+    );
 
     first_list = create_rc_ro_list_from_vec(&vec![2, -5, 4, 3, 4, 9, 1, 1, 8]);
     second_list = ConsList::create();
@@ -455,7 +534,9 @@ pub fn test_split() {
     result = first_list.split(&mut second_list, 7);
 
     assert_eq!(result, Ok(7));
-    assert!(ro_values(&first_list.content()) == vec![2, -5, 4, 3, 4, 9, 1] && first_list.size() == 7);
+    assert!(
+        ro_values(&first_list.content()) == vec![2, -5, 4, 3, 4, 9, 1] && first_list.size() == 7
+    );
     assert!(ro_values(&second_list.content()) == vec![1, 8] && second_list.size() == 2);
 
     first_list = create_rc_ro_list_from_vec(&vec![2, -5, 4, 3, 4, 9, 1, 1, 8]);
@@ -463,7 +544,9 @@ pub fn test_split() {
     result = first_list.split(&mut second_list, 8);
 
     assert_eq!(result, Ok(8));
-    assert!(ro_values(&first_list.content()) == vec![2, -5, 4, 3, 4, 9, 1, 1] && first_list.size() == 8);
+    assert!(
+        ro_values(&first_list.content()) == vec![2, -5, 4, 3, 4, 9, 1, 1] && first_list.size() == 8
+    );
     assert!(ro_values(&second_list.content()) == vec![8] && second_list.size() == 1);
 
     first_list = create_rc_ro_list_from_vec(&vec![2, -5, 4, 3, 4, 9, 1, 1, 8]);
@@ -471,7 +554,10 @@ pub fn test_split() {
     result = first_list.split(&mut second_list, 9);
 
     assert_eq!(result, Err(InvalidIndex));
-    assert!(ro_values(&first_list.content()) == vec![2, -5, 4, 3, 4, 9, 1, 1, 8] && first_list.size() == 9);
+    assert!(
+        ro_values(&first_list.content()) == vec![2, -5, 4, 3, 4, 9, 1, 1, 8]
+            && first_list.size() == 9
+    );
     assert!(second_list.empty());
 
     first_list = create_rc_ro_list_from_vec(&vec![9, -7, 8]);
@@ -568,7 +654,10 @@ pub fn test_split() {
     result = first_list.split(&mut second_list, 9);
 
     assert_eq!(result, Err(InvalidIndex));
-    assert!(ro_values(&first_list.content()) == vec![2, -5, 4, 3, 4, 9, 1, 1, 8] && first_list.size() == 9);
+    assert!(
+        ro_values(&first_list.content()) == vec![2, -5, 4, 3, 4, 9, 1, 1, 8]
+            && first_list.size() == 9
+    );
     assert!(ro_values(&second_list.content()) == vec![4, 0, -2, -4] && second_list.size() == 4);
 }
 

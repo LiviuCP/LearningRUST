@@ -1,5 +1,4 @@
 #[cfg(test)]
-
 use learn_rust_lib::cons::{conslists::ConsList, InvalidIndex};
 
 #[test]
@@ -96,7 +95,9 @@ pub fn test_pop_front() {
     let mut list = ConsList::create_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     let mut result = list.pop_front();
 
-    assert!(result.unwrap() == 8 && list.content() == vec![-3, -3, 5, 0, 2, 1, -4] && list.size() == 7);
+    assert!(
+        result.unwrap() == 8 && list.content() == vec![-3, -3, 5, 0, 2, 1, -4] && list.size() == 7
+    );
 
     list = ConsList::create_from_vec(&vec![3, 0]);
     result = list.pop_front();
@@ -140,7 +141,9 @@ pub fn test_pop_back() {
     let mut list = ConsList::create_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     let mut result = list.pop_back();
 
-    assert!(result.unwrap() == -4 && list.content() == vec![8, -3, -3, 5, 0, 2, 1] && list.size() == 7);
+    assert!(
+        result.unwrap() == -4 && list.content() == vec![8, -3, -3, 5, 0, 2, 1] && list.size() == 7
+    );
 
     list = ConsList::create_from_vec(&vec![3, 0]);
     result = list.pop_back();
@@ -164,27 +167,39 @@ pub fn test_insert() {
     let mut value = 9;
     let mut result = list.insert(&value, 0);
 
-    assert!(result == Ok(0) && list.content() == vec![9, 8, -3, -3, 5, 0, 2, 1, -4] && list.size() == 9);
+    assert!(
+        result == Ok(0) && list.content() == vec![9, 8, -3, -3, 5, 0, 2, 1, -4] && list.size() == 9
+    );
 
     list = ConsList::create_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     result = list.insert(&value, 2);
 
-    assert!(result == Ok(2) && list.content() == vec![8, -3, 9, -3, 5, 0, 2, 1, -4] && list.size() == 9);
+    assert!(
+        result == Ok(2) && list.content() == vec![8, -3, 9, -3, 5, 0, 2, 1, -4] && list.size() == 9
+    );
 
     list = ConsList::create_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     result = list.insert(&value, 7);
 
-    assert!(result == Ok(7) && list.content() == vec![8, -3, -3, 5, 0, 2, 1, 9, -4] && list.size() == 9);
+    assert!(
+        result == Ok(7) && list.content() == vec![8, -3, -3, 5, 0, 2, 1, 9, -4] && list.size() == 9
+    );
 
     list = ConsList::create_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     result = list.insert(&value, 8);
 
-    assert!(result == Ok(8) && list.content() == vec![8, -3, -3, 5, 0, 2, 1, -4, 9] && list.size() == 9);
+    assert!(
+        result == Ok(8) && list.content() == vec![8, -3, -3, 5, 0, 2, 1, -4, 9] && list.size() == 9
+    );
 
     list = ConsList::create_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     result = list.insert(&value, 9);
 
-    assert!(result == Err(InvalidIndex) && list.content() == vec![8, -3, -3, 5, 0, 2, 1, -4] && list.size() == 8);
+    assert!(
+        result == Err(InvalidIndex)
+            && list.content() == vec![8, -3, -3, 5, 0, 2, 1, -4]
+            && list.size() == 8
+    );
 
     list = ConsList::create_from_vec(&vec![2, 4, -3]);
     value = 8;
@@ -266,22 +281,32 @@ pub fn test_remove() {
     let mut list = ConsList::create_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     let mut result = list.remove(0);
 
-    assert!(result.unwrap() == 8 && list.content() == vec![-3, -3, 5, 0, 2, 1, -4] && list.size() == 7);
+    assert!(
+        result.unwrap() == 8 && list.content() == vec![-3, -3, 5, 0, 2, 1, -4] && list.size() == 7
+    );
 
     list = ConsList::create_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     result = list.remove(4);
 
-    assert!(result.unwrap() == 0 && list.content() == vec![8, -3, -3, 5, 2, 1, -4] && list.size() == 7);
+    assert!(
+        result.unwrap() == 0 && list.content() == vec![8, -3, -3, 5, 2, 1, -4] && list.size() == 7
+    );
 
     list = ConsList::create_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     result = list.remove(7);
 
-    assert!(result.unwrap() == -4 && list.content() == vec![8, -3, -3, 5, 0, 2, 1] && list.size() == 7);
+    assert!(
+        result.unwrap() == -4 && list.content() == vec![8, -3, -3, 5, 0, 2, 1] && list.size() == 7
+    );
 
     list = ConsList::create_from_vec(&vec![8, -3, -3, 5, 0, 2, 1, -4]);
     result = list.remove(8);
 
-    assert!(result == Err(InvalidIndex) && list.content() == vec![8, -3, -3, 5, 0, 2, 1, -4] && list.size() == 8);
+    assert!(
+        result == Err(InvalidIndex)
+            && list.content() == vec![8, -3, -3, 5, 0, 2, 1, -4]
+            && list.size() == 8
+    );
 
     list = ConsList::create_from_vec(&vec![2, 4, -3]);
     result = list.remove(0);

@@ -1,5 +1,6 @@
 mod guessing;
 
+use homedir::my_home;
 use learn_rust_lib::utilities;
 use rand::Rng;
 use std::fs;
@@ -15,6 +16,24 @@ TODO:
 
 const MIN_WORD_SIZE: usize = 10;
 
+fn build_input_file_path() -> Result<String, &'static str> {
+    static DOCUMENTS_DIR_NAME: &str = "Documents";
+    static INPUT_FILE_NAME: &str = "input.txt";
+
+    let mut result = Err("Unable to retrieve the input file path!");
+
+    if let Ok(Some(mut path)) = my_home() {
+        path.push(DOCUMENTS_DIR_NAME);
+        path.push(INPUT_FILE_NAME);
+
+        if let Some(path) = path.to_str() {
+            result = Ok(path.to_string());
+        }
+    }
+
+    result
+}
+
 fn read_input(file_path: &str, input: &mut Vec<String>) {
     let input_str = fs::read_to_string(file_path).expect("File could not be opened!");
 
@@ -27,13 +46,15 @@ fn read_input(file_path: &str, input: &mut Vec<String>) {
 
 fn main() {
     utilities::clear_screen();
-    let input_file = "/home/Liviu/Documents/input.txt";
     let mut input = Vec::new();
-    read_input(input_file, &mut input);
+
+    if let Ok(input_file) = build_input_file_path() {
+        read_input(&input_file, &mut input);
+    }
 
     loop {
         if input.is_empty() {
-            println!("File {} is empty!", input_file);
+            println!("No words to guess!");
             break;
         }
 

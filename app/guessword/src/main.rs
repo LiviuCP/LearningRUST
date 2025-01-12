@@ -2,41 +2,43 @@ mod guessing;
 
 use learn_rust_lib::utilities;
 use rand::Rng;
+use std::fs;
 
 /*
 TODO:
-- include all these words in a file (JSON, simple txt file, CSV ...)
 - create functionality for checking their validity when loading them into application (accept only the valid ones within array)
   - this includes allowing only specific characters (e.g. alphanumeric)
-- use a vector instead of an array for storing the loaded/validated words
 - create functionality for adding new words without manually modifying the file
 - create functionality that removes already guessed words from array (vector) so they are not provided multiple times for guessing
 - create functionality that prevents duplicate words within array
 */
 
-const AVAILABLE_WORDS: [&str; 14] = [
-    "confidential",
-    "geographic",
-    "availability",
-    "ambiguity",
-    "scalability",
-    "reliability",
-    "pedestrian",
-    "argumentation",
-    "dichotomy",
-    "understanding",
-    "geometry",
-    "responsiveness",
-    "accountability",
-    "priority",
-];
+const MIN_WORD_SIZE: usize = 10;
+
+fn read_input(file_path: &str, input: &mut Vec<String>) {
+    let input_str = fs::read_to_string(file_path).expect("File could not be opened!");
+
+    for word in input_str.split('\n') {
+        if word.len() > MIN_WORD_SIZE {
+            input.push(word.to_string());
+        }
+    }
+}
 
 fn main() {
     utilities::clear_screen();
+    let input_file = "/home/Liviu/Documents/input.txt";
+    let mut input = Vec::new();
+    read_input(input_file, &mut input);
 
     loop {
-        let word_to_guess_index = rand::thread_rng().gen_range(0..=AVAILABLE_WORDS.len() - 1);
-        let word_to_guess = AVAILABLE_WORDS[word_to_guess_index].to_string();
+        if input.is_empty() {
+            println!("File {} is empty!", input_file);
+            break;
+        }
+
+        let word_to_guess_index = rand::thread_rng().gen_range(0..=input.len() - 1);
+        let word_to_guess = input[word_to_guess_index].to_string();
         let word_size_successfully_guessed = guessing::guess_word_size(&word_to_guess);
 
         if word_size_successfully_guessed {
@@ -66,5 +68,5 @@ fn main() {
         break;
     }
 
-    println!("Aborted!");
+    println!("Aborted");
 }

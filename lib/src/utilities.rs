@@ -1,5 +1,7 @@
 use std::{collections::HashSet, io};
 
+pub mod random;
+
 pub fn clear_screen() {
     std::process::Command::new("clear").status().unwrap();
 }

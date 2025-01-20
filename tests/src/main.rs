@@ -1,6 +1,7 @@
 extern crate learn_rust_lib;
 
 mod consliststests;
+mod indexgeneratortests;
 mod numberstests;
 mod romannumeralstests;
 mod stringstests;

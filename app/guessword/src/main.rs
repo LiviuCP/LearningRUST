@@ -3,6 +3,7 @@ mod ioutils;
 
 use learn_rust_lib::utilities;
 use learn_rust_lib::utilities::random;
+use learn_rust_lib::utilities::random::IndexGenerator;
 use std::process;
 
 fn main() {
@@ -18,7 +19,7 @@ fn main() {
         process::exit(-1);
     });
 
-    let mut generator = random::IndexGenerator::create(input.len());
+    let mut generator = random::QuickIndexGenerator::create(input.len());
 
     loop {
         let word_to_guess_index = generator

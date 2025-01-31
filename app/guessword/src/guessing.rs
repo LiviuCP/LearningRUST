@@ -1,11 +1,55 @@
 use learn_rust_lib::utilities;
+use learn_rust_lib::utilities::random;
+use learn_rust_lib::utilities::random::IndexGenerator;
+
 use std::{
     cmp::Ordering,
     collections::{HashMap, HashSet},
     io,
 };
 
-pub fn guess_word_size(word_to_guess: &String) -> bool {
+pub fn run(data: Vec<String>) {
+    let mut generator = random::QuickIndexGenerator::create(data.len());
+
+    loop {
+        let word_to_guess_index = generator
+            .generate()
+            .expect("There should have been at least one word left to guess!");
+
+        let word_to_guess = data[word_to_guess_index].to_string();
+        let word_size_successfully_guessed = guess_word_size(&word_to_guess);
+
+        if !word_size_successfully_guessed {
+            println!("Aborted");
+            break;
+        }
+
+        println!(
+            "Congrats! You guessed the word size: {} characters",
+            word_to_guess.len()
+        );
+
+        println!("Now it's time to guess the word.");
+
+        let word_successfully_guessed = guess_word(&word_to_guess);
+
+        if !word_successfully_guessed {
+            println!("Aborted");
+            break;
+        }
+
+        println!("\nCongrats! You guessed the word: \"{}\".", word_to_guess);
+
+        if generator.is_empty() {
+            println!("There are no more words left to guess!");
+            break;
+        }
+
+        println!("Now it's time for another word.\n");
+    }
+}
+
+fn guess_word_size(word_to_guess: &String) -> bool {
     let word_size_to_guess = word_to_guess.chars().count();
     let mut word_size_successfully_guessed = false;
 
@@ -46,7 +90,7 @@ pub fn guess_word_size(word_to_guess: &String) -> bool {
     word_size_successfully_guessed
 }
 
-pub fn guess_word(word_to_guess: &String) -> bool {
+fn guess_word(word_to_guess: &String) -> bool {
     let word_to_guess_size = word_to_guess.chars().count();
     let mut nr_of_chars_to_guess: usize = if word_to_guess_size < 2 {
         0

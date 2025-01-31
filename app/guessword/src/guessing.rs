@@ -5,7 +5,7 @@ use learn_rust_lib::utilities::random::IndexGenerator;
 use std::{
     cmp::Ordering,
     collections::{HashMap, HashSet},
-    io,
+    io, process,
 };
 
 pub fn run(data: Vec<String>) {
@@ -59,7 +59,10 @@ fn guess_word_size(word_to_guess: &String) -> bool {
 
         io::stdin()
             .read_line(&mut guessed_word_size)
-            .expect("Failed reading the number of digits!");
+            .unwrap_or_else(|err| {
+                eprintln!("Failed reading the number of digits: {err}");
+                process::exit(-1)
+            });
 
         utilities::clear_screen();
 

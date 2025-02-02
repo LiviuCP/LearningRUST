@@ -26,5 +26,6 @@ fn main() {
         process::exit(-1);
     });
 
-    guessing::run(data);
+    let mut guessing_engine = guessing::GuessingEngine::create(data);
+    guessing_engine.run();
 }

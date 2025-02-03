@@ -8,12 +8,23 @@ use std::{
     io, process,
 };
 
+#[derive(PartialEq)]
+pub enum Status {
+    Init,
+    Running,
+    Paused,
+    Resumed,
+    Restarted,
+    Stopped,
+    Aborted,
+}
+
 struct GuessingContext {
     word_to_guess: String,
     word_to_display: String, // word displayed as guessing hint (with placeholders that are gradually filled in as the user guesses the chars)
     chars_left_to_guess: HashMap<char, HashSet<usize>>,
     guessed_chars: HashSet<char>,
-    is_size_guessed: bool,
+    word_size_guessed: bool,
 }
 
 impl GuessingContext {
@@ -23,7 +34,7 @@ impl GuessingContext {
             word_to_display: String::new(),
             chars_left_to_guess: HashMap::new(),
             guessed_chars: HashSet::new(),
-            is_size_guessed: false,
+            word_size_guessed: false,
         }
     }
 
@@ -32,7 +43,7 @@ impl GuessingContext {
         self.word_to_display.clear();
         self.chars_left_to_guess.clear();
         self.guessed_chars.clear();
-        self.is_size_guessed = false;
+        self.word_size_guessed = false;
     }
 }
 
@@ -40,6 +51,7 @@ pub struct GuessingEngine {
     data: Vec<String>,
     generator: random::QuickIndexGenerator,
     context: GuessingContext,
+    status: Status,
 }
 
 impl GuessingEngine {
@@ -48,138 +60,147 @@ impl GuessingEngine {
             generator: random::QuickIndexGenerator::create(data.len()),
             data,
             context: GuessingContext::create(),
+            status: Status::Init,
         }
     }
 
-    pub fn run(&mut self) {
+    pub fn run(&mut self) -> &Status {
+        if self.status == Status::Init || self.status == Status::Restarted {
+            self.status = Status::Running;
+        } else {
+            debug_assert!(self.status == Status::Resumed);
+        }
+
         loop {
-            let word_to_guess_index = self
-                .generator
-                .generate()
-                .expect("There should have been at least one word left to guess!");
+            if self.status == Status::Running {
+                self.build_context();
+            }
 
-            self.context.word_to_guess = self.data[word_to_guess_index].to_string();
-            self.guess_word_size();
+            if !self.context.word_size_guessed {
+                self.guess_word_size();
 
-            if !self.context.is_size_guessed {
-                println!("Aborted");
+                if self.status == Status::Paused || self.status == Status::Aborted {
+                    break;
+                }
+
+                self.display_word_size_guessed_message();
+            }
+
+            self.guess_word();
+
+            if self.status == Status::Paused || self.status == Status::Aborted {
                 break;
             }
 
-            println!(
-                "Congrats! You guessed the word size: {} characters",
-                self.context.word_to_guess.len()
-            );
+            self.display_word_guessed_message();
 
-            println!("Now it's time to guess the word.");
-
-            let word_successfully_guessed = self.guess_word();
-
-            if !word_successfully_guessed {
-                println!("Aborted");
-                break;
+            if self.status == Status::Resumed {
+                self.status = Status::Running;
             }
-
-            println!(
-                "\nCongrats! You guessed the word: \"{}\".",
-                self.context.word_to_guess
-            );
 
             self.context.reset();
 
             if self.generator.is_empty() {
-                println!("There are no more words left to guess!");
+                self.status = Status::Stopped;
                 break;
             }
 
-            println!("Now it's time for another word.\n");
+            Self::display_continue_guessing_message();
         }
+
+        &self.status
+    }
+
+    pub fn resume(&mut self) -> &Status {
+        if self.status == Status::Paused {
+            self.status = Status::Resumed;
+            self.run();
+        } else {
+            debug_assert!(self.status == Status::Paused);
+        }
+
+        &self.status
+    }
+
+    pub fn reset(&mut self, data: Vec<String>) -> &Status {
+        self.generator = random::QuickIndexGenerator::create(data.len());
+        self.data = data;
+        self.context.reset();
+        self.status = Status::Restarted;
+
+        self.run()
     }
 
     fn guess_word_size(&mut self) {
         let word_size_to_guess = self.context.word_to_guess.chars().count();
 
         loop {
-            println!("Please guess the word size (press ENTER to abort):");
-            let mut guessed_word_size = String::new();
+            let result = self.request_guessing_word_size();
 
-            io::stdin()
-                .read_line(&mut guessed_word_size)
-                .unwrap_or_else(|err| {
-                    eprintln!("Failed reading the number of digits: {err}");
-                    process::exit(-1)
-                });
-
-            utilities::clear_screen();
-
-            guessed_word_size = guessed_word_size.trim().to_string();
-
-            if guessed_word_size.len() == 0 {
+            if result.is_empty() {
+                self.status = Status::Aborted;
+                break;
+            } else if result == ":".to_string() {
+                self.status = Status::Paused;
                 break;
             }
 
-            let guessed_word_size: usize = match guessed_word_size.parse() {
+            let guessed_word_size: usize = match result.parse() {
                 Ok(guessed_nr) => guessed_nr,
                 Err(_) => {
-                    println!("Invalid input! Please try again.");
+                    Self::display_invalid_input_message();
                     continue;
                 }
             };
 
             match guessed_word_size.cmp(&word_size_to_guess) {
-                Ordering::Less => println!("Please enter a higher number!"),
-                Ordering::Greater => println!("Please enter a smaller number!"),
+                Ordering::Less => Self::display_not_matching_size_message(false),
+                Ordering::Greater => Self::display_not_matching_size_message(true),
                 Ordering::Equal => {
-                    self.context.is_size_guessed = true;
+                    self.context.word_size_guessed = true;
                     break;
                 }
             }
         }
     }
 
-    fn guess_word(&mut self) -> bool {
+    fn guess_word(&mut self) {
         let word_to_guess_size = self.context.word_to_guess.chars().count();
-        let mut nr_of_chars_to_guess: usize = if word_to_guess_size < 2 {
+        let mut nr_of_chars_to_guess = if word_to_guess_size < 2 {
             0
         } else {
             word_to_guess_size - 2
         }; // exclude beginning and ending char (should be displayed)
 
-        self.build_chars_left_to_guess_map();
-        let mut word_successfully_guessed = false;
+        debug_assert!(nr_of_chars_to_guess > 0);
 
-        if nr_of_chars_to_guess > 0 {
-            self.compute_word_to_display_initial_value();
-        } else {
-            word_successfully_guessed = true; // nothing to guess here as the first and last characters are displayed anyway
-        }
+        while !self.context.chars_left_to_guess.is_empty() {
+            let input_char;
+            let result = self.request_guessing_a_char(nr_of_chars_to_guess);
 
-        while !word_successfully_guessed {
-            println!("\nPlease guess: \"{}\"", self.context.word_to_display);
-            println!("({} char(s) to guess)", nr_of_chars_to_guess);
-            println!("\nEnter a character:");
-
-            let mut input_char: char = '\0';
-            let char_successfully_read = utilities::read_char(&mut input_char);
-
-            utilities::clear_screen();
-
-            if !char_successfully_read {
-                break;
+            match result {
+                Some(':') => {
+                    self.status = Status::Paused;
+                    break;
+                }
+                Some(ch) => {
+                    input_char = ch;
+                }
+                None => {
+                    self.status = Status::Aborted;
+                    break;
+                }
             }
 
-            utilities::convert_char_to_lowercase(&mut input_char);
-
             if self.context.guessed_chars.contains(&input_char) {
-                println!("Char \'{}\' already guessed!", input_char);
-                println!("Please try again with another char.");
+                Self::display_char_not_guessed_message(input_char, true);
                 continue;
             }
 
             if let Some(occurrence_indexes) = self.context.chars_left_to_guess.get(&input_char) {
                 let found_occurrences_count = occurrence_indexes.len();
 
-                assert!(found_occurrences_count <= nr_of_chars_to_guess);
+                debug_assert!(found_occurrences_count <= nr_of_chars_to_guess);
 
                 nr_of_chars_to_guess -= found_occurrences_count;
                 let replaced_occurrences_count = utilities::replace_chars_in_string(
@@ -188,26 +209,38 @@ impl GuessingEngine {
                     &mut self.context.word_to_display,
                 );
 
-                assert!(replaced_occurrences_count == found_occurrences_count);
+                debug_assert!(replaced_occurrences_count == found_occurrences_count);
 
                 self.context.chars_left_to_guess.remove(&input_char);
                 self.context.guessed_chars.insert(input_char);
 
-                println!(
-                    "Found {} occurrences of char: \'{}\'",
-                    found_occurrences_count, input_char
-                );
+                Self::display_guessed_char_message(input_char, found_occurrences_count);
             } else {
-                println!(
-                    "The word doesn't contain char: \'{}\'. Please try again.",
-                    input_char
-                );
+                Self::display_char_not_guessed_message(input_char, false);
             }
-
-            word_successfully_guessed = self.context.chars_left_to_guess.len() == 0;
         }
+    }
 
-        word_successfully_guessed
+    fn build_context(&mut self) {
+        debug_assert!(self.status == Status::Running);
+
+        let word_to_guess_index = self
+            .generator
+            .generate()
+            .expect("There should have been at least one word left to guess!");
+
+        let word_to_guess = self.data[word_to_guess_index].to_string();
+
+        if word_to_guess.len() > 2 {
+            self.context.word_to_guess = word_to_guess;
+            self.build_chars_left_to_guess_map();
+            self.compute_word_to_display_initial_value();
+        } else {
+            debug_assert!(
+                false,
+                "There is nothing to guess here, the word is too small!"
+            );
+        }
     }
 
     fn compute_word_to_display_initial_value(&mut self) {
@@ -248,5 +281,88 @@ impl GuessingEngine {
                 (*occurrence_indexes).insert(index + 1); // index should be mapped to actual char index in word_to_guess (take first char into account)
             }
         }
+    }
+
+    fn request_guessing_word_size(&mut self) -> String {
+        println!("Please guess the word size (press ENTER to abort):");
+        let mut guessed_word_size = String::new();
+
+        io::stdin()
+            .read_line(&mut guessed_word_size)
+            .unwrap_or_else(|err| {
+                eprintln!("Failed reading the number of digits: {err}");
+                process::exit(-1)
+            });
+
+        guessed_word_size = guessed_word_size.trim().to_string();
+        guessed_word_size
+    }
+
+    fn display_word_size_guessed_message(&self) {
+        utilities::clear_screen();
+
+        println!(
+            "Congrats! You guessed the word size: {} characters",
+            self.context.word_to_guess.len()
+        );
+
+        println!("Now it's time to guess the word.\n");
+    }
+
+    fn display_not_matching_size_message(is_higher: bool) {
+        utilities::clear_screen();
+
+        if is_higher {
+            println!("Please enter a lower number!");
+        } else {
+            println!("Please enter a higher number!");
+        }
+    }
+
+    fn request_guessing_a_char(&mut self, nr_of_chars_to_guess: usize) -> Option<char> {
+        println!("Please guess: \"{}\"", self.context.word_to_display);
+        println!("({} char(s) to guess)", nr_of_chars_to_guess);
+        println!("\nEnter a character:");
+
+        let mut result = None;
+        let mut input_char: char = '\0';
+        let char_successfully_read = utilities::read_char(&mut input_char);
+
+        utilities::clear_screen();
+
+        if char_successfully_read {
+            utilities::convert_char_to_lowercase(&mut input_char);
+            result = Some(input_char)
+        }
+
+        result
+    }
+
+    fn display_guessed_char_message(ch: char, found_occurrences_count: usize) {
+        println!("Found {found_occurrences_count} occurrences of char: \'{ch}\'\n");
+    }
+
+    fn display_char_not_guessed_message(ch: char, already_guessed: bool) {
+        if already_guessed {
+            println!("Char \'{ch}\' already guessed! Please try again with another char.\n");
+        } else {
+            println!("None of the blanks matches char: \'{ch}\'. Please try again.\n");
+        }
+    }
+
+    fn display_word_guessed_message(&self) {
+        println!(
+            "Congrats! You guessed the word: \"{}\".",
+            self.context.word_to_guess
+        );
+    }
+
+    fn display_continue_guessing_message() {
+        println!("Now it's time for another word.\n");
+    }
+
+    fn display_invalid_input_message() {
+        utilities::clear_screen();
+        println!("Invalid input! Please try again.");
     }
 }

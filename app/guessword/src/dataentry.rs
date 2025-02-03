@@ -9,7 +9,8 @@ struct ConsolidatedData {
     duplicates_count: usize,
 }
 
-pub fn take_input_from_user(io_manager: &mut ioutils::IOManager) {
+pub fn take_input_from_user(io_manager: &mut ioutils::IOManager) -> bool {
+    let mut saved = false;
     let data_file = io_manager.get_data_file();
 
     let data = io_manager.load().unwrap_or_else(|err| {
@@ -24,7 +25,7 @@ pub fn take_input_from_user(io_manager: &mut ioutils::IOManager) {
 
         if provided_words.is_empty() {
             utilities::clear_screen();
-            println!("No words provided!");
+            println!("No new words provided!");
             break;
         }
 
@@ -46,6 +47,8 @@ pub fn take_input_from_user(io_manager: &mut ioutils::IOManager) {
                         process::exit(-1);
                     });
 
+                    saved = true;
+
                     println!("{} words added to {data_file}\n", result.added_count);
                     println!("Total words count is now: {total_words_count}");
                 } else {
@@ -64,6 +67,8 @@ pub fn take_input_from_user(io_manager: &mut ioutils::IOManager) {
 
         break;
     }
+
+    saved
 }
 
 fn request_user_input(user_input: &mut Vec<String>) {

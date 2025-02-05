@@ -1,6 +1,7 @@
 use crate::ioutils;
+use ioutils::IOError;
 use learn_rust_lib::utilities;
-use std::{collections::HashSet, io, process};
+use std::{collections::HashSet, io};
 
 struct ConsolidatedData {
     data: Vec<String>,
@@ -9,19 +10,26 @@ struct ConsolidatedData {
     duplicates_count: usize,
 }
 
-pub fn take_input_from_user(io_manager: &mut ioutils::IOManager) -> bool {
-    let mut saved = false;
+pub fn take_input_from_user(io_manager: &mut ioutils::IOManager) -> Result<bool, IOError> {
+    let mut saved_result = Ok(false);
     let data_file = io_manager.get_data_file();
 
     let data = io_manager.load().unwrap_or_else(|err| {
-        eprintln!("Error in loading data to be updated! {err}");
-        process::exit(-1);
+        // the empty content error should not affect data entry, user should have the chance to make it "unempty"
+        if err != IOError::ReadEmptyContent {
+            saved_result = Err(err);
+        }
+
+        Vec::new()
     });
 
     let mut provided_words = Vec::new();
 
-    loop {
-        request_user_input(&mut provided_words);
+    while saved_result == Ok(false) {
+        if let Err(err) = request_user_input(&mut provided_words) {
+            saved_result = Err(err);
+            break;
+        }
 
         if provided_words.is_empty() {
             utilities::clear_screen();
@@ -30,7 +38,7 @@ pub fn take_input_from_user(io_manager: &mut ioutils::IOManager) -> bool {
         }
 
         match prompt_for_save() {
-            Some(true) => {
+            Ok(Some(true)) => {
                 let result = consolidate_data(data, provided_words);
 
                 utilities::clear_screen();
@@ -42,49 +50,57 @@ pub fn take_input_from_user(io_manager: &mut ioutils::IOManager) -> bool {
                 );
 
                 if result.added_count > 0 {
-                    let total_words_count = io_manager.save(result.data).unwrap_or_else(|err| {
-                        eprintln!("Error! {err}");
-                        process::exit(-1);
-                    });
+                    match io_manager.save(result.data) {
+                        Ok(total_words_count) => {
+                            saved_result = Ok(true);
 
-                    saved = true;
-
-                    println!("{} words added to {data_file}\n", result.added_count);
-                    println!("Total words count is now: {total_words_count}");
+                            println!("{} words added to {data_file}\n", result.added_count);
+                            println!("Total words count is now: {total_words_count}");
+                        }
+                        Err(error) => {
+                            saved_result = Err(error);
+                        }
+                    }
                 } else {
                     println!("No new words added to file!");
                 }
             }
-            Some(false) => {
+            Ok(Some(false)) => {
                 utilities::clear_screen();
                 println!("Saving aborted!");
             }
-            _ => {
+            Ok(None) => {
                 utilities::clear_screen();
                 continue;
+            }
+            Err(err) => {
+                saved_result = Err(err);
             }
         }
 
         break;
     }
 
-    saved
+    saved_result
 }
 
-fn request_user_input(user_input: &mut Vec<String>) {
+fn request_user_input(user_input: &mut Vec<String>) -> Result<usize, IOError> {
+    let mut entered_words_count = 0;
+    let mut result = Err(IOError::UserInputError);
+
     loop {
         println!("Enter a new word (press ENTER to abort): ");
 
         let mut new_word = String::new();
 
-        io::stdin().read_line(&mut new_word).unwrap_or_else(|err| {
-            eprintln!("Failed reading the new word: {err}");
-            process::exit(-1)
-        });
+        if let Err(_) = io::stdin().read_line(&mut new_word) {
+            break;
+        }
 
         new_word = new_word.trim().to_string();
 
         if new_word.is_empty() {
+            result = Ok(entered_words_count);
             break;
         }
 
@@ -105,31 +121,33 @@ fn request_user_input(user_input: &mut Vec<String>) {
                 .collect::<String>(),
         );
 
+        entered_words_count += 1;
+
         println!("Word added!\n");
     }
+
+    result
 }
 
-fn prompt_for_save() -> Option<bool> {
-    let mut result = None;
+fn prompt_for_save() -> Result<Option<bool>, IOError> {
+    let mut result = Ok(None);
 
     println!("Do you want to save the changes (y - yes, n - no, c - cancel)?");
 
     loop {
         let mut user_input = String::new();
 
-        io::stdin()
-            .read_line(&mut user_input)
-            .unwrap_or_else(|err| {
-                eprintln!("Failed reading the user input: {err}");
-                process::exit(-1)
-            });
+        if let Err(_) = io::stdin().read_line(&mut user_input) {
+            result = Err(IOError::UserInputError);
+            break;
+        }
 
         match user_input.trim() {
             "y" | "Y" => {
-                result = Some(true);
+                result = Ok(Some(true));
             }
             "n" | "N" => {
-                result = Some(false);
+                result = Ok(Some(false));
             }
             "c" | "C" => {}
             _ => {

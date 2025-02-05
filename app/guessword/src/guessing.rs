@@ -284,7 +284,7 @@ impl GuessingEngine {
     }
 
     fn request_guessing_word_size(&mut self) -> String {
-        println!("Please guess the word size (press ENTER to abort):");
+        println!("Please guess the word size (press ENTER to abort, enter \':\' for new words entry menu):");
         let mut guessed_word_size = String::new();
 
         io::stdin()
@@ -322,7 +322,9 @@ impl GuessingEngine {
     fn request_guessing_a_char(&mut self, nr_of_chars_to_guess: usize) -> Option<char> {
         println!("Please guess: \"{}\"", self.context.word_to_display);
         println!("({} char(s) to guess)", nr_of_chars_to_guess);
-        println!("\nEnter a character:");
+        println!(
+            "\nEnter a character (press ENTER to abort, enter \':\' for new words entry menu):"
+        );
 
         let mut result = None;
         let mut input_char: char = '\0';

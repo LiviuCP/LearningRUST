@@ -1,13 +1,24 @@
 use homedir::my_home;
 use std::{collections::HashSet, fs, fs::File, io::Write};
 
+#[derive(PartialEq, Debug)]
+pub enum IOError {
+    CannotLoadFile,
+    CannotSaveFile,
+    ReadEmptyContent,
+    WriteEmptyContent,
+    CannotRetrieveFilePath,
+    OtherSavingError,
+    UserInputError,
+}
+
 static DIR_NAME: &str = "Documents";
 static DATA_FILE_NAME: &str = "input.txt";
 
 pub const MIN_WORD_SIZE: usize = 10;
 
-pub fn build_data_file_path() -> Result<String, &'static str> {
-    let mut result = Err("Unable to retrieve the data file path");
+pub fn build_data_file_path() -> Result<String, IOError> {
+    let mut result = Err(IOError::CannotRetrieveFilePath);
 
     if let Ok(Some(mut path)) = my_home() {
         path.push(DIR_NAME);
@@ -27,13 +38,16 @@ pub struct IOManager {
 
 impl IOManager {
     pub fn create(file_path: &str) -> IOManager {
+        // ensure the file exists (even if empty) before starting any other IO operations
+        let _ = File::create_new(file_path);
+
         IOManager {
             data_file: file_path.to_string(),
         }
     }
 
-    pub fn load(&self) -> Result<Vec<String>, &'static str> {
-        let mut result = Err("File could not be opened");
+    pub fn load(&self) -> Result<Vec<String>, IOError> {
+        let mut result = Err(IOError::CannotLoadFile);
 
         if let Ok(data_str) = fs::read_to_string(&self.data_file) {
             // use HashSet to remove duplicate values, the collect the (valid) data into a vector for enabling randomization
@@ -53,15 +67,15 @@ impl IOManager {
             result = if !data.is_empty() {
                 Ok(data.iter().map(|val| val.to_string()).collect())
             } else {
-                Err("File is empty or contains no valid data")
+                Err(IOError::ReadEmptyContent)
             };
         }
 
         result
     }
 
-    pub fn save(&self, data: Vec<String>) -> Result<usize, &'static str> {
-        let mut result = Err("Empty content, nothing to save");
+    pub fn save(&self, data: Vec<String>) -> Result<usize, IOError> {
+        let mut result = Err(IOError::WriteEmptyContent);
 
         if !data.is_empty() {
             let file = File::create(&self.data_file);
@@ -83,11 +97,11 @@ impl IOManager {
                     result = if saved_words_count == words_to_save_count {
                         Ok(saved_words_count)
                     } else {
-                        Err("An error occurred while saving the words")
+                        Err(IOError::OtherSavingError)
                     };
                 }
                 Err(_err) => {
-                    result = Err("Unable to open the file for saving");
+                    result = Err(IOError::CannotSaveFile);
                 }
             }
         }

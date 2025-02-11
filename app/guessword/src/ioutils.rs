@@ -1,16 +1,16 @@
 use homedir::my_home;
 use std::{collections::HashSet, fs, fs::File, io::Write};
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone)]
 pub enum IOError {
     CannotLoadFile,
     CannotSaveFile,
-    ReadEmptyContent,
-    WriteEmptyContent,
     CannotRetrieveFilePath,
     OtherSavingError,
     UserInputError,
 }
+
+type Data = Vec<String>;
 
 static DIR_NAME: &str = "Documents";
 static DATA_FILE_NAME: &str = "input.txt";
@@ -46,7 +46,7 @@ impl IOManager {
         }
     }
 
-    pub fn load(&self) -> Result<Vec<String>, IOError> {
+    pub fn load(&self) -> Result<Data, IOError> {
         let mut result = Err(IOError::CannotLoadFile);
 
         if let Ok(data_str) = fs::read_to_string(&self.data_file) {
@@ -64,47 +64,37 @@ impl IOManager {
                 })
                 .collect();
 
-            result = if !data.is_empty() {
-                Ok(data.iter().map(|val| val.to_string()).collect())
-            } else {
-                Err(IOError::ReadEmptyContent)
-            };
+            result = Ok(data.iter().map(|val| val.to_string()).collect());
         }
 
         result
     }
 
-    pub fn save(&self, data: Vec<String>) -> Result<usize, IOError> {
-        let mut result = Err(IOError::WriteEmptyContent);
+    pub fn save(&self, data: Data) -> Result<usize, IOError> {
+        let file = File::create(&self.data_file);
 
-        if !data.is_empty() {
-            let file = File::create(&self.data_file);
+        let result = match file {
+            Ok(mut file_handle) => {
+                let words_to_save_count = data.len();
+                let mut saved_words_count = 0;
 
-            match file {
-                Ok(mut file_handle) => {
-                    let words_to_save_count = data.len();
-                    let mut saved_words_count = 0;
-
-                    for word in data.into_iter() {
-                        if let Ok(_res) = file_handle.write_all((word + "\n").as_bytes()) {
-                            saved_words_count += 1;
-                            continue;
-                        }
-
-                        break;
+                for word in data.into_iter() {
+                    if let Ok(_res) = file_handle.write_all((word + "\n").as_bytes()) {
+                        saved_words_count += 1;
+                        continue;
                     }
 
-                    result = if saved_words_count == words_to_save_count {
-                        Ok(saved_words_count)
-                    } else {
-                        Err(IOError::OtherSavingError)
-                    };
+                    break;
                 }
-                Err(_err) => {
-                    result = Err(IOError::CannotSaveFile);
+
+                if saved_words_count == words_to_save_count {
+                    Ok(saved_words_count)
+                } else {
+                    Err(IOError::OtherSavingError)
                 }
             }
-        }
+            Err(_err) => Err(IOError::CannotSaveFile),
+        };
 
         result
     }

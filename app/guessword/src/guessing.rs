@@ -19,6 +19,8 @@ pub enum Status {
     Aborted,
 }
 
+type Data = Vec<String>;
+
 struct GuessingContext {
     word_to_guess: String,
     word_to_display: String, // word displayed as guessing hint (with placeholders that are gradually filled in as the user guesses the chars)
@@ -48,17 +50,17 @@ impl GuessingContext {
 }
 
 pub struct GuessingEngine {
-    data: Vec<String>,
+    data: Data,
     generator: random::QuickIndexGenerator,
     context: GuessingContext,
     status: Status,
 }
 
 impl GuessingEngine {
-    pub fn create(data: Vec<String>) -> GuessingEngine {
+    pub fn create(data: &Data) -> GuessingEngine {
         GuessingEngine {
             generator: random::QuickIndexGenerator::create(data.len()),
-            data,
+            data: data.clone(),
             context: GuessingContext::create(),
             status: Status::Init,
         }
@@ -122,9 +124,9 @@ impl GuessingEngine {
         &self.status
     }
 
-    pub fn reset(&mut self, data: Vec<String>) -> &Status {
+    pub fn reset(&mut self, data: &Data) -> &Status {
         self.generator = random::QuickIndexGenerator::create(data.len());
-        self.data = data;
+        self.data = data.clone();
         self.context.reset();
         self.status = Status::Restarted;
 

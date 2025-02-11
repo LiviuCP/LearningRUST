@@ -1,5 +1,6 @@
 use std::{collections::HashSet, io};
 
+pub mod cta;
 pub mod random;
 
 pub fn clear_screen() {

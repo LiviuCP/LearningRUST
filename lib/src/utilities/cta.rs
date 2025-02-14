@@ -5,7 +5,7 @@ pub fn execute_yes_no_cancel_cta(message: &str) -> Result<Option<bool>, ()> {
     let mut result = Ok(None);
 
     println!("{}", message);
-    println!("(y - yes, n - no, c - cancel)?\n");
+    println!("(y - yes, n - no, c - cancel)\n");
 
     loop {
         let mut user_input = String::new();
@@ -23,6 +23,37 @@ pub fn execute_yes_no_cancel_cta(message: &str) -> Result<Option<bool>, ()> {
                 result = Ok(Some(false));
             }
             "c" | "C" => {}
+            _ => {
+                println!("Invalid choice! Please try again");
+                continue;
+            }
+        }
+
+        break;
+    }
+
+    result
+}
+
+pub fn execute_yes_no_cta(message: &str) -> Result<bool, ()> {
+    let mut result = Ok(false);
+
+    println!("{}", message);
+    println!("(y - yes, n - no)\n");
+
+    loop {
+        let mut user_input = String::new();
+
+        if let Err(_) = io::stdin().read_line(&mut user_input) {
+            result = Err(());
+            break;
+        }
+
+        match user_input.trim() {
+            "y" | "Y" => {
+                result = Ok(true);
+            }
+            "n" | "N" => {}
             _ => {
                 println!("Invalid choice! Please try again");
                 continue;

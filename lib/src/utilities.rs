@@ -7,26 +7,32 @@ pub fn clear_screen() {
     std::process::Command::new("clear").status().unwrap();
 }
 
-pub fn read_char(ch: &mut char) -> bool {
+pub fn read_char(ch: &mut char) -> Result<bool, ()> {
+    let mut result = Ok(false);
     let mut buffer = String::new();
 
-    io::stdin()
-        .read_line(&mut buffer)
-        .expect("Failed reading the line!");
+    io::stdin().read_line(&mut buffer).unwrap_or_else(|_err| {
+        result = Err(());
+        0
+    });
 
-    let mut is_buffer_empty = buffer.len() == 0;
+    if result == Ok(false) {
+        let mut is_buffer_empty = buffer.is_empty();
 
-    if !is_buffer_empty {
-        let first_char = buffer.chars().nth(0).unwrap();
+        if !is_buffer_empty {
+            let first_char = buffer.chars().nth(0).unwrap();
 
-        if first_char != '\n' {
-            *ch = first_char;
-        } else {
-            is_buffer_empty = true;
+            if first_char != '\n' {
+                *ch = first_char;
+            } else {
+                is_buffer_empty = true;
+            }
         }
+
+        result = Ok(!is_buffer_empty);
     }
 
-    !is_buffer_empty
+    result
 }
 
 pub fn convert_char_to_lowercase(input_char: &mut char) {

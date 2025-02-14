@@ -5,7 +5,7 @@ use learn_rust_lib::utilities::random::IndexGenerator;
 use std::{
     cmp::Ordering,
     collections::{HashMap, HashSet},
-    io, process,
+    io,
 };
 
 #[derive(PartialEq)]
@@ -17,6 +17,7 @@ pub enum Status {
     Restarted,
     Stopped,
     Aborted,
+    Error,
 }
 
 type Data = Vec<String>;
@@ -81,7 +82,7 @@ impl GuessingEngine {
             if !self.context.word_size_guessed {
                 self.guess_word_size();
 
-                if self.status == Status::Paused || self.status == Status::Aborted {
+                if self.has_interrupt_status() {
                     break;
                 }
 
@@ -90,7 +91,7 @@ impl GuessingEngine {
 
             self.guess_word();
 
-            if self.status == Status::Paused || self.status == Status::Aborted {
+            if self.has_interrupt_status() {
                 break;
             }
 
@@ -139,9 +140,26 @@ impl GuessingEngine {
         loop {
             let result = self.request_guessing_word_size();
 
-            if result.is_empty() {
-                self.status = Status::Aborted;
+            if self.status == Status::Error {
                 break;
+            }
+
+            if result.is_empty() {
+                match Self::prompt_for_abort() {
+                    Ok(true) => {
+                        self.status = Status::Aborted;
+                        break;
+                    }
+                    Ok(false) => {
+                        utilities::clear_screen();
+                        continue;
+                    }
+                    Err(_) => {
+                        self.status = Status::Error;
+                        eprintln!("Failed reading the user choice!");
+                        break;
+                    }
+                }
             } else if result == ":".to_string() {
                 self.status = Status::Paused;
                 break;
@@ -180,6 +198,10 @@ impl GuessingEngine {
             let input_char;
             let result = self.request_guessing_a_char(nr_of_chars_to_guess);
 
+            if self.status == Status::Error {
+                break;
+            }
+
             match result {
                 Some(':') => {
                     self.status = Status::Paused;
@@ -188,10 +210,21 @@ impl GuessingEngine {
                 Some(ch) => {
                     input_char = ch;
                 }
-                None => {
-                    self.status = Status::Aborted;
-                    break;
-                }
+                None => match Self::prompt_for_abort() {
+                    Ok(true) => {
+                        self.status = Status::Aborted;
+                        break;
+                    }
+                    Ok(false) => {
+                        utilities::clear_screen();
+                        continue;
+                    }
+                    Err(_) => {
+                        self.status = Status::Error;
+                        eprintln!("Failed reading the user choice!");
+                        break;
+                    }
+                },
             }
 
             if self.context.guessed_chars.contains(&input_char) {
@@ -216,8 +249,10 @@ impl GuessingEngine {
                 self.context.chars_left_to_guess.remove(&input_char);
                 self.context.guessed_chars.insert(input_char);
 
+                utilities::clear_screen();
                 Self::display_guessed_char_message(input_char, found_occurrences_count);
             } else {
+                utilities::clear_screen();
                 Self::display_char_not_guessed_message(input_char, false);
             }
         }
@@ -285,18 +320,28 @@ impl GuessingEngine {
         }
     }
 
+    fn has_interrupt_status(&self) -> bool {
+        self.status == Status::Paused
+            || self.status == Status::Aborted
+            || self.status == Status::Error
+    }
+
     fn request_guessing_word_size(&mut self) -> String {
         println!("Please guess the word size (press ENTER to abort, enter \':\' for new words entry menu):");
         let mut guessed_word_size = String::new();
 
         io::stdin()
             .read_line(&mut guessed_word_size)
-            .unwrap_or_else(|err| {
-                eprintln!("Failed reading the number of digits: {err}");
-                process::exit(-1)
+            .unwrap_or_else(|_err| {
+                self.status = Status::Error;
+                eprintln!("Failed reading the number of digits!");
+                0 // set number of read bytes to 0 in case of user input error
             });
 
-        guessed_word_size = guessed_word_size.trim().to_string();
+        if self.status != Status::Error {
+            guessed_word_size = guessed_word_size.trim().to_string();
+        }
+
         guessed_word_size
     }
 
@@ -330,13 +375,18 @@ impl GuessingEngine {
 
         let mut result = None;
         let mut input_char: char = '\0';
-        let char_successfully_read = utilities::read_char(&mut input_char);
 
-        utilities::clear_screen();
-
-        if char_successfully_read {
-            utilities::convert_char_to_lowercase(&mut input_char);
-            result = Some(input_char)
+        match utilities::read_char(&mut input_char) {
+            Ok(char_successfully_read) => {
+                if char_successfully_read {
+                    utilities::convert_char_to_lowercase(&mut input_char);
+                    result = Some(input_char)
+                }
+            }
+            Err(_) => {
+                self.status = Status::Error;
+                eprintln!("Failed to read the character!");
+            }
         }
 
         result
@@ -368,5 +418,9 @@ impl GuessingEngine {
     fn display_invalid_input_message() {
         utilities::clear_screen();
         println!("Invalid input! Please try again.");
+    }
+
+    fn prompt_for_abort() -> Result<bool, ()> {
+        utilities::cta::execute_yes_no_cta("Are you sure you want to abort?")
     }
 }

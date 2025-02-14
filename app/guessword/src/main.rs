@@ -82,6 +82,10 @@ fn main() {
                 println!("Aborted");
                 break;
             }
+            Status::Error => {
+                println!("Aborted");
+                break;
+            }
             _ => {
                 debug_assert!(false, "Invalid guessing engine status!");
             }

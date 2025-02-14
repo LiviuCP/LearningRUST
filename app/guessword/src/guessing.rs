@@ -5,7 +5,6 @@ use learn_rust_lib::utilities::random::IndexGenerator;
 use std::{
     cmp::Ordering,
     collections::{HashMap, HashSet},
-    io,
 };
 
 #[derive(PartialEq)]
@@ -330,16 +329,14 @@ impl GuessingEngine {
         println!("Please guess the word size (press ENTER to abort, enter \':\' for new words entry menu):");
         let mut guessed_word_size = String::new();
 
-        io::stdin()
-            .read_line(&mut guessed_word_size)
-            .unwrap_or_else(|_err| {
+        match utilities::read_line(&mut guessed_word_size) {
+            Ok(_) => {
+                guessed_word_size = guessed_word_size.trim().to_string();
+            }
+            Err(_) => {
                 self.status = Status::Error;
                 eprintln!("Failed reading the number of digits!");
-                0 // set number of read bytes to 0 in case of user input error
-            });
-
-        if self.status != Status::Error {
-            guessed_word_size = guessed_word_size.trim().to_string();
+            }
         }
 
         guessed_word_size

@@ -1,7 +1,7 @@
 use crate::ioutils;
 use ioutils::IOError;
 use learn_rust_lib::utilities;
-use std::{collections::HashSet, io};
+use std::collections::HashSet;
 
 struct ConsolidationStatistics {
     initial_words_count: usize,
@@ -112,7 +112,7 @@ impl DataManager {
 
             let mut new_word = String::new();
 
-            if let Err(_) = io::stdin().read_line(&mut new_word) {
+            if let Err(_) = utilities::read_line(&mut new_word) {
                 result = Err(IOError::UserInputError);
                 break;
             }

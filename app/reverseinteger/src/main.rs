@@ -3,7 +3,7 @@ use learn_rust_lib::{numbers::reverse_int, utilities};
 
 fn read_input() -> String {
     let mut input_str = String::new();
-    std::io::stdin().read_line(&mut input_str).unwrap();
+    utilities::read_line(&mut input_str).unwrap();
     pre_parse_input_string(&mut input_str);
     input_str
 }

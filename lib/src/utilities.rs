@@ -13,7 +13,7 @@ pub fn read_char(ch: &mut char) -> Result<bool, ()> {
 
     io::stdin().read_line(&mut buffer).unwrap_or_else(|_err| {
         result = Err(());
-        0
+        0 // set number of read bytes to 0 in case of user input error
     });
 
     if result == Ok(false) {
@@ -30,6 +30,21 @@ pub fn read_char(ch: &mut char) -> Result<bool, ()> {
         }
 
         result = Ok(!is_buffer_empty);
+    }
+
+    result
+}
+
+pub fn read_line(str: &mut String) -> Result<bool, ()> {
+    let mut result = Ok(false);
+
+    io::stdin().read_line(str).unwrap_or_else(|_err| {
+        result = Err(());
+        0 // set number of read bytes to 0 in case of user input error
+    });
+
+    if result == Ok(false) && !str.is_empty() {
+        result = Ok(true);
     }
 
     result

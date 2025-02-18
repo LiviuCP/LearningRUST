@@ -75,27 +75,7 @@ impl DataManager {
 
             match Self::prompt_for_save() {
                 Ok(Some(true)) => {
-                    let statistics = self.consolidate_data(provided_words);
-
-                    utilities::clear_screen();
-
-                    if statistics.added_words_count > 0 {
-                        match self.io_manager.save(self.data.clone()) {
-                            Ok(_) => {
-                                result = Ok(true);
-
-                                Self::display_data_saved_message(
-                                    &statistics,
-                                    self.io_manager.get_data_file(),
-                                );
-                            }
-                            Err(error) => {
-                                result = Err(error);
-                            }
-                        }
-                    } else {
-                        Self::display_provided_data_is_duplicate_message();
-                    }
+                    result = self.handle_save_request(provided_words);
                 }
                 Ok(Some(false)) => {
                     utilities::clear_screen();
@@ -160,6 +140,30 @@ impl DataManager {
 
     fn prompt_for_save() -> Result<Option<bool>, ()> {
         utilities::cta::execute_yes_no_cancel_cta("Do you want to save the changes?")
+    }
+
+    fn handle_save_request(&mut self, provided_words: Vec<String>) -> Result<bool, IOError> {
+        let mut result = Ok(false);
+        let statistics = self.consolidate_data(provided_words);
+
+        utilities::clear_screen();
+
+        if statistics.added_words_count > 0 {
+            match self.io_manager.save(self.data.clone()) {
+                Ok(_) => {
+                    result = Ok(true);
+
+                    Self::display_data_saved_message(&statistics, self.io_manager.get_data_file());
+                }
+                Err(error) => {
+                    result = Err(error);
+                }
+            }
+        } else {
+            Self::display_provided_data_is_duplicate_message();
+        }
+
+        result
     }
 
     fn consolidate_data(&mut self, input_data: Data) -> ConsolidationStatistics {

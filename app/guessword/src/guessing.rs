@@ -418,6 +418,6 @@ impl GuessingEngine {
     }
 
     fn prompt_for_abort() -> Result<bool, ()> {
-        utilities::cta::execute_yes_no_cta("Are you sure you want to abort?")
+        utilities::cta::execute_yes_no_cta("Are you sure you want to abort guessing?")
     }
 }

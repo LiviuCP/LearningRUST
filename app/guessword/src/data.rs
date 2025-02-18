@@ -56,8 +56,20 @@ impl DataManager {
             }
 
             if provided_words.is_empty() {
-                utilities::clear_screen();
-                Self::display_no_data_provided_message();
+                match Self::prompt_for_data_entry_abort() {
+                    Ok(true) => {
+                        utilities::clear_screen();
+                        Self::display_no_data_provided_message();
+                    }
+                    Ok(false) => {
+                        utilities::clear_screen();
+                        continue;
+                    }
+                    Err(_) => {
+                        result = Err(IOError::UserInputError);
+                    }
+                }
+
                 break;
             }
 
@@ -201,5 +213,11 @@ impl DataManager {
 
     fn display_saving_aborted_message() {
         println!("Saving aborted!");
+    }
+
+    fn prompt_for_data_entry_abort() -> Result<bool, ()> {
+        utilities::cta::execute_yes_no_cta(
+            "You entered no new words. Are you sure you want to abort?",
+        )
     }
 }

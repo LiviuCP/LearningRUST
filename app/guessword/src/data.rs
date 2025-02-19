@@ -1,5 +1,8 @@
-use crate::ioutils;
-use ioutils::IOError;
+use crate::errors::IOError;
+use crate::inout::IOManager;
+
+use crate::settings;
+
 use learn_rust_lib::utilities;
 use std::collections::HashSet;
 
@@ -13,12 +16,12 @@ type Data = Vec<String>;
 
 pub struct DataManager {
     data: Data,
-    io_manager: ioutils::IOManager,
+    io_manager: IOManager,
     is_initialized: bool,
 }
 
 impl DataManager {
-    pub fn create(io_manager: ioutils::IOManager) -> DataManager {
+    pub fn create(io_manager: IOManager) -> DataManager {
         DataManager {
             data: Data::new(),
             io_manager,
@@ -118,9 +121,9 @@ impl DataManager {
             utilities::clear_screen();
 
             if !new_word.chars().all(|ch| ch.is_ascii_alphabetic())
-                || new_word.len() < ioutils::MIN_WORD_SIZE
+                || new_word.len() < settings::MIN_WORD_SIZE
             {
-                println!("The word \"{new_word}\" contains invalid characters and/or doesn't have the required minimum chars count ({})!", ioutils::MIN_WORD_SIZE);
+                println!("The word \"{new_word}\" contains invalid characters and/or doesn't have the required minimum chars count ({})!", settings::MIN_WORD_SIZE);
                 println!("Please try again\n");
                 continue;
             }

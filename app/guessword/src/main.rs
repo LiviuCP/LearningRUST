@@ -1,16 +1,20 @@
 mod data;
+mod errors;
 mod guessing;
-mod ioutils;
+mod inout;
+mod settings;
 
 use data::DataManager;
-use guessing::Status;
-use ioutils::IOError;
+use errors::IOError;
+use guessing::{GuessingEngine, Status};
+use inout::IOManager;
+
 use learn_rust_lib::utilities;
 use std::{env, process};
 
 fn main() {
     let data_file = retrieve_data_file_path();
-    let mut data_manager = DataManager::create(ioutils::IOManager::create(&data_file));
+    let mut data_manager = DataManager::create(IOManager::create(&data_file));
     let args: Vec<String> = env::args().collect();
 
     utilities::clear_screen();
@@ -51,7 +55,7 @@ fn main() {
         println!("\nLet's continue with guessing!\n");
     }
 
-    let mut guessing_engine = guessing::GuessingEngine::create(data_manager.data());
+    let mut guessing_engine = GuessingEngine::create(data_manager.data());
     let mut status = guessing_engine.run();
 
     loop {
@@ -105,7 +109,7 @@ fn check_cli_args(args: &Vec<String>) {
 }
 
 fn retrieve_data_file_path() -> String {
-    ioutils::build_data_file_path().unwrap_or_else(|err| {
+    settings::build_data_file_path().unwrap_or_else(|err| {
         if err == IOError::CannotRetrieveFilePath {
             eprintln!("Error! Cannot retrieve data file path");
         } else {

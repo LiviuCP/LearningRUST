@@ -194,7 +194,7 @@ impl GuessingEngine {
         debug_assert!(nr_of_chars_to_guess > 0);
 
         while !self.context.chars_left_to_guess.is_empty() {
-            let input_char;
+            let mut input_char = '\0'; // this C-style string terminating value is used only to make sure the char variable is initialized
             let result = self.request_guessing_a_char(nr_of_chars_to_guess);
 
             if self.status == Status::Error {
@@ -204,7 +204,6 @@ impl GuessingEngine {
             match result {
                 Some(':') => {
                     self.status = Status::Paused;
-                    break;
                 }
                 Some(ch) => {
                     input_char = ch;
@@ -212,7 +211,6 @@ impl GuessingEngine {
                 None => match Self::prompt_for_abort() {
                     Ok(true) => {
                         self.status = Status::Aborted;
-                        break;
                     }
                     Ok(false) => {
                         utilities::clear_screen();
@@ -221,9 +219,12 @@ impl GuessingEngine {
                     Err(_) => {
                         self.status = Status::Error;
                         eprintln!("Failed reading the user choice!");
-                        break;
                     }
                 },
+            }
+
+            if self.has_interrupt_status() {
+                break;
             }
 
             if self.context.guessed_chars.contains(&input_char) {
